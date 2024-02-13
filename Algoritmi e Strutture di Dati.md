@@ -1,3 +1,4 @@
+# Lezione I
 ___
 ##  Ordinamenti di confronto
 
@@ -82,7 +83,7 @@ ___
 **Output**:  `B[1..n]` ordinato.
 **Memoria ausiliaria**:  `C[0...k]`
 
- ```
+ ```c
  countingsort(array A, array B, int n, int k)               
 	 array C[0...k]
      for i = to k
@@ -103,3 +104,99 @@ L'algoritmo parte dal fondo per essere $\color{green} stabile$.
 ##### Tempo di esecuzione
 Il primo ciclo costa $\Theta(k)$, il secondo $\Theta(n)$, il terzo $\Theta(k)$ e l'ultimo $\Theta(n)$, pertanto il tempo di esecuzione è $\color{red}\Theta(k + n)$.
 In particolare se $k$ è limitato superiormente da $n$ il tempo di esecuzione è $\color{red}\Theta(n)$, tuttavia se la condizione non è verificata l'algoritmo non è conveniente.
+
+
+# Lezione 2
+___
+## Radix Sort
+
+* Aumenta l'applicabilità del **Counting Sort**.
+* Serve per ordinare elementi con $d$ cifre, dove la cifra meno significativa è in posizione 1 e quella più significativa in posizione $d$.
+ 
+```c
+radixsort(array A, int d)
+	for int i to d
+		//Usa un ordinamento stabile per ordinare l'array a
+		//sulla cifra i
+
+```
+
+Utilizzo un **Counting Sort**, e lo applico partendo dalle cifre meno significative:
+
+![[Pasted image 20240213122817.png]]
+
+#### $\color{red} \textbf{Dimostrazione della correttezza per induzione}$
+
+**Caso Base**:
+	$i = 1$ $\rightarrow$ ordino l'unica colonna disponibile.
+
+**Ipotesi Induttiva**: 
+	suppongo che le cifre delle colonne $i...i-1$ siano ordinate.
+
+**Passo Induttivo**: 
+	dimostro che un algoritmo stabile sulla colonna $i$ lascia le colonne $1...i$ ordinate.
+
+* Se  2 cifre in posizione $i$ sono uguali, per la stabilità rimangono nello stesso ordine e per ipotesi induttiva sono ordinate.
+* Se 2 cifre in posizione $i$ sono diverse, allora l'algoritmo di ordinamento sulla colonna $i$-esima le ordina e le mette in posizione corretta. 
+
+#### $\color{red} \textbf{Analisi della complessità}$
+
+*Lemma*: Dati $n$ numeri di $d$ cifre, dove ogni cifra può variare fino a $k$ valori possibili, la procedura **radix sort** correttemente ordina i numeri nel tempo di $\color{green}\Theta(d(n + k))$.
+
+##### $\color{red} \textbf{Dimostrazione del lemma per induzione}$
+* Per ogni iterazione $\theta(n + k)$.
+* $d$ iterazioni.
+* totale è $\color{green}\Theta(d(n + k))$.
+
+Se $k = O(n)$, il tempo di esecuzione è $\color{green}\Theta(d\cdot n)$  e se $d$ è costante $\color{green}\Theta(n)$.
+
+
+### Come ripartire le chiavi in cifre?
+
+*Esempio*: consideriamo una parola di 32 bit, spezzo una parola in 4 byte (in 4 cifre di 8 bit).
+$$ b=32,\ r=8,\ d=4,\ ci \in [0...2^r-1]$$ 
+*Lemma*: Dati $n$ numeri di $b$ bit e un intero positivo $r \in b$, la procedura `radixsort` ordina correttamente questi numeri in tempo $\color{green}\Theta((\frac{b}{r})\cdot (n+2^n))$ se l'algoritmo di ordinamento stabile usato richiede tempo $\color{green} \Theta(n + k)$ per input nel'intervallo $[0...k]$.
+
+##### $\color{red} \textbf{Dimostrazione del lemma}$
+Per $r \leq b$
+* Spezziamo ogni numero in $\lceil \frac{b}{r} \rceil$ cifre di $n$ bit ciascuna.
+* Ogni cifra varia in $[0...2^r-1]$
+* Possiamo applicare il **counting sort** con $k=2^r-1$.
+* Ogni passaggio richiede $\color{green} \Theta(n + k)$ ovvero $\color{green} \Theta(n + 2^r)$.
+* Esegue d = $\lceil \frac{b}{r} \rceil$ passaggi.
+* Infine il tempo di esecuzione totale è $\color{green}\Theta((\frac{b}{r}) \cdot (n + 2^r)$.
+
+
+Dati i valori di $n$ ed $b$, vogliamo scegliere il valore $r$ con $r \in b$ , che rende minima $(\frac{b}{r}) \cdot (n+2^r)$.
+
+* Se $b \leq \lfloor log\ n \rfloor$  allora per qualsiasi valore $r \leq b$ si ha $(n + 2^r) = \color{green} \Theta(n)$. Quindi scegliendo $r = b$ si ottiene $(\frac{b}{b}) \cdot (n + 2^b) = \color{green} \Theta(n)$.
+* Se $b \geq \lfloor log\ n \rfloor$ allora scegliamo $r$ che sia massimo sotto la condizione che $n \geq 2^r \rightarrow  r=log\ n$. Quindi si ottiene che $(\frac{b}{log\ n}) \cdot (n + 2^{log\ n}) = \color{green} \Theta(\frac{b \cdot n}{log\ n})$.
+* Se $b = O(log\ n)$, per esempio $b = c \cdot log\ n$ con $c$ costante, i numeri variano fra $0...2^b-1 = 0...2^{c \cdot log\ n}-1 = 0...n^c-1$. Il tempo di esecuzione del **radix sort** pertanto è $\Theta(\frac{n \cdot c \cdot log\ n}{log\ n}) = \color{green}\Theta(n)$.
+
+Da cui si deduce che: $[0...n^c-1]$ con $n$ numeri:
+* **counting sort** $\rightarrow$ $\Theta(n+n^c) = \Theta(n)$.
+* **radix sort** $\rightarrow$ $\Theta(n)$.
+
+
+$\color{red} \textbf{Esercizio}$
+* Dimostrare come ordinare $n$ numeri interi compresi nell'intervallo fra $0..n^4-1$ nel tempo $O(n)$.
+
+$\Theta(d(n+k))$ con $d =$ **#cifre** e $k=$ **numero di valori che vogliamo**. 
+
+Se rappresento il numero in base $n$ ogni cifra varia fra $[0...n-1]$. 
+Per rappresentare un numero nell'intervallo $[0...n^4-1]$ in base $n$ uso $\color{green}\log_n(n^4) = 4$. 
+
+# Lezione 3
+___
+## Tabelle Hash
+Nell'applicazione ha bisogno:
+* *Insieme dinamico* su cui sono definite le operazioni **instert**, **delete** e **search**.
+* Ogni elemento ha una *chiave* estratta dall'*universo*  $U = \{0,1...w-1\}$  dove $v$ non è troppo grande.
+* Nessun elemento ha la stessa chiave (*chiavi distinte*).
+
+Si può utilizzare un array `T[0...w-1]`:
+* Ogni posizione (o *cella*) corrisponde ad una *chiave* in $U$.
+* Se c'è un elemento $x$ con chiave $k$ allora `T[k]` contiene un puntatore ad $x$.
+* Altrimenti se l'insieme non contiene alcun elemento con chiave $k$ $\rightarrow$ `T[k] = NIL`.
+
+![[Pasted image 20240213134541.png]]

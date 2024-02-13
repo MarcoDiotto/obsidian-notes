@@ -8,12 +8,12 @@
         "type": "tabs",
         "children": [
           {
-            "id": "91a3a92a436e65b4",
+            "id": "26241a2e4e80ca0c",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Programmazione ad oggetti mod 2/Lezione 1.md",
+                "file": "Algoritmi e Strutture di Dati.md",
                 "mode": "source",
                 "source": false
               }
@@ -65,12 +65,12 @@
               "state": {}
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "5a3146de85d04ed0",
@@ -86,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Programmazione ad oggetti mod 2/Lezione 1.md",
+                "file": "Algoritmi e Strutture di Dati.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Programmazione ad oggetti mod 2/Lezione 1.md",
+                "file": "Algoritmi e Strutture di Dati.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +126,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Programmazione ad oggetti mod 2/Lezione 1.md"
+                "file": "Algoritmi e Strutture di Dati.md"
               }
             }
           }
@@ -147,27 +147,32 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "91a3a92a436e65b4",
+  "active": "26241a2e4e80ca0c",
   "lastOpenFiles": [
-    "Algoritmi e strutture dati mod 2/Lezione 1.md",
-    "BD mod 2/Lezione 1.md",
+    "Pasted image 20240213134541.png",
+    "Untitled.md",
+    "Algoritmi e Strutture di Dati.md",
+    "Utilità/Pasted image 20240213122817.png",
+    "Analisi dei Dati.md",
+    "Basi di  dati Mod. 2.md",
+    "Programmazione ad Oggetti Mod. 2.md",
+    "Tecnologie e Applicazioni Web.md",
+    "Utilità/Pasted image 20240212092142.png",
+    "Utilità/Pasted image 20240212092818.png",
+    "Utilità",
+    "Analisi dei Dati",
     "Untitled.canvas",
     "Untitled 1.canvas",
-    "Tecnologie e Applicazioni Web/Lesson 1.md",
-    "Programmazione ad oggetti mod 2/Lezione 1.md",
     "Programmazione ad oggetti mod 2",
     "Tecnologie e Applicazioni Web",
-    "Pasted image 20240212092818.png",
-    "Pasted image 20240212110839.png",
-    "Pasted image 20240212111145.png",
-    "Pasted image 20240212092142.png",
-    "Pasted image 20240212104224.png",
+    "Utilità/Pasted image 20240212110839.png",
+    "Utilità/Pasted image 20240212111145.png",
+    "Utilità/Pasted image 20240212104224.png",
     "Algoritmi e strutture dati mod 2",
-    "Pasted image 20240212100219.png",
-    "Pasted image 20240212094734.png",
-    "Pasted image 20240212094715.png",
-    "Pasted image 20240212094438.png",
-    "Untitled.md",
+    "Utilità/Pasted image 20240212100219.png",
+    "Utilità/Pasted image 20240212094734.png",
+    "Utilità/Pasted image 20240212094715.png",
+    "Utilità/Pasted image 20240212094438.png",
     "ALGORITMI E STRUTTURE DATI.md",
     "BD mod 2"
   ]

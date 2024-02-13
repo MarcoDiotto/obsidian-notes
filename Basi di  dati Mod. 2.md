@@ -1,4 +1,7 @@
+
+# Lezione 1
 ___
+
 ## Anomalie e dipendenze funzionali
 
 Poiché un oggetto può essere modellato in maniera differente, sorge il dubbio su quale sia la forma migliore per modellarlo.

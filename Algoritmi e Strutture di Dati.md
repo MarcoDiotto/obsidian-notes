@@ -59,7 +59,7 @@ $f = f_1 \leq 2^{h-1} \leq 2^h$ $\rightarrow$ per ipotesi induttiva poiché l'al
 Il numero di foglie di $T$ è Il numero di foglie di $T_1$ e di $T_2$. Se $T_1$ ha altezza $h_1$ che è $<h$ e $T_2$ ha altezza $h_2$ che è $<h$ :  $f = f_1 + f_2 \leq 2^{h_1} + 2^{h_2}$  $\rightarrow$ per ipotesi induttiva $\leq 2^{max\{h1,h1\}} = 2^{1+ max\{h1,h1\}} = 2^h$ perché $h = 1+ max\{h1,h2\}$. 
 
 #### $\color{red} Teorema$
-Qualsiasi algoritmo di ordinamento per confronto richiede $\Omega(nlogn)$ confronti nel caso peggiore.
+Qualsiasi algoritmo di ordinamento per confronto richiede $\Omega(n\ log\ n)$ confronti nel caso peggiore.
 
 ##### $\color{red} Dimostrazione$
 
@@ -86,7 +86,7 @@ ___
  ```c
  countingsort(array A, array B, int n, int k)               
 	 array C[0...k]
-     for i = to k
+     for i = 0 to k
 	     C[i] = 0
 	 for j = 1 to n
 		 C[A[j]] = C[A[j]] +1
@@ -194,9 +194,138 @@ Nell'applicazione ha bisogno:
 * Ogni elemento ha una *chiave* estratta dall'*universo*  $U = \{0,1...w-1\}$  dove $v$ non è troppo grande.
 * Nessun elemento ha la stessa chiave (*chiavi distinte*).
 
+### Array
+
 Si può utilizzare un array `T[0...w-1]`:
 * Ogni posizione (o *cella*) corrisponde ad una *chiave* in $U$.
 * Se c'è un elemento $x$ con chiave $k$ allora `T[k]` contiene un puntatore ad $x$.
 * Altrimenti se l'insieme non contiene alcun elemento con chiave $k$ $\rightarrow$ `T[k] = NIL`.
 
+Di seguito una *tabella ad indirizzamento diretto*:
+
 ![[Pasted image 20240213134541.png]]
+
+Se la chiave non è presente nell'insieme si inserisce un `NIL`.
+
+##### $\color{red} \textbf{Search}$
+```C
+Direct_access_search(T, k)
+	Return T[k]
+```
+
+Il tempo di esecuzione è $\color{green} \Theta(1)$.
+
+##### $\color{red} \textbf{Insert}$
+```C
+Direct_access_insert(T, x)
+	T[x.key] = x
+```
+
+Il tempo di esecuzione è $\color{green} \Theta(1)$.
+
+##### $\color{red} \textbf{Delete}$
+```C
+Direct_access_delete(T, x)
+	T[x.key] = NIL
+```
+
+Il tempo di esecuzione è nuovamente $\color{green} \Theta(1)$.
+
+
+* **Vantaggio**: Tutte le operazioni avvengo in tempo $\color{green} \Theta(1)$.
+* **Svantaggio**: Lo spazio utilizzato è proporzionale a $w$, non al numero $n$ di elementi memorizzati $\rightarrow$ grande spreco di memoria $n << w$.
+
+
+### Tabelle Hash
+* Lo spazio può essere ridotto a $\color{green} \Theta(|K|)$. $\rightarrow$ $K =$ insieme considerato.
+* Il tempo di **ricerca** è *costante* ma *solo nel caso medio*, nel caso peggiore è $\color{green} \Theta(n)$.
+
+**Idea**: invece di memorizzare un elemento con chiave `k` nella cella con indice `k`, si una una funzione `h` e si memorizza l'elemento nella cella `h[k]`.
+* `h` $\rightarrow$ la funzione hash
+* `h.U` $\rightarrow$ $\{0 ... m-1\}$, dove $m$ è la dimensione della tabella hash che è generalmente molto più piccola di $|U|$.
+ 
+![[Pasted image 20240214090632.png]]
+
+Le tabelle hash possono soffrire del problema delle **collisioni**
+
+### Collisioni
+Quando un elemento da inserire è mappato in una cella già occupata, si verifica una **collisione**.
+
+* $|U| > m$ $\rightarrow$ *può accadere* che ci siano collisioni.
+* $|K| > m$  $\rightarrow$ *c'è sicuramente* una collisione.
+
+Metodi di risoluzione delle collisioni:
+* **Concatenamento** (o **lista di collisioni**).
+* **Indirizzamento aperto**.
+
+### Risoluzione delle collisioni mediante il concatenamento
+Si mettono tutti gli elementi che sono associati alla *stessa cella* in una **lista concatenata**:
+* la *cella* `j` contiene un puntatore alla testa della lista, di tutti gli elementi memorizzati che sono mappati in `j` $\rightarrow$ `h[k] = j`.
+* Non ci sono elementi, la cella `j` contiene `NIL`.
+##### $\color{red} \textbf{Insert}$
+```c
+chained_hash_insert(T, x)
+ inserisce x in testa alla lista T[h(x.key)]
+```
+
+Il tempo di esecuzione è $\color{green} \Theta(1)$.
+
+**Ipotesi**: 
+* Il calcolo della tabella hash è $\color{green} \Theta(1)$.
+* Si suppone che l'elemento da inserire non sia nella lista.
+##### $\color{red}\textbf{Search}$
+```c
+chained_has_search(T, k)
+	ricerca un elemento con chiave k nella lista T[h[k]]
+```
+
+Il tempo di esecuzione di questa funzione nel caso peggiore è proporzionale alla lunghezza della lista nella cella `h[k]`
+##### $\color{red} \textbf{Delete}$
+```c
+chained_hash_delete(T, x)
+	cancella x dalla lista T[h(x.key)]
+```
+
+* Il tempo di esecuzione nel caso peggiore è  $\color{green} O(1)$ se la lista è **doppiamente concatenata**. Poiché si fornisce il puntatore all'elemento `x`,  per cancellare non è richiesta alcuna **ricerca**.
+* Se la lista è **singolarmente concatenata**, la cancellazione richiede di cercare il predecessore di `x` nella lista `T[h(x.key)]` $\rightarrow$ *il costo della cancellazione è il costo della ricerca*
+### Analisi del'hashing con concatenamento
+
+Sia `T` una *tabella hash*  con $m$ *celle* in cui sono stati mappati $n$ *elementi* nella quale vogliamo cercare l'elemento con chiave `k`.
+
+* Il **caso** **peggiore** si verifica quando tutti gli elementi sono mappati nella stessa cella $\rightarrow$ unica lista di lunghezza $n$.  Il tempo di esecuzione della ricerca è $\color{green} O(n)$, a cui si somma il tempo per il calcolo della funzione hash (che supponiamo essere $\color{green} \Theta(1)$).
+* Il **caso medio** dipende dal modo in cui la funzione hash distribuisce mediamente le chiavi per le $m$ celle.
+#### Caso Medio
+
+**Ipotesi**:  *hashing uniforme ed indipendente* $\rightarrow$ ogni elemento ha la stessa probabilità di essere mandato in una qualsiasi delle $m$ celle, indipendentemente dalle celle in cui sono mandati gli altri elementi $\rightarrow$ $\forall i \in [0 ... m-1]\ Q(i) = \frac{1}{m}$ con $Q =$ probabilità che una chiave finisca nella cella $i$.
+
+**Definizione**: il *fattore di carico* di una tabella hash con $m$ celle e $n$ elementi memorizzati è $\alpha = \frac{n}{m}$.
+
+**Osservazione**: $$\alpha < 1 \ \ \ \ \alpha = 1 \ \ \ \ \alpha >1$$
+$\alpha > 1$ perché gli elementi  sono memorizzati su liste!
+
+Sotto l'ipotesi di *hashing uniforme ed indipendente*:
+* $nj =$ lunghezza della lista `T[j]`.
+* il valore medio di $nj$ è $\frac{n_0+n_1+ ... +n_{m-1}}{m} = \frac{n}{m} = \color{green} \alpha$.
+* Di conseguenza $\alpha \rightarrow$ numero medio di elementi memorizzati in una lista.
+
+**Ipotesi**: calcolo della funzione hash *costante*.
+###### $\color{red} \textbf{Teorema}$
+In una tabella hash in cui le collisioni sono risolte con il concatenamento, una *ricerca senza successo* richiede un tempo $\color{green} \Theta(1 + \alpha)$ nel caso medio, nell'ipotesi di *hashing uniforme ed indipendente*.
+
+$\color{red} \textbf{Dimostrazione}$:
+* calcolo $j = h(k) \rightarrow \color{green} O(1)$.
+* accedo a `T[j]` $\rightarrow \color{green} O(1)$.
+* scorro la lista `T[j]` $\rightarrow \color{green} \Theta(a)$.
+Di conseguenza il tempo totale è $\color{green} \Theta(1 + \alpha)$ .
+###### $\color{red} \textbf{Teorema}$
+In una tabella hash in cui le collisioni sono risolte con il concatenamento, una ricerca *con successo* richiede un tempo $\color{green} \Theta(1 + \alpha)$  nel caso medio, nell'ipotesi di *hashing uniforme ed indipendente*
+
+$\color{red} \textbf{Dimostrazione}$:
+* calcolo $j = h(k) \rightarrow \color{green} O(1)$.
+* accedo a `T[j]` $\rightarrow \color{green} O(1)$.
+* scorro la lista `T[j]` fino a trovare $k$ $\rightarrow$ mediamente trovo l'elemento a metà: $\color{green} \Theta(\frac{\alpha}{2})$.
+Di conseguenza il tempo totale di esecuzione è $\color{green} \Theta(1 + \frac{\alpha}{2})\rightarrow \Theta(1 + \alpha)$
+
+**Interpretazione**: nel caso medio il costo della ricerca è $\Theta(1 + \alpha)$, se $n = O(m) \rightarrow$ il numero delle celle è proporzionale al numero di elementi da memorizzare:
+$$\alpha = \frac{n}{m} = \frac{O(n)}{m} = O(1)$$
+**Attenzione**: se $n$ cresce le prestazioni possono peggiorare.

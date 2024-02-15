@@ -126,3 +126,99 @@ L'*override* serve a modificare metodi preesistenti nelle sottoclassi e di conse
 
 **Dynamic Dispatching** : dopo la chiamata del metodo viene utilizzato il tipo dinamico                                                              dell'oggetto, conosciuto a runtime.
 **Subsumption** : possibilità di assegnare ad una cosa meno specifica, una più specifica.
+
+# Lezione 2
+___
+## Classi e Interfacce
+
+*Estendere*  (`extends`) ed *implementare* (`implements`) un'interfaccia sono concetti equivalenti.
+Le *interfacce* non hanno costruttori.
+Gli unici metodi implementabili all'interno delle interfacce sono quelli con la keyword `default`.
+La *classe* che implementa l'*interfaccia* è **sottotipo** di quest'ultima e deve implementare **tutti** i metodi dell'*interfaccia*, tranne quelli di **default** .
+
+``` java
+public class Misc
+{
+	public inteface I
+	{
+		void a();
+		void b();
+		
+		default void c()
+		{
+			a();
+			b();
+		}
+	}
+	
+	public static abstract class J
+	{
+		public abstract void a();
+		public abstract void b();
+		
+		public void c()
+		{
+			a();
+			b();
+		}
+	}
+	
+	public static class C implemets I
+	{
+		@Override
+		public void a(){}
+		@Override
+		public void b(){}
+	}
+	
+	public static void main(String[] args)
+	{
+	
+	}
+}
+
+```
+
+```mermaid
+flowchart LR
+	id1[/Interfaces/] ~~~ Classes
+```
+
+```mermaid
+flowchart LR
+	id1[/Iterable/] --> id2[/Collection/] 
+	id2 --> id3[/List/]
+	id3 --> Arraylist
+```
+
+```java
+import java.util.ArrayList;
+import java.util.Collection;
+
+public class ProveJDK1
+{
+	public static void main(String[] args)
+	{
+		Iterable<Integer> l = new ArrayList<Integer>();
+		l.add(21);
+		l.add(2);
+		l.add(456);
+		l.set(2, 987) //set(int, <T>)
+		
+		Iterator<Integer> it = l.iterator();
+		while(it.hasNext())
+		{
+			int n = it.next();
+			System.out.println(n);
+		}
+		
+		
+		// Iterazione c-like
+		for(int i = 0; i < l.size(); i++)
+		{
+			int n = l.get(i);
+			System.out.println(n);
+		}
+	}
+}
+```

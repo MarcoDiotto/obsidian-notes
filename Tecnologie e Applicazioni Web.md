@@ -35,6 +35,42 @@ We start with a resource: `http://www.example.org/home.html`
 
 * http is the name of the protocol used to ask for the resource
 * `www.example.org` is the destination name (resolved into an IP address by the DNS (Domain Name System))
-* using the HTTP protocol, the browser askes for the resource `home.html`
+* using the HTTP protocol, the browser asks for the resource `home.html`
 * The resource is downloaded by the TCP connection.
 * The resource has an associated representation($\color{green} mime-type$).
+# Lesson 2
+___
+**HTTP**: 
+* A *protocol* is a set of rules. 
+* It is called *hypertext* because it was once used to transmit only texts 
+* It is used to *transfer* data
+* It's a *request-response* protocol with a *client-server* model 
+  ```mermaid
+  flowchart LR
+  A[[CLIENT]] --HTPP REQUEST --> B[[SERVER]]
+  B -- HTTP RESPONSE --> A
+  B -- HOSTS --> C(Resources)
+  D(Static) --> C
+  E(Generated on-demands) --> C
+  ```
+  Every *resource* has an associated type, called **MIME**, which is simply a *string* formatted as: `<type>/<subtype>`. 
+  **Examples**:
+  * the mime type of an HTML document is `text/plain`
+  * the mime type of a JPEG image is `image/jpeg`
+  * the mime type of JSON strings in `application/json`
+Every resource has a name, called **URI** (Uniform Resource Identifier):
+* **URL** (Uniform Resource Locator): identifies a resource by specifiyng its *location*
+* **URN** (Uniform Resource Name): identifies a resource with an *unique name* $\to$ Not used!
+ 
+  HTTP consists of  a sequence of *trnasactions*, composed by a *request* (client $\to$ server), followed by a *response* (server $\to$ client), formatted in an *HTTP message*
+  The commands for asking a server to do something are called *HTTP  methods*, the six most common ones are:
+  * GET
+  * PUT
+  * DELETE
+  * POST
+  * HEAD
+  * PATCH
+Every *server response* must contain a *status code*, the most popular ones are:
+* 200 (Success)
+* 302 (Redirect required)
+* 404 (The resource does not exists)

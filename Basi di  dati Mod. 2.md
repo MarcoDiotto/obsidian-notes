@@ -169,3 +169,37 @@ Se $F=G$ allora $F \equiv G$, ma **in generale non vale il contrario**
 Sia $X \rightarrow Y \in F$. L'attributo $A \in X$ è detto **estraneo** $\iff$ $X$ \\ $\{A\}  \rightarrow Y \in F^+$.
 #### Definizione di Dipendenza Ridondante
 La dipendenza $X \rightarrow Y \in F$ è **ridondante** $\iff$ $X\rightarrow Y \in (F$ \\ $\{X\rightarrow Y\})^+$. 
+# Lezione 3
+___
+## Forma Canonica
+La **forma canonica** è un metodo per scrivere un insieme di dipendenze funzionali equivalente, che ci permette di eseguire  vari algoritmi
+**Proprietà**:
+* $|Y| =1$
+* $X$ non contiene *attributi estranei*
+* $X \to Y$ non è *ridondante*
+
+#### Copertura Canonica
+$G$ è **copertura canonica** di $F \iff F  \equiv G$ e $G$ è in forma canonica.
+**Teorema**: per ogni insieme di dipemdemze funzionali $F$ esiste una copertura canonica
+#### Algoritmo per determinare la copertura canonica
+Segue 3 passi:
+* Decompone tutte le dipendenze funzionali che haanno più attributi sulla destra $X \to Y \implies \{ X \to A | A \in Y\}$.
+* Togliere dalla parte sinistra delle dipendenze gli attributi che non impediscono di derivare la dipendenza stessa. $X \to A \implies X$ \\ $Z | A \in (X$ \\ $Z)^+_F$.
+* Togliere le dipendenze funzionali non essemziali per derivare la dipendenza stessa. $X \to A \implies F^{new} = F$\\ $\{X \to A\} | A \in X^+_{F - \{X \to A \}}$.
+
+![[Pasted image 20240219090819.png]]
+
+**Esempio**:
+Abbiamo $F \{A \to BC, B \to C, A \to B, AB \to C\}$:
+* $G = \{A \to B, A \to C, B \to C, A \to B, AB \to C \}$.
+* $\{AB\}$\\ $\{A\}^+_F = B^+_F = BC$, quindi  $G = \{A \to B, B \to C, A \to B, \color{green}B \to C \color{default}$\},  $\to$  *se a sinistra c'è un solo elemento rimane com'è*. $Z \leftarrow AB$,  $\to$ $(AB$\\ $\{A\}^+_G = B^+_G = BC$, $\to$ $Z = B$.
+* Dobbiamo verificarle tutte: $(A^+_{G- \{A \to B\}} = AC$, $A^+_{G - \{A \to C\}} = ABC$ $\to$ *si può togliere*,  $B^+_{G - \{B \to C\}} = B) \implies G = \{A \to B, B \to C\}$  .
+## Esercizi
+* Usando gli **assiomi di Armstrong**, si dimostri che se $X \to Y$ e $YW \to Z$ allora $XW \to Z$.
+$$_{TRANS}\frac{_{AUGM}\frac{F \vdash X \to Y}{F \vdash XW \to YW}\ \ \ \ F\vdash Z}{F \vdash XW \to Z}$$
+* Si supponga che una dipendenza funzionale $X \to Y$ sia soddisfatta da due istanze di relazione $r$ ed $s$ con gli stessi attributi. Dire se $r \cap s$ e $r \cup s$ soddisfano $X \to Y$, fornendo una dimostrazione o un controesempio oppurtuni.
+$$\forall t_1, t_2 \in r \iff t_1[x] = t_2[x]\ allora\ t_1[y] = t2[y]$$
+$$Considero:\ (r \cap s) \forall t_1, t_2 \in r \cap s\ allora\ t_1,t_2 \in r$$
+* Si consideri lo schema di relazione $R(A,B,C,D)$ con dipendenze $F = \{AB \to C, C \to D, D \to A\}$. Si trovino tutte le dipendenze non banali derivabili da $F$ e tutte le chiavi di $R$.
+$$\frac{F \vdash X \to Y}{F \vdash X \to Z | Z \in \mathcal{P}(Y)}$$
+$$\color{white} A \to A, C \to CDA, \to D \to DA, \color{green} AB \to ABCD b\color{white}, AC \to ACD, AD \to AD,\color{green}BC \to BCDA \color{white},BD \to BDAC, CD \to CDA, ABC \to ABCD, ABD \to ABCD, ACD \to ACD, BCD \to ABCD$$

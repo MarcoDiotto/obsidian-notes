@@ -83,7 +83,7 @@ ___
 **Output**:  `B[1..n]` ordinato.
 **Memoria ausiliaria**:  `C[0...k]`
 
- ```c
+```c
  countingsort(array A, array B, int n, int k)               
 	 array C[0...k]
      for i = 0 to k
@@ -97,8 +97,7 @@ ___
 	 for j = n down to 1                //somme prefisse
 		 B[C[A[j]]] = A[j]
 		 C[A[j]] = C[A[j]] - 1
-  ```  
-
+  ```
 
 L'algoritmo parte dal fondo per essere $\color{green} stabile$.
 ##### Tempo di esecuzione
@@ -329,3 +328,98 @@ Di conseguenza il tempo totale di esecuzione è $\color{green} \Theta(1 + \frac{
 **Interpretazione**: nel caso medio il costo della ricerca è $\Theta(1 + \alpha)$, se $n = O(m) \rightarrow$ il numero delle celle è proporzionale al numero di elementi da memorizzare:
 $$\alpha = \frac{n}{m} = \frac{O(n)}{m} = O(1)$$
 **Attenzione**: se $n$ cresce le prestazioni possono peggiorare.
+### Funzioni Hash
+Deve soddisfare l'*lhashing uniforme ed indipendente* $\to$ non sempre possibile
+
+**Esempio**:
+ Le chiavi sono numeri reali $k$ casuali e distribuiti in modo *indipendente* e *uniforme* nell'intervallo $0 \leq k < 1$.
+La funzione hash: $$h(k) = \lfloor m \cdot k \rfloor$$ $$h : U \to \{0, ..., m-1\}$$
+soddisfa la condizione di *hashing uniforme ed indipendente*.
+
+**Ipotesi**: le chiavi sono numeri naturali.
+
+1) $\textbf{Metodo della divisione}$: $$h(k) = k\ mod\ n$$ $m$ è la dimensione della tabella hash. $h(k)$ è il resto della divisione fra $k$  e $m$.
+  **Vantaggi**:
+  *  semplice realizzazione.
+ **Svantaggi**: 
+ * evitare come $m$ le potenze di 2. Se $m = 2P$ allora $h(k)$ rappresenta i $p$ bit meno significativi di $k$.
+   **Buona scelta per m**: 
+* un numero primo non troppo vicino ad una potenza di 2 o di 10.
+ 
+  **Esempio**:
+  Devo memorizare $m = 2000$ e prevedendo una media di 3 conflitti , cerco un $m$ numero primo vicino a $\frac{n}{3} \simeq 666,66 ... \to m =701$. $\color{green} n = O(m)$
+
+2) $\textbf{Metodo della moltiplicazione}$: $$h(k) = \lfloor k \cdot m \rfloor \ \ \ \ k \in [0,1)$$
+**Idea**: data una chiave numero naturale $k \in U$ la traformo in un in $[0,1)$ e poi applico la stessa funzione hash.
+* fisso una costante $A$ con $0 < A < 1$
+* calcolo $k \cdot A$
+* estraggo la parte frazionaria: $$k \cdot A\ mod\ 1 = k \cdot A - \lfloor k \cdot A \rfloor$$ $$h(k) = \lfloor m \cdot (k \cdot A\ mod\ 1)\rfloor  )$$
+**Vantaggi**
+* il valore di $n$ non è critico.
+* funziona bene con tutti i valori di $A$.
+* Knuth ha osservato che funziona particolarmente bene con $A \simeq \frac{\sqrt{5}-1}{2} = 0,618033$
+
+Per semplificare il calcolo della fuzione hash:
+
+![[Pasted image 20240219111103.png]]
+* Sia $w$ la lunghezza della parola di memoria. Assumiamo che $k$ entri in una singola parola di memoria. Scelgo un intero $q$, $0 < q < 2^w$ e $m = 2^p$ con $0 <  p \leq w$
+* Pongo $A = \frac{q}{2^w}$
+* Calcolo $K \cdot  A = \frac{k \cdot q}{2^w}$
+* $k \cdot q = r_12^w + r_0 \implies \frac{k \cdot q}{2^w} = \frac{r_12^w + r_0}{2^w} =r_1 + \frac{r_0}{2^w}$
+* $h(k) = \lfloor m \cdot (k \cdot A\ mod\ 1)\rfloor = \lfloor 2^p \cdot {k \cdot q}{2^w}\ mod\ 1 \rfloor = p$ bit più significativi della parola men significativa di $k \cdot q$
+* $h(k) = (k \cdot q\ mod\ 2^w) >> (w - p) \to$ scorrimento logico a destra di $w-p$ inserendo degli 0 nella nelle posizioni lasciate libere, di modo che i $p$ bit più significativi di $r_0$ si sposti nelle $p$ posizioni più a destra.
+### Hashing Randomizzato
+Invece di avere una singola funzione hash, abbiamo un **insieme di funzioni hash** opportunamente costruito, da cui il nostro programma all'inizio della computazione scglie **casualmente** $h \in \mathcal{H}$.
+### Indirizzamento Aperto
+**Idea**: Tutti gli elementi sono memorizzati nella tabella hash stessa $\to$ *non c'è memoria esterna*
+* ogni cella della nostra tabella contiene un elemento dell'insieme dinamico oppure `NIL`
+* Per cercare un elemento di chiave $k$
+	1)  Calcoliamo $h(k)$ ed **esaminiamo** ($\to$ *ispezione*) le celle $h(k)$
+	2) Se la cella $h(k)$ contiene la chiave $k$, la ricerca ha $\color{red} \textbf{successo}$. Se la cella contiene `NIL`, la ricerca termina con $\color{red} \textbf{insuccesso}$
+	3) Può accadere che la cella $h(k)$ contenga una chiave che $\color{red} \textbf{NON}$ è $k$. Allora calcoliamo l'indice di un'altra cella in base alla chiave $k$ e all'**ordine di ispezione**(quante ispezioni ho gia fatto.)
+	4) si continua la scansione della tabella finché non si trova la chiave $k$ ($\color{red} \textbf{successo}$), oppure una cella contiene `NIL`, oppure ho eseguito $m$ ispezioni senza successo ($\color{red} \textbf{insuccesso}$).
+La funzione hash diventa: $$h: U\ x\ \{0,1, ..., m-1\}\  (ordine\ di\ ispezione) \to \{0,1, ..., m-1\}$$
+$h(k,i)$ rappresenta la posizione della chiave $k$ dopo $i$ ispezioni fallite.
+Si richiede che per ogni chiave la **sequenza di ispezioni** <$h(k,0),h(k,1), ..., h(k,m-1)>$ sia una *permutazione* di di <$0,1, ..., m-1$> in modo che ogni posizione della tabella hash possa essere considerata come possibile cella in cui inserire una nuova chiave mentre la tabella si riempie.
+#### Operazioni con indirizzamento aperto
+**Ipotesi**: gli elementi della tabella hash sono chiavi senza dati satellite: la chiave è identica all'elemento che contiene la chiave.
+##### **Insert**
+```c
+Hash_insert(T, k)
+	i = 0
+	trovato = false
+	repet
+		j = h(k,i)
+		if T[j] == NIL
+			T[j] = k
+			trovato = true
+		else
+			i = i + 1
+	until trovato or i == m
+	if trovato
+		return j
+	else
+		error "overflow della tabella Hash"
+```
+
+**Post**: inserisce l'indice della tabella dove ha memorizzato la chiave $k$ oppure segna un errore se la tabella è piena.
+##### **Search**
+
+```c
+Hash_search(T,k)
+	i = 0
+	trovato = false
+	repeat
+		j = h(k,i)
+		if T[j] == k
+			trovato = true
+		else
+			i = i + 1
+	until trovato or T[j] == NIL or i == m
+	if trovato
+		return j
+	else
+		return NIL
+```
+
+**Post**: restituisce j se la cella $j$ coontiene $k$ oppure `NIL` se la chiave $k$ non si trova nella tabella $T$.

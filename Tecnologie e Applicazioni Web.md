@@ -59,10 +59,10 @@ ___
   * the mime type of a JPEG image is `image/jpeg`
   * the mime type of JSON strings in `application/json`
 Every resource has a name, called **URI** (Uniform Resource Identifier):
-* **URL** (Uniform Resource Locator): identifies a resource by specifiyng its *location*
+* **URL** (Uniform Resource Locator): identifies a resource by specifying its *location*
 * **URN** (Uniform Resource Name): identifies a resource with an *unique name* $\to$ Not used!
  
-  HTTP consists of  a sequence of *trnasactions*, composed by a *request* (client $\to$ server), followed by a *response* (server $\to$ client), formatted in an *HTTP message*
+  HTTP consists of  a sequence of *transactions*, composed by a *request* (client $\to$ server), followed by a *response* (server $\to$ client), formatted in an *HTTP message*
   The commands for asking a server to do something are called *HTTP  methods*, the six most common ones are:
   * GET
   * PUT
@@ -74,3 +74,46 @@ Every *server response* must contain a *status code*, the most popular ones are:
 * 200 (Success)
 * 302 (Redirect required)
 * 404 (The resource does not exists)
+# Lesson 3
+___
+* The *scheme* specifies the protocol to use to receive the resource from the server.
+* *User* and *Password* can sometimes be requested to authenticated with the server. If not specified, the default user name is **anonymous**.
+* The *server address* can be a **hostname** (resolved via DNS) or an **IP address**.
+* The server has a *port* on which it is listening for a connection. The port can be omitted and in this case the default value will (**Example**: HTTP default port is 80).
+* The *path* specifies the local location in the server (as a file in the filesystem of the server $\to$ nowadays resources are generated on the fly). The path can be divided into multiple segments separated by /.
+* *Params* allows to specify a list of "key-value" pairs. They refer to the **path**
+* *Query* is again a "key-value" pair used to restrict the resources of the server. They refer to the **resources**. `&` can be used to separate "key-value" pairs.
+* *frag* is used to restrict the area to a specific fragment of the page.
+## Absolute and Relative URLs
+* `<a href-=".hammer.html"` is a **relative** URL because it doesn't contain any *schema* nor *hostname*. We need a **base URL** to which concatenate the relative URL. Base URLs can be obtained in 2 ways:
+  1) By specifying it using the tag `<base>` in the document header
+  2) Using the absolute URL.
+* URLs can only contain symbols from the standard **ASCII**(non-ASCII characters are supported by **IRI**)
+* **Character escaping** in URLs is performed in the following way:`%`+ 2 digits that identifie the character
+## HTTP Connection
+HTTP works at an **application** level, so we need other protocols:
+* **TCP** provides a *bidirectional data stream*:
+	1) **Connection-oriented**
+	2) **Reliable**
+	3) **Ordered** $\to$ data arrives in the same order as they where generated
+	4) **Flow control** is used to avoid congestion
+	5) A **TCP connection** is uniquely identified by 4 values: `<source ip> <source port> <destination ip> <destination port>`. Multiple connections with the same IP or port are allowed.
+## HTTP messages
+After the **TCP connection**, the HTTP protocol expects the exchange of a list of at least **2 messages**:
+* a **request**
+* a **response**
+
+A  **general message** is divided in 3 parts:
+* a **start line**: string describing the message followed by a newline
+* a **header**: multiple text lines to define options and properties of the message. The header section end with an empty newline
+* a **body**: generic data
+
+A **request** uses those parts as following:
+* **start line**: `<method> <request-URL> <version>`
+* **header** : `<name1> : <value1>  <name2> : <value2>`
+* **body**: *binary*, text data or an empty line
+
+A **response** on the other hand uses them as following:
+* **start line**:
+* **header**:
+* **body**:

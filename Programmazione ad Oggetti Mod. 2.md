@@ -222,7 +222,7 @@ public class ProveJDK1
 	}
 }
 ````
-# Lezione 3
+# Lezioni 3 e 4
 ___
 ## Creazione di iteratori
 In java ogni interfaccia deve avere un *file a parte* (o essere *nested*), pertanto ogni blocco di codice corrisponderà ad un diverso file.
@@ -284,7 +284,7 @@ public interface Collection<T> extends Iterable<T>{
 package tinyjdk;
 
 public interface List<T> extends Collection<T>{
-	T get (int i);
+	T get (int i) throws IndexOutOfBoundsException;
 	
 	T set(int i, T x);
 	
@@ -323,14 +323,95 @@ public class ArrayList<T> implements List<T>{
 	public void clear(){
 		sz = 0; 
 	}
+	/*
+		non può essere static perchè non altimenti i metodi
+		della classe enclosing non andrebbero.
+	*/
+	private class MyIterator implements Iterator<T> {
+		
+		private int pos = 0;
+		
+		@Override
+		public boolean hasNext(){
+			return this.pos < Arraylist.this.size();
+			// size appartiene alla classe enclosing
+		}
+		
+		@Override
+		public T next(){
+			return get(pos++);
+			//anche get è della classe enclosing
+		}
+	}
 	
 	@Override
-	public T get(int i){
-		return (T) a[i]; //brutto ma legale e funzionante!
+	public Iterator<T> iterator(){
+		//automaticamente chiama il costruttore di Iterator<T>
+		return new MyIterator();
+		/*
+			Chi sta fuori ha staticamente un iterator, quindi
+			non importa se la classe è private
+		*/
+	}
+	
+	@Override
+	public int size(){
+		return sz;
+	}
+	
+	@Override
+	public T get(int i) throws IndexOutOfBoundsException{
+		if(i < sz)
+			return (T) a[i]; //brutto ma legale e funzionante!
+		
+		//Eccezione unchecked
+		throw new RuntimeException(String.format
+		                          ("Arraylist.get():index %d
+		                            out of bound %d" i, sz));
+		
+		//Eccezione checked
+		throw new IndexOutOfBoundsException(String.format
+		                                ("Arraylist.get():
+		                                 index %d out of
+		                                 bound %d" i, sz));
+		/*
+		Ho implementato entrambe le possibilità ma assumo di
+		utilizzare l'eccezione checked come nella class
+		originale
+		*/ 
+	}
+	
+	@Override
+	public T set(int i, T x){
+		if(i < sz){
+			T old = get(i);
+			a[i] = x; //brutto ma legale e funzionante!
+			return old;
+		}
+		//Eccezione unchecked
+		throw new RuntimeException(String.format
+		                          ("Arraylist.get():index %d
+		                            out of bound %d" i, sz));
+	
+	}
+	
+	@override
+	public boolean isEmpty(){
+		return sz == 0;
 	}
 	
 	(...)
 }
+```
+
+```java
+package tinyjdk
+
+public static class IndexOutOfBoundsException extend Exception{
+		public IndexOutOfBoundsException(string msg){
+			super(msg);
+		}
+	}
 ```
 *Nota*: 
 * In `Collection<T>`, `T`$\to$ **type parameter**
@@ -343,3 +424,8 @@ void f(int n){...} // --> n = type parameter
 f(7); // --> 7 = type argument
 ```
 **Type Parameter** determina il nome dei tipi, mentre **Type Argument** lo usa.
+## Eccezioni Checked e Unchecked
+* Le eccezioni **unchecked** non hanno bisogno della keyword `throws`ne del costrutto `try{...}catch{...}`,  tuttavia potrebbero non essere raccolte.
+* Al contrario le eccezioni **checked** ne hanno bisogno e devono essere propagate gerarchicamente.
+* Se l'anomalia *non è frequente* meglio scegliere un'**eccezione unchecked**.
+* Se l'anomalia *è frequente* ed è ritenuta un *secondo possibile esito del codice* megio scegliere un **eccezione checked**.

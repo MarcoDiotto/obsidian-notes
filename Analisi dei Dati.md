@@ -118,12 +118,81 @@ La **Deviazione Standard** $S$ è una funzione di $S^2$ $$S = g(S^2),\ con\ g(\c
 * $S$ è uno stimatore **consistente** di $\sigma$: $$S \overset{p} \to \sigma,\ per\ n \to \infty$$
 * $S$ è uno stimatore **asintoticamente normale**: $$S \overset{p} \to N(\sigma, \frac{1}{4\sigma^2}Var(S^2))\ per\ n \to \infty$$
 ### Errore Standard
-L'**Errore Standard** di uno stimatore  corrisponde alla **deviazione standard**  dello stesso: $$SE(\hat{\theta}) = SD(\hat{\theta})$$ Anche l'errore standard deve essere stimato e in particolare $\hat{SE}(\hat{\mu})$ è uno stimatore di $SE(\hat{\mu})$:
+L'**Errore Standard** di uno stimatore  corrisponde alla **deviazione standard**  dello stesso: $$SE(\hat{\theta}) = SD(\hat{\theta})$$. Per esempio l'errore standard della media campionaria è: $$SE(\hat{\mu}) = SE(\overline{X}) = \frac{\sigma}{\sqrt{n}} $$ Anche l'errore standard deve essere stimato e in particolare $\hat{SE}(\hat{\mu})$ è uno stimatore di $SE(\hat{\mu})$ ottenuto mediante la **deviazione standard campionaria**: $$\hat{SE}(\hat{\mu}) = \frac{S}{\sqrt{n}}$$
 * asintoticamente **non distorto**
 * **consistente**
 * asintoticamente **normale**
 ### Precisione e Accuratezza
 La qualità di uno stimatore viene valutata in base:
-* **Accuratezza**: stimatore tanto più accurato quanto meno è distorto
-* **precisione**: stimatore tanto più preciso quanto meno è variabile.
-Accuratezza e precisione sono combinate nell'**errore quadratico medio**
+* **Accuratezza**: stimatore tanto *più accurato* quanto *meno è distorto*.
+* **Precisione**: stimatore tanto più *preciso* quanto *meno è variabile*.
+Accuratezza e precisione sono combinate nell'**errore quadratico medio**: $$MSE(\hat{\theta}) = E(\hat{\theta} - \theta)^2 = Var(\hat{\theta}) + Bias(\hat{\theta})^2$$
+### Confronto fra stimatori
+* Se entrambi gli stimatori sono *non distorti* si prende quello con la *minor varianza*.
+* Se entrambi sono *distorti* si prende quello con l'*errore quadratico medio inferiore*, tuttavia uno stimatore con un *basso errore quadratico medio* ma un'*alta varianza* è spesso considerato inaccettabile.
+### Scarto Interquantile
+Si vuole una misura della variabilità che sia *meno sensibile della varianza*  alle osservazioni estreme. Si utilizza lo **Scarto Interquantile**: $$\mathcal{IQR} = \mathcal{Q_3} - \mathcal{Q_1}$$
+dove $\mathcal{Q_1}$ e $\mathcal{Q_3}$ sono rispettivamente il *primo* e il *terzo quartile*.
+Lo  scarto interquantile si trova anche nella **versione campionaria**: $$\hat{\mathcal{IQR}} = \mathcal{\hat{Q_3}} - \mathcal{\hat{Q_1}}$$
+dove $\mathcal{\hat{Q_1}}$ e $\mathcal{\hat{Q_3}}$ sono rispettivamente il *primo* e il *terzo quartile campionario*.
+### Valori anomali
+Una regola empirica suggerisce che i **valori anomali** (o **outliers**) sono le osservazioni che sono:
+* **inferiori** a $\mathcal{\hat{Q_1}} - 1.5 \cdot \mathcal{\hat{IQR}}$
+* **superiori** a $\mathcal{\hat{Q_3}} + 1.5 \cdot \mathcal{\hat{IQR}}$
+
+Questa regola è ben motivata per **distribuzioni normali**, tuttavia i dati registrati hanno spesso **distribuzioni esponenziali**.
+
+Quando si incontrano **dati anomali** è importante capire la causa di tali valori, poichè spesso contengono **informazioni importanti**. Vengono tuttavia rimossi quando:
+* corrispondono ad **errori**
+* corrispondono ad osservazioni provenienti da **altre popolazioni**
+## Analisi grafice
+### Sintesi grafiche
+Utili per individuare:
+* **modello probabilistico** per descrivere i dati
+* **metodo statistico** per l'analisi dei dati
+* **outliers**
+* fonti di **eterogeneità** $\rightarrow$ dati molto diversi fra loro
+* **patterns** e **trends**
+* **relazioni** fra 2 o più variabili
+### Istogrammi
+* Servono per visualizzare la **forma di una distribuzione**.
+* Sono costruiti da un insieme di **rettangoli adiacenti**
+* Si costruiscono dividendo il campo di variazione dei dati (o **range**) in intervalli (o **bins**) e contando il numero di osservazioni presenti in ciascun bin
+
+Considereremo solo istogrammi formati da **bins della stessa ampiezza**:
+* **istogrammi di frequenza**: l'*altezza dei rettangoli* corrisponde al *numero di osservazioni* di ogni intervallo.
+* **istogrammi di frequenza relativa**: l'*altezza dei rettangoli* corrisponde alla *proporzione di osservazione* in ciascun intervallo.
+**Esempio**:
+
+![[Pasted image 20240222100131.png]]
+In particolare nel caso di osservazioni  di *variabili continue* al crescere della dimensione campionaria gli istogrammi convergeranno alla *funzione di densità* della variabile.
+
+![[Pasted image 20240222094858.png]]
+### Esempi di istogrammi
+![[Pasted image 20240222095021.png]]
+### Scelta degli intervalli
+Risulta importante scegliere intevalli utili a comprendere la distribuzione dei dati, poichè una cattiva scelta degli intervalli inficia la comprensione della loro distribuzione:
+
+![[Pasted image 20240222095252.png]]
+I software come R implementano regole per il calcolo ottimale automatico del numero di intervalli, tuttavia talvolta è necessario *ritoccarli a mano*.
+
+### Grafico a scatola con i baffi
+Il **grafico a scatola con i baffi** (o **boxplot**) viene costruito con le seguenti statistiche:
+* *minimo*
+* *primo quartile*
+* *mediana*
+* *terzo quartile*
+* *massimo*
+
+In particolare la **scatola** contiene il 50% delle osservazioni più centrali fra il *primo* e il *terzo quartile*, mentre i **baffi** si estendono dalla scatola parallelamente verso il *massimo* e il *minimo*. Le osservazioni anomale sono indicate con dei *punti oltre i baffi*.
+
+![[Pasted image 20240222100007.png]]
+### Boxplot appaiati
+Utilizzati per confrontare *diverse popolazioni* o *sotto-popolazioni*:
+
+![[Pasted image 20240222100435.png]]
+### Grafici a dispersione
+**Esempio**:
+
+![[Pasted image 20240222100529.png]]
+*Nota*: il professore consiglia di usare il **grafico a bolle** (a sinistra dell'esempio) o il **cheatring** (che vedremo nel 2° laboratorio).

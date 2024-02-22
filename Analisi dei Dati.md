@@ -89,3 +89,41 @@ Nel *caso discreto* l'equazione $F(M) = 0.5$:
 
 ![[Pasted image 20240215102044.png]]
 
+#### Calcolo Mediana Campionaria
+Dopo aver ordinato le osservazioni:
+* Se $n$ è *pari* allora $\hat{M}$ è un qualsiasi valore fra le osservazioni in posizione $\frac{n}{2}$ e $\frac{n+2}{2}$
+* Se $n$ è *dispari*  allora $\hat{M}$ è il valore dell'osservazioni in posizione $\frac{n+1}{2}$
+
+### Quantili, Percentili e Quartili
+* **Quatile di ordine p**: numero $x$ tale che: $$Pr(X < x) \leq p\ \ \ Pr(X > x) \leq 1-p$$ , cioè può assumere qualsiasi valore fra 0 e 1
+* **Percentile**: il percentile di ordine $\gamma$ corrisponde al quantile di ordine $0.01\gamma$
+* **Quartile**: divide la funzione di ripartizione in quarti (Esempio: 1° quartile $=$ 25° percentile)
+### Varianza e Deviazione Standard Campionaria
+* La **Varianza Campionaria** è definita come: $$S^2 = \frac{1}{\color{blue}n-1} \cdot \sum_{i=1}^n (X_i - \overline{X})^2$$ e misura la dispersione attorno alla media campionaria
+* La **Deviazione Standard Campionaria** è la radice quadrata della varianza campionaria: $$S = \sqrt{S^2}$$
+
+La **Varianza** è al quadrato perchè altrimenti gli scarti positivi e negativi potrebbero bilanciarsi.
+Talvolta tuttavia sarebbe utile usare il valore assoluto poichè la **Varianza** è molto sensibile ai *valori anomali*.
+#### Proprietà della Varianza Campionaria
+* Il coefficiente $\frac{1}{n-1}$ che appare in $S^2$ è necessario perché $S^2$ non sia *distorta*: $$Bias(S^2) = E(S^2) - \sigma^2 = 0$$
+* $S^2$ è uno stimatore *consistente* di $\sigma^2$: $$S^2 \overset{p} \to \sigma^2\ per\ n \to \infty$$
+* $S^2$ è uno stimatore *asintoticamente normale*: $$S^2 \overset{d} \to N\{\sigma^2,Var(S^2)\}\ per\ n \to \infty$$
+#### Trasformazioni
+* **Valore Atteso**: in genere il valore atteso della trasformazione è diverso dalla trasformazione del valore atteso $$E\{g(X)\} \neq g\{E(X)\}$$ a meno che $g(\cdot)$ non sia lineare.
+* **Convergenza in Probabilità**: se $g(\cdot)$ è continua  $$X \overset{p} \to \theta \implies g(X) \overset{p} \to g(\theta).$$
+* **Normalità Asintotica**: se $g'(\theta)$ esiste e non è nulla $$X \overset{p} \to N(\theta, \psi^2) \implies g(X) \overset{p} \to N(g(\theta), g'(\theta)^2 \cdot \psi^2).$$
+#### Deviazione Standard Campionaria
+La **Deviazione Standard** $S$ è una funzione di $S^2$ $$S = g(S^2),\ con\ g(\cdot) = \sqrt{\cdot}$$
+* $S$ è uno stimatore **distorto** di $\sigma$: $$Bias(S) = E(S) - \sigma \neq 0$$ tuttavia la distorsione svanisce asintoticamente.
+* $S$ è uno stimatore **consistente** di $\sigma$: $$S \overset{p} \to \sigma,\ per\ n \to \infty$$
+* $S$ è uno stimatore **asintoticamente normale**: $$S \overset{p} \to N(\sigma, \frac{1}{4\sigma^2}Var(S^2))\ per\ n \to \infty$$
+### Errore Standard
+L'**Errore Standard** di uno stimatore  corrisponde alla **deviazione standard**  dello stesso: $$SE(\hat{\theta}) = SD(\hat{\theta})$$ Anche l'errore standard deve essere stimato e in particolare $\hat{SE}(\hat{\mu})$ è uno stimatore di $SE(\hat{\mu})$:
+* asintoticamente **non distorto**
+* **consistente**
+* asintoticamente **normale**
+### Precisione e Accuratezza
+La qualità di uno stimatore viene valutata in base:
+* **Accuratezza**: stimatore tanto più accurato quanto meno è distorto
+* **precisione**: stimatore tanto più preciso quanto meno è variabile.
+Accuratezza e precisione sono combinate nell'**errore quadratico medio**

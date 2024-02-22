@@ -221,4 +221,125 @@ public class ProveJDK1
 		}
 	}
 }
+````
+# Lezione 3
+___
+## Creazione di iteratori
+In java ogni interfaccia deve avere un *file a parte* (o essere *nested*), pertanto ogni blocco di codice corrisponderà ad un diverso file.
+
+```mermaid
+flowchart RL
+	A[/Iterator/]--> D[/Iterable/]
 ```
+```mermaid
+flowchart TB
+	A[/Iterable/] --> B[/Collection/]
+	B --> C[/List/]
+```
+
+```java
+package tinyjdk;
+
+public interface Iterator<T>{ // T = type parameter
+	boolean hasNext();
+	T next();
+}
+```
+
+```java
+package tinyjdk;
+
+public interface Iterable<E>{ // E = type parameter
+	Iterator<E> iterator();
+}
+```
+
+```java
+package tinyjdk;
+
+public interface Collection<T> extends Iterable<T>{
+	void add(T x);
+	
+	default void addAll(Collection<T> c){ 
+	//T --> type argument
+		Iterator<T> it = c.iterator();
+		while(it.hasNext()){
+			add(it.next());
+		}
+	}
+	
+	default void clear();
+	
+	boolean contains(T x);
+	
+	boolean isEmpty();
+	
+	void remove(T x);
+	
+	int size();
+}
+```
+
+```java
+package tinyjdk;
+
+public interface List<T> extends Collection<T>{
+	T get (int i);
+	
+	T set(int i, T x);
+	
+	void add(int i, T x);
+	
+	T remove(int i); // java non da errore senza binding
+}
+```
+
+```java
+package tinyjdk;
+
+public class ArrayList<T> implements List<T>{
+	private Object[] a;
+	private int sz;
+	
+	public Arraylist(){
+	//con new T[10] da errore --> limitazione del linguaggio
+		this.a = new Object[10];
+		this.sz = 0;
+	}
+	
+	@Override
+	public void add(T x){
+		if(zs >= a.length{
+			Object[] old = a;
+			a = new Object[a.length() * 2]
+			for(int i = 0; i < old.length; i++){
+				a[i] = old[i];
+			}
+		}
+		s[sz++] = x; // subsume x ad object
+	}
+	
+	@Override
+	public void clear(){
+		sz = 0; 
+	}
+	
+	@Override
+	public T get(int i){
+		return (T) a[i]; //brutto ma legale e funzionante!
+	}
+	
+	(...)
+}
+```
+*Nota*: 
+* In `Collection<T>`, `T`$\to$ **type parameter**
+* In `Iterable<T>`, `T` $\to$ **type argument**
+
+*Nota*: senza i **generics** si rischia di subsumere troppo con `Objects`.
+## Type Parameter e Type Argument
+```java
+void f(int n){...} // --> n = type parameter
+f(7); // --> 7 = type argument
+```
+**Type Parameter** determina il nome dei tipi, mentre **Type Argument** lo usa.

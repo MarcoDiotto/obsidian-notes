@@ -340,7 +340,7 @@ soddisfa la condizione di *hashing uniforme ed indipendente*.
 
 1) $\textbf{Metodo della divisione}$: $$h(k) = k\ mod\ n$$ $m$ è la dimensione della tabella hash. $h(k)$ è il resto della divisione fra $k$  e $m$.
   **Vantaggi**:
-  *  semplice realizzazione.
+  * semplice realizzazione.
  **Svantaggi**: 
  * evitare come $m$ le potenze di 2. Se $m = 2P$ allora $h(k)$ rappresenta i $p$ bit meno significativi di $k$.
    **Buona scelta per m**: 
@@ -374,13 +374,13 @@ Invece di avere una singola funzione hash, abbiamo un **insieme di funzioni hash
 **Idea**: Tutti gli elementi sono memorizzati nella tabella hash stessa $\to$ *non c'è memoria esterna*
 * ogni cella della nostra tabella contiene un elemento dell'insieme dinamico oppure `NIL`
 * Per cercare un elemento di chiave $k$
-	1)  Calcoliamo $h(k)$ ed **esaminiamo** ($\to$ *ispezione*) le celle $h(k)$
+	1)  Calcoliamo $h(k)$ ed **esaminiamo** ($\to$ *ispezione*) la cella $h(k)$
 	2) Se la cella $h(k)$ contiene la chiave $k$, la ricerca ha $\color{red} \textbf{successo}$. Se la cella contiene `NIL`, la ricerca termina con $\color{red} \textbf{insuccesso}$
 	3) Può accadere che la cella $h(k)$ contenga una chiave che $\color{red} \textbf{NON}$ è $k$. Allora calcoliamo l'indice di un'altra cella in base alla chiave $k$ e all'**ordine di ispezione**(quante ispezioni ho gia fatto.)
 	4) si continua la scansione della tabella finché non si trova la chiave $k$ ($\color{red} \textbf{successo}$), oppure una cella contiene `NIL`, oppure ho eseguito $m$ ispezioni senza successo ($\color{red} \textbf{insuccesso}$).
 La funzione hash diventa: $$h: U\ x\ \{0,1, ..., m-1\}\  (ordine\ di\ ispezione) \to \{0,1, ..., m-1\}$$
 $h(k,i)$ rappresenta la posizione della chiave $k$ dopo $i$ ispezioni fallite.
-Si richiede che per ogni chiave la **sequenza di ispezioni** <$h(k,0),h(k,1), ..., h(k,m-1)>$ sia una *permutazione* di di <$0,1, ..., m-1$> in modo che ogni posizione della tabella hash possa essere considerata come possibile cella in cui inserire una nuova chiave mentre la tabella si riempie.
+Si richiede che per ogni chiave la **sequenza di ispezioni** <$h(k,0),h(k,1), ..., h(k,m-1)$> sia una *permutazione* di di <$0,1, ..., m-1$> in modo che ogni posizione della tabella hash possa essere considerata come possibile cella in cui inserire una nuova chiave mentre la tabella si riempie.
 #### Operazioni con indirizzamento aperto
 **Ipotesi**: gli elementi della tabella hash sono chiavi senza dati satellite: la chiave è identica all'elemento che contiene la chiave.
 ##### **Insert**
@@ -388,7 +388,7 @@ Si richiede che per ogni chiave la **sequenza di ispezioni** <$h(k,0),h(k,1), ..
 Hash_insert(T, k)
 	i = 0
 	trovato = false
-	repet
+	repeat
 		j = h(k,i)
 		if T[j] == NIL
 			T[j] = k

@@ -325,7 +325,9 @@ public class ArrayList<T> implements List<T>{
 	}
 	/*
 		non può essere static perchè non altimenti i metodi
-		della classe enclosing non andrebbero.
+		della classe enclosing non andrebbero. Se fosse static
+		avrebbe comunque il suo this. Anche i generics non
+		funzionerebbero.
 	*/
 	private class MyIterator implements Iterator<T> {
 		

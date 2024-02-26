@@ -222,7 +222,7 @@ public class ProveJDK1
 	}
 }
 ````
-# Lezioni 3 e 4
+# Lezioni 3, 4 e 5
 ___
 ## Creazione di iteratori
 In java ogni interfaccia deve avere un *file a parte* (o essere *nested*), pertanto ogni blocco di codice corrisponderà ad un diverso file.
@@ -329,6 +329,29 @@ public class ArrayList<T> implements List<T>{
 		avrebbe comunque il suo this. Anche i generics non
 		funzionerebbero.
 	*/
+	
+	// static nested iterator --> non va nella virtal table
+	private static class StaticMyIterator<T> implements
+	Iterator<T>{
+		private int pos = 0;
+		private ArrayList<T> enclosing;
+		
+		public StaticMyIterator(ArrayList<T> a){
+			this.enclosing = a;
+		}
+		
+		@Override
+		public boolean hasNext(){
+			return this.pos < enclosing.size();
+		}
+		
+		@Override
+		public T next(){
+			return enclosing.get(pos++);
+		}
+	}
+	
+	//non-static nested iterator
 	private class MyIterator implements Iterator<T> {
 		
 		private int pos = 0;
@@ -349,7 +372,17 @@ public class ArrayList<T> implements List<T>{
 	@Override
 	public Iterator<T> iterator(){
 		//automaticamente chiama il costruttore di Iterator<T>
-		return new MyIterator();
+		return new MyIterator() {
+			@Override
+			public boolean hasNext(){
+				return false;
+			}
+			
+			@Override
+			public T next(){
+				return null;
+			}
+		};
 		/*
 			Chi sta fuori ha staticamente un iterator, quindi
 			non importa se la classe è private
@@ -415,6 +448,29 @@ public static class IndexOutOfBoundsException extend Exception{
 		}
 	}
 ```
+
+```java
+package tinyjdk
+//Metodo globale -> non preferibile
+public class ArrayListIterator<T> implements Iterator<T> {
+        
+        private int pos = 0;
+        private ArrayList<T> enclosing;
+        
+        public ArrayListIterator(ArrayList<T> a) {
+            this.enclosing = a;
+        }
+        @Override
+        public boolean hasNext() {
+            return this.pos < enclosing.size();
+        }
+        @Override
+        public T next() {
+            return enclosing.get(pos++);
+        }
+
+}
+```
 *Nota*: 
 * In `Collection<T>`, `T`$\to$ **type parameter**
 * In `Iterable<T>`, `T` $\to$ **type argument**
@@ -431,3 +487,7 @@ f(7); // --> 7 = type argument
 * Al contrario le eccezioni **checked** ne hanno bisogno e devono essere propagate gerarchicamente.
 * Se l'anomalia *non è frequente* meglio scegliere un'**eccezione unchecked**.
 * Se l'anomalia *è frequente* ed è ritenuta un *secondo possibile esito del codice* megio scegliere un **eccezione checked**.
+## Virtual Table e Dynamic Dispatching
+Alla creazione di un campo in Java  (prima della chiamata al costruttore), questo viene inizializzato a  `NULL`, se è un **reference type**, a 0 se è un **int**.
+Di conseguenza quando viene chiamato il costruttore, c'è già della memoria allocata (8 Byte per i pointer, 4 per gli int), il compilatore sa quanto allocare sulla base della sommatoria dei campi della classe.
+Viene inoltre creata una tabella, detta **Virtual Table**, che contiene pointer ai metodi della classe, i quali puntano alla prima istruzione dei corrispondenti metodi. Ciò avviene perché quando una classe istanziata viene passata a qualcos'altro si crea **subsumpion**, e di conseguenza alla chiamata di un metodo della classe si può recuperare quest'ultimo dalla virtual table della stessa. Grazie all'uso delle virtual table Java implementa il **Dynamic Dispatching**. Quando viene creato un oggetto, viene prima allocato lo spazio necessario per i campi ed in seguito la virtual table, che contiene anche i metodi sottoposti ad **Override**.

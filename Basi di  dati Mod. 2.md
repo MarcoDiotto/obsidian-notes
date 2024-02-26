@@ -180,19 +180,19 @@ La **forma canonica** è un metodo per scrivere un insieme di dipendenze funzion
 
 #### Copertura Canonica
 $G$ è **copertura canonica** di $F \iff F  \equiv G$ e $G$ è in forma canonica.
-**Teorema**: per ogni insieme di dipemdemze funzionali $F$ esiste una copertura canonica
+**Teorema**: per ogni insieme di dipendemze funzionali $F$ esiste una copertura canonica
 #### Algoritmo per determinare la copertura canonica
 Segue 3 passi:
-* Decompone tutte le dipendenze funzionali che haanno più attributi sulla destra $X \to Y \implies \{ X \to A | A \in Y\}$.
+* Decompone tutte le dipendenze funzionali che hanno più attributi sulla destra $X \to Y \implies \{ X \to A | A \in Y\}$.
 * Togliere dalla parte sinistra delle dipendenze gli attributi che non impediscono di derivare la dipendenza stessa. $X \to A \implies X$ \\ $Z | A \in (X$ \\ $Z)^+_F$.
-* Togliere le dipendenze funzionali non essemziali per derivare la dipendenza stessa. $X \to A \implies F^{new} = F$\\ $\{X \to A\} | A \in X^+_{F - \{X \to A \}}$.
+* Togliere le dipendenze funzionali non essenziali per derivare la dipendenza stessa. $X \to A \implies F^{new} = F$ \\ $\{X \to A\} | A \in X^+_{F - \{X \to A \}}$.
 
 ![[Pasted image 20240219090819.png]]
 
 **Esempio**:
 Abbiamo $F \{A \to BC, B \to C, A \to B, AB \to C\}$:
 * $G = \{A \to B, A \to C, B \to C, A \to B, AB \to C \}$.
-* $\{AB\}$\\ $\{A\}^+_F = B^+_F = BC$, quindi  $G = \{A \to B, B \to C, A \to B, \color{green}B \to C \color{default}$\},  $\to$  *se a sinistra c'è un solo elemento rimane com'è*. $Z \leftarrow AB$,  $\to$ $(AB$\\ $\{A\}^+_G = B^+_G = BC$, $\to$ $Z = B$.
+* $\{AB\}$\\ $\{A\}^+_F = B^+_F = BC$, quindi  $G = \{A \to B, B \to C, A \to B, \color{green}B \to C \color{default}$\},  $\to$  *se a sinistra c'è un solo elemento rimane com'è*. $Z \leftarrow AB$,  $\to$ $(AB$ \\ $\{A\}^+_G) = B^+_G = BC$, $\to$ $Z = B$.
 * Dobbiamo verificarle tutte: $(A^+_{G- \{A \to B\}} = AC$, $A^+_{G - \{A \to C\}} = ABC$ $\to$ *si può togliere*,  $B^+_{G - \{B \to C\}} = B) \implies G = \{A \to B, B \to C\}$  .
 ## Esercizi
 * Usando gli **assiomi di Armstrong**, si dimostri che se $X \to Y$ e $YW \to Z$ allora $XW \to Z$.
@@ -202,4 +202,138 @@ $$\forall t_1, t_2 \in r \iff t_1[x] = t_2[x]\ allora\ t_1[y] = t2[y]$$
 $$Considero:\ (r \cap s) \forall t_1, t_2 \in r \cap s\ allora\ t_1,t_2 \in r$$
 * Si consideri lo schema di relazione $R(A,B,C,D)$ con dipendenze $F = \{AB \to C, C \to D, D \to A\}$. Si trovino tutte le dipendenze non banali derivabili da $F$ e tutte le chiavi di $R$.
 $$\frac{F \vdash X \to Y}{F \vdash X \to Z | Z \in \mathcal{P}(Y)}$$
-$$\color{white} A \to A, C \to CDA, \to D \to DA, \color{green} AB \to ABCD b\color{white}, AC \to ACD, AD \to AD,\color{green}BC \to BCDA \color{white},BD \to BDAC, CD \to CDA, ABC \to ABCD, ABD \to ABCD, ACD \to ACD, BCD \to ABCD$$
+$$\color{white} A \to A, C \to CDA, \to D \to DA, \color{green} AB \to ABCD \color{white}, AC \to ACD, AD \to AD,\color{green}BC \to BCDA \color{white},BD \to BDAC, CD \to CDA, ABC \to ABCD, ABD \to ABCD, ACD \to ACD, BCD \to ABCD$$
+# Lezione 4
+___
+## Anomalie
+Schemi di scarsa qualità soffrono di **anomalie** che vanno ad ostacolare le operazioni di inserimento, cancellazione ed aggiornamento dei dati.
+
+![[Pasted image 20240226155107.png]]
+### Decomposizione di Schemi
+L'eliminazione di anomalie è tipicamente basata sulla **decomposizione** di schemi *mal definiti* in schemi *più piccoli*, equivalenti ma più disciplinati
+
+![[Pasted image 20240226155352.png]]
+#### Definizione di Proiezione
+Dato uno schema $R(T,F)$ e $Z \subseteq T$, la **proiezione** di $F$ su $Z$ è definita come l'insieme $\pi_Z(F) = \{X \to Y \in F^+ | X \cup Y \subseteq Z\}$.
+#### Definizione di Decomposizione
+Dato uno schema $R(T,F)$, una sua **decomposizione** è un insieme di schemi $\rho = \{R_1(T_1,F_1) ... R_n(T_n, F_n)\}$ tale che $\bigcup_i T_i = T, \forall i : T_i \neq \emptyset$ e $\forall i : F_i = \pi_{T_i}(F)$.
+
+*Nota*: visto che gli $F_i$ sono determinati da $F$ e dai $T_i$ per **proiezione**, per leggibilità indicheremo una **decomposizione** di $R(T,F)$ con la notazione più compatta $\rho = \{R_1(T_1) ... R_n(T_n)\}$.
+
+### Proprietà delle Decomposizioni
+Sebbene decomporre uno schema possa correggere le **anomalie**, non tutte le decomposizioni sono desiderabili:
+
+* **Perdita di informazione**: la decomposizione va ad introdurre dei *dati spuri*, che possono inficiare la correttezza di alcune query $\to$ (introduce *informazioni sbagliate*)
+* **Perdita di dipendenze**: la decomposizione perde alcune *dipendenze funzionali*, andando ad alterare la semantica dei dati rappresentati
+
+*Proprietà desiderabili*: una buona decomposizione dovrebbe eliminare le anomalie, ma preservare i dati e le dipendenze
+
+### Decomposizioni con Perdita di Informazione
+
+![[Pasted image 20240226162104.png]]
+
+Facend0 la join fra le tabelle ottengo due possibili numeri di telefono
+
+Qual è il numero di telefono del proprietario della macchina targata $CG153SE$?
+* $\pi_{Telefono}(\sigma_{Macchina = CG153SE}(R)) = \{423567\}$
+* $\pi_{Telefono}(\sigma_{Macchina = CG153SE}(R_1 \bowtie R_2)) = \{423567,542635\}$
+### Decomposizioni che Preservano i Dati
+In generale un'operazione di decomposizione può *introdurre nuovi dati*, come formalizzato dal seguente teorema.
+#### Teorema
+Sia $\rho = \{R_1(T_1) ... R_n(T_n)\}$ una decomposizione di $R(T,F)$, allora per ogni istanza $r$ di $R(T,F)$ si ha $r = \pi_{T_1})(r) \bowtie ... \bowtie \pi_{T_n}(r)$.
+
+Una decomposizione **preserva i dati** ( non perde informazione) quando ciò non si verifica.
+#### Definizione di Decomposizione che Preserva i Dati
+La decomposizione $\rho = \{R_1(T_1) ... R_n(T_n)\}$ di $R(T,F)$ **preserva i dati** $\iff$ per ogni istanza $r$ di $R(T,F)$ si ha $r = \pi_{T_1})(r) \bowtie ... \bowtie \pi_{T_n}(r)$.
+
+#### Teorema per verificare se una decomposizione preserva i dati
+Sia $\rho = \{R_1(T_1), R_2(T_2)\}$ una decomposizione di $R(T,F)$, si ha che $\rho$ preserva i dati $\iff T_1 \cap T_2 \to T_1 \in F^+$ oppure $T_1 \cap T_2 \to T_2 \in F^+$.
+
+Questo permette di ricondurre il problema di determinare se una certa decomposizione binaria preserva i dati al *problema dell'implicazione*, che ha costo **binomiale**.
+##### Dimostrazione
+Sia $\rho = \{R_1(T_1), R_2(T_2)\}$ una decomposizione di $R(T,F)$, dimostriamo che se $T_1 \cap T_2 \to T_1 \in F^+$ allora $\rho$ conserva i dati:
+* Sia $r$ un'istanza valida di $R(T,F)$ e $s = (\pi_{T_1}r) \bowtie (\pi_{T_2}r)$, dobbiamo dimostrare che per ogni $t \in s$ abbiamo anche $t \in r$. $\to$ (che ogni riga di $r$ sia in $s$ e viceversa, dove $r$ è la tabella iniziale e $s$ l'unione delle due proiezioni $T_1$ e $T_2$).
+* Per definizione di $s$ esistono due tuple $u,v \in r$ con $u[T_1] = t[T_1],\ v[T_2] = t[T_2]$ e $u[T_1 \cap T_2] = v[T_1 \cap T_2] = t[T_1 \cap T_2]$.
+* Poiché $T_1 \cap T_2 \to T_1 \in F^+$, da $u[T_1 \cap T_2] = v[T_1 \cap T_2]$ otteniamo $u[T_1] = v[T_1]$ e quindi $t = v \in r$.
+Il caso $T_1 \cap T_2 \to T_2 \in F^+$ è analogo.
+
+Se: $$\frac{t \in s \to t \in v}{\exists u,v \in r\ |\ u[T_1] = t[T_1],\ v[T_2] = t[T_2]}$$ $$u[T_1 \cap T_2] = t[T_1 \cap T_2]$$ $$v[T_1 \cap T_2] = t[T_1 \cap T_2] \overset{per\ ipotesi}\to v[T_1] = t[T_1]$$ quindi $u = t$.
+
+#### Esempio
+Si consideri $R(A,B,C,D)$ con $F = \{A \to BC\}$.
+La decomposizione binaria $\{R_1(A,B,C), R_2(A,D)\}$ *preserva i dati*:
+* $T_1 = \{A,B,C\}$ e $T_2 = \{A,D\}$
+* $T_1 \cap T_2 = \{A\}$
+* $A^+_F = \{A,B,C\} = T_1$ quindi $T_1 \cap T_2 \to T_1 \in F^+$$\to$ (vedo se $A^+_F$ dipende da $T_1 \cap T_2$)
+
+![[Pasted image 20240226170943.png]]
+#### Esempio 2
+Si consideri $R(A,B,C,D)$ con $F = \{A \to B, C \to D\}$.
+La decomposizione binaria $\{R_1(A,B), R_2(C,D)\}$ *non preserva i dati*:
+* $T_1 = \{A,B\}$ e $T_2 = \{C,D\}$
+* $T_1 \cap T_2 = \emptyset$
+* Abbiamo quindi $\{T_1 \cap T_2 \to T_1, T_1 \cap T_2 \to T_2\} \cap F^+ = \emptyset$
+
+![[Pasted image 20240226172306.png]]
+### Decomposizioni con perdita di dipendenze
+
+![[Pasted image 20240226172426.png]]
+*Nota*: la macchina può avere un solo proprietario.
+
+Supponiamo di voler inserire (Luca Bianchi, $421448$, $CG153SE$)
+* Nel primo caso violerei la dipendenza Macchina $\to$ Proprietario (avremo cioè la stessa macchina con due proprietari)
+* Nel secondo caso non me ne posso accorgere se non dopo giunzione.
+### Decomposizioni che Preservano le Dipendenze
+Una decomposizione **preserva le dipendenze** $\iff$ l'unione delle dipendenze indotte sui singoli schemi equivale (cioè ha le stesse chiusure) alle dipendenze dello schema originale.
+#### Definizione di Decomposizione che Preserva Le Dipendenze
+La decomposizione $\rho = \{R_1(T_1) ... R_n(T_n)\}$ di $R(T,F)$ **preserva le dipendenze** $\iff \bigcup_i \pi_{T_i}(F) \equiv F$.
+
+Per *verificarlo algoritmicamente* applichiamo la definizione:
+* Calcoliamo le proiezioni $\pi_{T_i}(F) = \{X \to Y \in F^+\ |\ X \cup Y \subseteq T_i\}$
+* Verifichiamo se $\bigcup_i \pi_{T_i}(F) \equiv F$
+### Verificare l'Equivalenza
+#### Teorema
+$F \equiv G \iff F \subseteq G^+$ e $G \subseteq F^+$.
+##### Dimostrazione
+* Sia $F \equiv G$ allora $F^+ = G^+$ per definizione. Dato che si ha $F \subseteq F^+$ e $G \subseteq G^+$, ottengo $F \subseteq G^+$ e $G \subseteq F^+$ come desiderato.
+* Poiché $F \subseteq G^+$, osservo che $F^+ \subseteq (G^+)^+ = G^+$. Analogamente da $G \subseteq F^+$ ottengo $G^+ \subseteq (F^+)^+ = F^+$. Concludo che $F^+ = G^+$.
+#### Teorema
+$F \equiv G \iff F \subseteq G^+$ e $G \subseteq F^+$.
+
+Sia $G = \bigcup_i \pi_{T_i}(F)$, per dimostrare che $F \equiv G$ osserviamo che:
+* $F \subseteq G^+$ è verificabile  tramite il *problema dell'implicazione*, perché equivale a verificare che $\forall X \to Y \in F$ abbiamo $Y \subseteq X^+_G$
+* $G \subseteq F^+$ vale per definizione, quindi non serve neppure verificarlo
+Ci manca quindi solo da calcolare $G = \bigcup_i \pi_{T_i}(F)$ per avere un algoritmo che verifica se le dipendenze sono verificate o meno.
+### Calcolo delle Proiezioni
+Non è possibile calcolare $G = \bigcup_i \pi_{T_i}(F)$ in modo efficiente, perché il calcolo delle singole proiezioni $\pi_{T_i}(F)$ ha costo **esponenziale**.
+
+![[Pasted image 20240226174736.png]]
+
+### Riassunto
+Alla luce di quanto discusso, possiamo verificare se la decomposizione $\rho = \{R_1(T_1) ... R_n(T_n)\}$ di $R(T,F)$ preserva le dipendenze tramite il seguente algoritmo:
+* Calcola le proiezioni $\pi_{T_1}(F)$ per ogni $i \in [1,n]$
+* Calcola $G = \bigcup_i \pi{T_i}(F)$
+* Verifica che per ogni $X \to Y \in F$ si abbia $Y \subseteq X^+_G$
+Tale algoritmo ha costo **esponenziale** a causa del calcolo delle proiezione.
+### Esempio
+Siano $R(A,B,C)$ e $F = \{A \to B, B \to C, C \to A\}$. Vogliamo verificare se la decomposizione $\rho = \{R_1(A,B), R_2(B,C)\}$ preserva le dipendenze.
+
+Calcoliamo $\pi_{AB}(F)$, considerando i due sottoinsiemi propri $A$ e $B$.
+* $A^+_F = ABC$, quindi $B \to C \in \pi_{AB}(F)$
+* $B^+_F = BCA$, quindi $B \to A \in \pi_{AB}(F)$
+Concludiamo quindi $\pi_{AB}(F) = \{A \to B, B \to A\}$.
+
+Calcoliamo ora $\pi_{BC}(F)$ considerando i due sottoinsiemi propri $B$ e $C$:
+* $B^+_F = BCA$ quindi $B \to C \in \pi_{BC}(F)$
+* $C^+_F = CAB$ quindi $C \to B \in \pi_{BC}(F)$
+Concludiamo quindi $\pi_{BC}(F) = \{B \to C, C \to B\}$
+
+A questo punto possiamo calcolare: $$G = \pi_{AB}(F) \cup \pi_{BC}(F) = \{A \to B, B \to A, B \to C, C \to B\}$$ Iteriamo sulla dipendenza $F = \{A \to B, B \to C, C \to A\}$ e verifichiamo che siano tutte derivabili da $G$:
+* $A \to B$: abbiamo $B \in A^+_G = ABC$
+* $B \to C$: Abbiamo $C \in B^+_G = BAC$
+* $C \to A$: abbiamo $A \in C^+_G = CBA$
+Concludiamo che la decomposizione in esame preserva le dipendenze.
+### Ottimizzare la verifica
+Per fortuna non ci interessa davvero calcolare $G = \bigcup_i \pi_T{T_i}(F)$, ma ci basta verificare che per ogni $X \to Y \in F$ abbiamo $Y \subseteq X^+_G$. In effetti esiste un algoritmo che calcola $X^+_G$ in tempo **polinomiale** senza calcolare $G$.
+
+![[Pasted image 20240226181722.png]]

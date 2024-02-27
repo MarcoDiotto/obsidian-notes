@@ -222,7 +222,7 @@ public class ProveJDK1
 	}
 }
 ````
-# Lezioni 3, 4 e 5
+# Lezioni 3, 4, 5, 6
 ___
 ## Creazione di iteratori
 In java ogni interfaccia deve avere un *file a parte* (o essere *nested*), pertanto ogni blocco di codice corrisponderà ad un diverso file.
@@ -371,16 +371,19 @@ public class ArrayList<T> implements List<T>{
 	
 	@Override
 	public Iterator<T> iterator(){
-		//automaticamente chiama il costruttore di Iterator<T>
-		return new MyIterator() {
+		//anonymous class
+		return new Iterator<T>() {
+			
+			private int pos = 0;
+			
 			@Override
 			public boolean hasNext(){
-				return false;
+				return pos < size;
 			}
 			
 			@Override
 			public T next(){
-				return null;
+				return get(pos++);
 			}
 		};
 		/*
@@ -435,7 +438,115 @@ public class ArrayList<T> implements List<T>{
 		return sz == 0;
 	}
 	
-	(...)
+	@Override
+	public void add(int i, T x){
+		//TODO
+	}
+	
+	@Override
+	public void add(T x){
+		//TODO
+	}
+	
+	@Override
+	boolean equals(Object o){
+		
+		if(o instanceof ArrayList){
+			(...)
+		}
+		
+		return false
+	}
+	
+	@Override
+	public boolean contains(T x){
+		
+		Iterator<T> it = iterator();
+		
+		while(it.hasNext()){
+			T o = it.next();
+			
+			if(x.equals(o))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public void remove(T x){
+		
+		for(int i = 0; i < size(); ++i){
+			T o = get(i);
+			
+			if(o.equals(x)){
+				
+				for(int j = i; j <size() - 1; ++j ){
+					set(j, get(j + 1));
+				}
+				
+				--sz;
+			}
+		}
+	}
+}
+```
+
+```java
+package tinyjdk;
+
+public class LinkedList<T> implements List<T>{
+	
+	// non-static nested class
+	private class Node{
+		
+		public T data;
+		public Node next;
+		
+		public Node(T data, Node next){
+			
+			this.data = data;
+			this.next = next;
+		}
+	}
+	
+	private Node head;
+	private int sz;
+	
+	public LinkedList(){
+		this.head = null;
+		sz = 0;
+	}
+	
+	@Override
+	public void add(T x){
+		if(head == null){
+			head = new Node(x, null);
+		} else {
+			Node n = head;
+			while(n.next != null){
+				n = n.next;
+			}
+			n.next = new Node(x, null);
+		}
+		sz++;
+	}
+	
+	@Override
+	public void clear(){
+		head = null;
+		/*
+			garbage collector multishot perché gli elementi
+			in coda hanno ancora reference type.
+			
+			Sarebbe meglio mettere tutto a null.
+		*/
+	}
+	
+	@Override
+	public void size(){
+		return sz;
+	}
 }
 ```
 
@@ -491,3 +602,52 @@ f(7); // --> 7 = type argument
 Alla creazione di un campo in Java  (prima della chiamata al costruttore), questo viene inizializzato a  `NULL`, se è un **reference type**, a 0 se è un **int**.
 Di conseguenza quando viene chiamato il costruttore, c'è già della memoria allocata (8 Byte per i pointer, 4 per gli int), il compilatore sa quanto allocare sulla base della sommatoria dei campi della classe.
 Viene inoltre creata una tabella, detta **Virtual Table**, che contiene pointer ai metodi della classe, i quali puntano alla prima istruzione dei corrispondenti metodi. Ciò avviene perché quando una classe istanziata viene passata a qualcos'altro si crea **subsumpion**, e di conseguenza alla chiamata di un metodo della classe si può recuperare quest'ultimo dalla virtual table della stessa. Grazie all'uso delle virtual table Java implementa il **Dynamic Dispatching**. Quando viene creato un oggetto, viene prima allocato lo spazio necessario per i campi ed in seguito la virtual table, che contiene anche i metodi sottoposti ad **Override**.
+
+## Anonymous Class
+
+```java
+(...)new Iterator<T>() {
+		
+		private int pos = 0;	
+		
+		@Override
+		public boolean hasNext(){
+			return pos < size;
+		}
+		
+		@Override
+		public T next(){
+			return get(pos++);
+		}
+	}
+```
+
+Un codice è formato da:  
+* **statement**: porzioni di codice formate da una o più righe e delimitati dalle graffe.  $\to$ (inizializzazioni, dichiarazioni, `return`, `if`, `do`, `for`, `throw` ...).
+* **espressioni**: computano qualcosa, come fra le tonde dell'`if`  $\to$ (`(n < 8)`, `(n - 8)`...).
+
+Il codice riportato è una **classe anonima**, ovvero un' **espressione**. La classe anonima permette di istanziare al momento un nuovo oggetto. La keyword `new` viene riutilizzata, in quanto quello che lancia non è un costruttore. Il nome anonymous class è sbagliato perché quello che abbiamo davanti è un **anonymous object**. Il nuovo oggetto viene subsunto ad `Iterator`, pertanto, nel caso in cui venga creato un nuovo metodo nella classe anonima, questo non può essere utilizzato. Dalla classe anonima si può accedere ai campi istanziati nello scope del metodo che la chiama (cioè *la classe porta con sé lo scope in cui è stata definita* $\to$ **chiusura**):
+
+```java
+public Iterator<T> iterator(){
+	
+	int pos = 0;
+	
+	return new Iterator<T>() {
+		
+		@Override
+		public boolean hasNext(){
+			return pos < size;
+		}
+		
+		@Override
+		public T next(){
+			return get(pos++);
+		}
+	};
+}
+```
+
+## Metodi == e equals
+* `==`: se i due elementi sono **reference type** controlla i puntatori, se **value type** fa un vero confronto, è **polimorfo** e **omogeneo** (funziona con due oggetti dello stesso tipo),
+* `equals`: è un metodo della classe `Object` reso standard, è **polimorfo per subtype** ed è **eterogeneo**. In genere si usa `equals` per fare una deep copy. $\to$ *è un semplice metodo*.

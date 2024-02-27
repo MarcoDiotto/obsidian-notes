@@ -196,3 +196,268 @@ Utilizzati per confrontare *diverse popolazioni* o *sotto-popolazioni*:
 
 ![[Pasted image 20240222100529.png]]
 *Nota*: il professore consiglia di usare il **grafico a bolle** (a sinistra dell'esempio) o il **cheatring** (che vedremo nel 2° laboratorio).
+#  Laboratorio 1: Media Campionaria
+___
+```r
+popolazione <- rexp(n = 5000, rate = 1/40)
+media.pop <- mean(popolazione)
+campione <- sample(popolazione, size = 50)
+mean(campione)
+```
+
+Grazie a `sample` possiamo ottenere un campione casuale da utilizzare per i nostri calcoli.
+### Non Distorsione e Normalità Asintotica della Media Campionaria
+```r
+medie <- replicate(1000, mean(sample(popolazione, size = 50)))
+range(medie)
+mean(medie)
+```
+La funzione `range` ci indica l'intervallo entro cui si trovano le nostre medie:
+Grazie a `mean(medie)` facciamo la **media delle medie** e otteniamo un risultato molto vicino alla media dell'intera popolazione.$\to$ Abbiamo osservato la **non distorsione** della media campionaria.
+#### Visualizzazione Grafica
+
+```r
+hist(medie, col = "steelblue")
+```
+
+![[Pasted image 20240227110944.png]]
+
+```r
+hist(medie, col = "steelblue", breaks = 15)
+```
+
+![[Pasted image 20240227110750.png]]
+
+```r
+abline(v = media.pop, col = "red", breaks = 15, main = "Titolo", xlab = "asse delle x", ylab = "asse delle y")
+```
+
+![[Pasted image 20240227111036.png]]
+
+```r
+hist(medie, col = "steelblue", breaks = 15, freq = FALSE)
+```
+
+![[Pasted image 20240227111159.png]]
+
+```r
+curve(dnorm(x, mean = media.pop, sd = media.pop /sqrt(50)), col = "red", lwd = 1.5, add = TRUE)
+```
+
+![[Pasted image 20240227111308.png]]
+
+*Note*:
+* Grazie a `breaks` inseriamo il numero di rettangoli
+* Grazie ad `abline` posso aggiungere una linea, nel nostro caso la media
+* Grazie a `main`,  `xlab` e `ylab` inserisco il titolo e i nomi degli assi x e y
+* Grazie a `freq = FALSE` valuto la **densità** e non la **frequenza
+* Grazie all'ultima funzione riusciamo a vedere la relativa curva normale
+
+### Consistenza della Media Campionaria
+
+```r
+permutazione <- sample(popolazione)
+numeratori <- cumsum(permutazione)
+denominatori <- 1:5000
+medie = numeratori / denominatori
+```
+*Note*:
+* La funzione `sample` questa volta serve ad avere le osservazioni in ordine diverso
+* La funzione `cumsum` fa le **somme cumulative** in ogni posizione del vettore
+#### Visualizzazione grafica
+
+```r
+plot(medie, col = "steelblue", type = "l", lwd = 2)
+```
+
+![[Pasted image 20240227112603.png]]
+
+```r
+abline(h = media.pop, lty = dashed, col = "red", lwd = 1.5)
+```
+
+![[Pasted image 20240227112702.png]]
+
+# Laboratorio 2: Analisi Descrittive
+___
+## Sintesi Numeriche
+Iniziamo utilizzando i dati sui tempi di elaborazione dei processi presentati nel Capitolo 8 del Baron (2014)
+
+Per leggere i dati si usa il seguente comando:
+```r
+cpu <- scan("CPU-times.txt")
+cpu
+```
+
+Calcoliamo la **media**:
+```r
+mean(cpu)
+```
+
+Calcoliamo la **mediana**:
+```r
+median(cpu)
+```
+
+Calcoliamo **primo**, **secondo** e **terzo quartile**:
+```r
+quantile(cpu, probs = 0.25, type = 2)
+quantile(cpu, probs = 0.5, type = 2)
+quantile(cpu, probs = 0.75, type = 2)
+```
+
+`type = 2` serve per essere coerenti col libro di testo, le funzioni di default di R sono:
+```r
+quantile(cpu, probs = 0.25)
+quantile(cpu, probs = 0.5)
+quantile(cpu, probs = 0.75)
+```
+
+Calcoliamo la **varianza**:
+```r
+var(cpu)
+```
+
+Calcoliamo la **deviazione standard**:
+```r
+sd(cpu)
+```
+
+Calcoliamo lo **scarto interquantile**:
+```r
+Q1 <- quantile(cpu, probs = 0.25, type = 2)
+Q3 <- quantile(cpu, probs = 0.75, type = 2)
+Q3 - Q1
+```
+
+## Sintesi Grafiche
+Per creare **istogrammi** si utilizza `hist`:
+```r
+isto <- hist(cpu, main = "Tempi elaborazione CPU", xlab = "Tempo (sec)"
+ylab = "Frequenze", col = "steelblue")
+```
+
+![[Pasted image 20240227114228.png]]
+
+Per **esplorare le componenti** di `isto`:
+```r
+names(isto)
+```
+
+Per **estrarre le componenti** di isto si utilizza `$`:
+```r
+##osservazioni per intervallo
+isto$counts
+
+## intervalli (breaks)
+isto$breaks
+```
+
+Per ottenere l'istogramma con la **densità** si utilizza `freq = FALSE`:
+```r
+isto <- hist(cpu, freq = FALSE, main = "Tempi elaborazione CPU", xlab = "Tempo (sec)", ylab = "Densita'", col = "steelblue")
+```
+
+![[Pasted image 20240227114659.png]]
+
+La **densità** si ottiene con:
+```r
+isto$density
+```
+
+che è equivalente a:
+```r
+freqrel <- isto$counts / sum(isto$counts)
+freqrel / 20
+```
+
+L’opzione `breaks` permette, in principio, di modificare il numero di intervalli con cui è disegnato l’istogramma. In pratica, R prende l’indicazione fornita con `breaks` come un suggerimento e sceglie un numero di intervalli vicino che soddisfi delle regole interne:
+
+```r
+isto <- hist(cpu, freq = FALSE, main = "Tempi elaborazione CPU", xlab = "Tempo (sec)", ylab = "Densita'", col = "steelblue", breaks = 12)
+```
+
+![[Pasted image 20240227114904.png]]
+
+Spesso è utile sovrapporre all’istogramma una stima della funzione di densità calcolata con la funzione `density`:
+
+```r
+hist(cpu, freq = FALSE, main = "Tempi elaborazione CPU",  xlab = "Tempo (sec)", ylab = "Densita'", col = "steelblue", breaks = 12)
+lines(density(cpu), col = "red", lwd = 2) ## linea con spessore doppio (lwd = 2)
+```
+
+![[Pasted image 20240227114943.png]]
+
+Per creare i **boxplot** si utilizza `boxplot`:
+```r
+bp <- boxplot(cpu, main = "Tempi elaborazione CPU", col = "steelblue")
+```
+
+![[Pasted image 20240227115106.png]]
+
+Le statistiche utilizzate per disegnare il boxplot si possono ottenere con la funzione `summary`:
+```r
+summary(cpu)
+```
+
+In realtà, però, le statistiche usate dalla funzione `boxplot` sono leggermente diverse:
+```r
+bp$stats
+```
+
+Lo slot `stats` dell’oggetto `bp` contiene, nell’ordine, il “baffo” inferiore, il primo quartile, la mediana, il terzo quartile, il “baffo” superiore. Il baffo superiore si ferma a 89 poiché il boxplot non disegna punti oltre il seguente limite:
+```r
+59 + 1.5 * (59 - 34)
+```
+
+e l’osservazione più grande che non supera questo limite è appunto
+```r
+max(cpu[cpu <= 96.5])
+```
+
+Possiamo aggiungere al boxplot la **media dei tempi di elaborazione** con la funzione `points`:
+```r
+boxplot(cpu, col = "steelblue")
+points(mean(cpu), pch = "+") ## pch significa "point character"
+```
+
+![[Pasted image 20240227115245.png]]
+
+Il file **CPU-times-2.txt** contiene un secondo campione di tempi di elaborazione:
+```r
+cpu2 <- scan("CPU-times-2.txt")
+```
+
+Possiamo confrontare visivamente i due campioni attraverso due boxplot appaiati:
+```r
+boxplot(cpu, cpu2, col = c("steelblue", "lightblue"), names = c("Campione 1", "Campione 2"))
+```
+
+![[Pasted image 20240227115321.png]]
+Nell’ultima chiamata a `boxplot` abbiamo usato la funzione `c` (“combine”) per creare un vettore di due colori, `c("steelblue", "lightblue")`, e un vettore di due etichette, `c("campione 1", "campione 2")`.
+
+Vediamo come implementare i **grafici a dispersione** con un *esempio*:
+
+Il file **antivirus.csv** contiene i dati discussi nel capitolo 8 del Baron (2014) sulla relazione fra l’utilizzo degli antivirus nell’ultimo mese e i virus (_worms_) individuati. Possiamo importare i dati in **R** con la funzione `read.csv`:
+```r
+antivirus <- read.csv("antivirus.csv")
+antivirus
+```
+
+![[Pasted image 20240227115500.png]]
+
+Di seguito il**grafico a dispersione** del numero di _worms_ in funzione del numero di volte che l’antivirus è stato eseguito nell’ultimo mese:
+```r
+with(antivirus, plot(x, y, xlab = "Esecuzioni antivirus", ylab = "Worms individuati"))
+```
+
+![[Pasted image 20240227115542.png]]
+
+Siccome ci sono molte osservazioni ripetute il grafico non coglie davvero la struttura dei dati. Possiamo ovviare a questo problema aggiungendo un **piccola quantità di errore casuale** ad ogni osservazione con la funzione `jitter` (“agitato”):
+```r
+with(antivirus, plot(jitter(x), jitter(y), xlab = "Esecuzioni antivirus", ylab = "Worms individuati"))
+```
+
+![[Pasted image 20240227115636.png]]
+
+Due esempi vengono riportati nel secondo laboratorio al [seguente link](obsidian://open?vault=obsidian-notes&file=Utilit%C3%A0%2FAD2324-unita1-base.pdf)

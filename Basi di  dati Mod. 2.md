@@ -1,5 +1,5 @@
 
-# Lezione 1
+# Dipendenze Funzionali e Chiusura
 ___
 
 ## Anomalie e dipendenze funzionali
@@ -48,7 +48,7 @@ $$REFL: \frac{Y \subseteq X}{F \vdash X \rightarrow Y} \ \ AUGM: \frac{F \vdash 
 * $\vDash$ : sempre vero, *assioma*
 * $\vdash$ : potrebbe essere sbagliato se le regole sono sbagliate, *derivazione*
 
-$\color{red} Teorema$
+### Teorema
 F $\vdash$ X $\rightarrow$ Y se e solo se  F $\vDash$ X $\rightarrow$ Y.
 
 
@@ -93,10 +93,9 @@ $F \vdash X \rightarrow Y$ se e solo se  $Y \subseteq X^+_F$.
 * Il *for* interno viene eseguito al più $d$ volte.
 * *Verificare l'inclusione di insiemi ordinati* di cardinalità al più $a$ nel *for* interno ha costo $O(a)$.
 Pertanto la complessità totale dell'algoritmo è $O(a^2d)$.
-# Lezione 2
+# Chiavi
 ___
-## Chiavi e Coperture Canoniche
-### Chiavi e attributi primi
+## Chiavi e attributi primi
 #### Definizione di superchiave
 Dato uno schema di relazione $R(T,F)$, un insieme di attributi $X \subseteq T$ è una *superchiave* di $R$  $\iff$ $X \rightarrow  T \in F^+$.
 #### Definizione di Chiave
@@ -104,7 +103,7 @@ Una *chiave* è una superchiave minimale, cioè una superchiave tale che nessuno
 #### Definizi0ne di attributi primi
 Un attributo è *primo* $\iff$ appartiene ad almeno una chiave.
 
-### Verifica di Superchiave
+## Verifica di Superchiave
 
 Dato $R(T,F)$ possiamo verificare se $X \subseteq T$ è una *superchiave* tramite il seguente algoritmo di costo *polinomiale*.
 * Calcola la *chiusura* $X^+_F$
@@ -117,7 +116,7 @@ Si consideri la relazione $R(T,G)$ con $T = ABCDEF$ e $G = \{AB \rightarrow C,\ 
 * $ABD^+_2 = ABCD$ E(tramite $A \rightarrow E$)
 * $ABD^+_3 = ABCDEF$ (tramite $B \rightarrow F$)
 Se io li aggiungo tutti allora $ABD$ è una superchiave.
-### Verifica di Chiave
+## Verifica di Chiave
 Dato $R(T,F)$ possiamo verificare se $X \subseteq T$ è una *chiave* tramite il seguente algoritmo di costo *polinomiale*.
 * Verifica se $X$ è una superchiave. Se non lo è non è una chiave
 * Verifica che $\forall A \in X$ si abbia $X \\ \{A\}^+_F \neq T$
@@ -127,7 +126,7 @@ Si consideri la relazione $R(T,G)$ con $T = ABCDEF$ e $G = \{AB \rightarrow C,\ 
 * $A$ non può essere rimosso: $BD^+_G = BDF$
 * $B$ non può essere rimosso: $AD^+_G = ADE$
 * $D$ non può essere rimosso: $AB^+_G = ABCEF$
-### Trovare una chiave
+## Trovare una chiave
 Dato $R(T, F)$, è possibile trovare una sua chiave in tempo *polinomiale*. L’idea dell’algoritmo è di partire da $T$ e rimuovere uno ad uno tutti gli attributi che non sono indispensabili per derivare $T$.
 #### Algoritmo
 ![[Pasted image 20240214112747.png]]
@@ -143,7 +142,7 @@ Sia $G = \{AB \rightarrow C,\ E \rightarrow A,\ A\rightarrow E,\ B\rightarrow F\
 * Rimuoviamo $F$ da $K_2:\ BDE^+_G = ABCDEF$ quindi $F$ deve essere rimosso e aggiorniamo la chiave $K_3 = BDE$
 L'algoritmo ritorna la *chiave* $K_3 = BDE$ , è l'unica chiave? 
 
-### Trovare l'Insieme delle Chiavi
+## Trovare l'Insieme delle Chiavi
 Dato $R(T,F)$ trovare *tutte* le chiavi ha costo *esponenziale*, perché ogni sottoinsieme di $T$ è potenzialmente una chiave. Esiste però un algoritmo piuttosto ottimizzato per la ricerca di tutte le chiavi.
 
 **Intuizione**:
@@ -155,12 +154,12 @@ Dato $R(T,F)$ trovare *tutte* le chiavi ha costo *esponenziale*, perché ogni so
 
 **Nota**: se un attributo non compare mai alla destra di una dipendenza funzionale, allora esso deve fare parte di tutte le chiavi. L’insiemi di tali attributi sarà il primo che testeremo.
 
-### Algoritmo per trovare l'Insieme delle Chiavi
+## Algoritmo per trovare l'Insieme delle Chiavi
 
 ![[Pasted image 20240214114822.png]]
-### Verifica di Primalità
+## Verifica di Primalità
 Ad oggi non esiste un *algoritmo efficiente* per trovare tutte gli attributi primi se non *trovare tutte le chiavi*
-### Forma Canonica
+## Forma Canonica
 Abbiamo visto vari algoritmi che operano sull'*insieme delle dipendenze funzionali*. Per questo motivo è utile portare tale insieme ad una **forma canonica** equivavente all'origine
 #### Definizione di equivalenza
 Due insiemi di dipendenza funzionale $F$ e $G$ sono **equivalenti**, indicato con $F \equiv G$ $\iff$ $F^+ = G^+$.
@@ -169,7 +168,7 @@ Se $F=G$ allora $F \equiv G$, ma **in generale non vale il contrario**
 Sia $X \rightarrow Y \in F$. L'attributo $A \in X$ è detto **estraneo** $\iff$ $X$ \\ $\{A\}  \rightarrow Y \in F^+$.
 #### Definizione di Dipendenza Ridondante
 La dipendenza $X \rightarrow Y \in F$ è **ridondante** $\iff$ $X\rightarrow Y \in (F$ \\ $\{X\rightarrow Y\})^+$. 
-# Lezione 3
+# Copertura Canonica
 ___
 ## Forma Canonica
 La **forma canonica** è un metodo per scrivere un insieme di dipendenze funzionali equivalente, che ci permette di eseguire  vari algoritmi
@@ -203,7 +202,7 @@ $$Considero:\ (r \cap s) \forall t_1, t_2 \in r \cap s\ allora\ t_1,t_2 \in r$$
 * Si consideri lo schema di relazione $R(A,B,C,D)$ con dipendenze $F = \{AB \to C, C \to D, D \to A\}$. Si trovino tutte le dipendenze non banali derivabili da $F$ e tutte le chiavi di $R$.
 $$\frac{F \vdash X \to Y}{F \vdash X \to Z | Z \in \mathcal{P}(Y)}$$
 $$\color{white} A \to A, C \to CDA, \to D \to DA, \color{green} AB \to ABCD \color{white}, AC \to ACD, AD \to AD,\color{green}BC \to BCDA \color{white},BD \to BDAC, CD \to CDA, ABC \to ABCD, ABD \to ABCD, ACD \to ACD, BCD \to ABCD$$
-# Lezione 4
+# Decomposizione di Schemi
 ___
 ## Anomalie
 Schemi di scarsa qualità soffrono di **anomalie** che vanno ad ostacolare le operazioni di inserimento, cancellazione ed aggiornamento dei dati.
@@ -337,3 +336,118 @@ Concludiamo che la decomposizione in esame preserva le dipendenze.
 Per fortuna non ci interessa davvero calcolare $G = \bigcup_i \pi_T{T_i}(F)$, ma ci basta verificare che per ogni $X \to Y \in F$ abbiamo $Y \subseteq X^+_G$. In effetti esiste un algoritmo che calcola $X^+_G$ in tempo **polinomiale** senza calcolare $G$.
 
 ![[Pasted image 20240226181722.png]]
+
+Dati uno schema $R(T,F)$ e $\rho = \{R_1(T_1) ... R_n(T_n)\}$ è quindi possibile verificare se $\rho$ preserva le dipendenze tramite il seguente algoritmo di complessità **polinomiale**.
+
+![[Pasted image 20240228103632.png]]
+### Esempio
+
+$F = \{A \to B, B \to C, C \to A\}$ e $\rho = \{R_1(A,B), R_2(B,C)\}$
+
+Partiamo dalla dipendenza $A \to B$:
+* Partiamo inizializzando $FC(A,F,\rho) = \{A\}$
+* Consideriamo $R_1(\{A,B\})$, abbiamo: $(\{A\} \cap \{A,B\})^+_F \cap \{A,B\} = A^+_F \cap \{A,B\} = \{A,B\}$, quindi aggiungiamo $B$ a $FC(A,F,\rho)$
+* Consideriamo $R_2(\{B,C\})$, abbiamo: $(\{A,B\} \cap \{B,C\})^+_F \cap \{B,C\} = B^+_F \cap \{B,C\}  )= \{B,C\}$, quindi aggiungiamo $C$ a $FC(A,F,\rho)$
+* Otteniamo quindi $B \in FC(A,F,\rho) = \{A,B,C\}$
+
+Passiamo alla dipendenza$B \to C$:
+* Partiamo inizializzando $FC(B,F,\rho) = \{B\}$
+* Consideriamo $R_1(\{A,B\})$, abbiamo: $(\{B\} \cap \{A,B\})^+_F \cap \{A,B\} = B^+_F \cap \{A,B\} = \{A,B\}$, quindi aggiungiamo $A$ ad $FC(B,F,\rho)$
+* Consideriamo $R_2(\{B,C\})$, abbiamo: $(\{A,B\} \cap \{B,C\})^+_F \cap \{B,C\} = B^+_F \cap \{B,C\} = \{B,C\}$, quindi aggiungiamo $C$ ad $FC(B,F,\rho)$
+* Otteniamo quindi $C \in FC(B,F,\rho) = \{A,B,C\}$
+
+Passiamo alla dipendenza $C \to A$:
+* Passiamo inizializzando $FC(C,F,\rho) = \{C\}$
+* Consideriamo $R_1(\{A,B\})$, abbiamo: $(\{C\} \cap \{A,B\})^+_F \cap \{A,B\} = \emptyset$ quindi per ora non aggiungiamo niente a $FC(C,F,\rho)$
+* Consideriamo  $R_2(\{B,C\})$,abbiamo: $(\{C\} \cap \{B,C\})^+_F \cap \{B,C\} = C^+_F \cap \{B,C\} = \{B,C\}$, quindi aggiungiamo  $B$ ad $FC(C,F,\rho)$
+* Consideriamo $R_1(\{A,B\})$, abbiamo: $(\{B,C\} \cap \{A,B\})^+_F \cap \{A,B\} = B^+_F \cap \{A,B\} = \{A,B\}$ quindi aggiungiamo $A$ ad $FC(C,F,\rho)$
+* Otteniamo quindi $A \in FC(C,F,\rho) = \{A,B,C\}$
+### Teorema
+In generale la preservazione dei dati è **indipendente** dalla preservazione delle dipendenze. Esiste però un teorema che collega le due proprietà, che è particolarmente utile perché applicabile a decomposizioni non binarie.
+
+**Teorema**: Sia $\rho = \{R_1(T_1) ... R_n(T_n)\}$ una decomposizione di $R(T,F)$ che preserva le dipendenze e tale che almeno uno degli insiemi $T_j$ sia una superchiave per $R(T,F)$, allora $\rho$ preserva anche i dati.
+# Lezione 5
+___
+## Introduzione
+L'obbiettivo delle forme normali è garantire che uno schema sia di buona qualità e viene spesso ottenuto tramite un processo di **normalizzazione** basato su una decomposizione dello schema di partenza.
+
+**Proprietà desiderabili**: 
+* Uno schema in forma normale non deve contenere anomalie
+* Il processo di normalizzazione deve preservare i dati
+* Il processo di normalizzazione deve preservare le dipendenze
+## Forma Normale di Boyce-Codd(BCNF)
+### Definizione
+Uno schema di relazione $R(T,F)$ è in BCNF $\iff$ per ogni dipendenza funzionale $X \to Y \in F^+$ tale che $Y \nsubseteq X$ si ha che $X$ è una superchiave.
+
+Verificare se uno schema è in BCNF ha costo **polinomiale**.
+### Esempio
+Si consideri $Prodotti(\{Articolo,\ Magazzino,\ Quantità,\ Indirizzo\},\ F)$ con $F = \{Articolo\ Magazzino \to Quantità, Magazzino \to Indirizzo\}$. Dato che $\{Magazzino\}^+_F = \{Magazzino,\ Indirizzo\}$, lo schema non è in BCNF.
+### Dipendenze Anomale
+Una dipendenza che viola BCNF è detta **anomala**. Nel nostro esempio abbiamo una dipendenza anomala $Magazzinio \to Indirizzo$.
+
+![[Pasted image 20240228112020.png]]
+
+Tale dipendenza anomala evidenzia che lo schema mescola informazioni relative ai magazzini con alte **indipendenti** relative agli articoli.
+### Conversione in BCNF
+L'algoritmo di conversione in BCNF è detto anche **algoritmo di analisi**, perché decompone lo schema originale fino a normalizzazione.
+
+Sia $R(T,F)$ lo schema di partenza:
+* Se $R(T,F)$ è già in BCNF, ritorna $\{R(T,F)\}$
+* Altrimenti seleziona $X \to Y \in F$ che viola BCNF. Calcola gli insiemi di attributi $T_1 = X^+_F$ e $T_2 = X \cup (T$ \\ $T_1)$
+* Calcola le proiezioni $F_1 = \pi_{T_1}(F)$ e $F_2 = \pi_{T_2}(F)$
+* Decomponi ricorsivamente $R_1(T_1,F_1)$ e $R_2(T_2,F_2)$ in $\rho_1$ e $\rho_2$
+* Ritorna la loro unione $\rho_1 \cup \rho_2$
+### Esempio
+Si consideri $Telefoni(\{Prefisso,\ Numero,\ Località\},\ F)$ con $$F =\{Prefisso\ Numero \to Località,\ Località \to Prefisso\}$$
+La dipendenza $Località \to Prefisso$ viola BCNF, dato che: $$\{Località\}^+_F = \{Località,\ Prefisso\}$$
+Applicando l'algoritmo di conversione in BCNF, abbiamo:
+* $R_1(\{Località,\ Prefisso\},\ F_1)$ con $F_1$ da calcolare per proiezione
+* $R_2(\{Località,\ Numero\},\ F_2 )$ con $F_2$ da calcolare per proiezione
+
+Dato $F =\{Prefisso\ Numero \to Località,\ Località \to Prefisso\}$
+
+calcoliamo la sua proiezione per $R_1(\{Località,\ Prefisso\})$:
+* $\{Località\}^+_F = \{Località,\ Prefisso\}$, da cui $Località \to Prefisso \in F_1$
+* $\{Prefisso\}^+_F = \{Prefisso\}$, da cui nessuna nuova dipendenza
+
+Calcoliamo poi la sua proiezione per $R_2(\{Località,\ Numero\})$:
+* $\{Località\}^+_F = \{Località,\ Prefisso\}$, da cui nessuna nuova dipendenza
+* $\{Numero\}^+_F = \{Numero\}$, da cui nessuna nuova dipendenza
+
+Abbiamo quindi $F_1 = \{Località \to Prefisso\}$ e $F_2 = \emptyset$.
+
+Abbiamo deomposto $Telefoni(\{Prefisso,\ Numero,\ Località\},\ F)$ con $$F =\{Prefisso\ Numero \to Località,\ Località \to Prefisso\}$$
+nei seguenti schemi:
+* $R_1(\{Località,\ Prefisso\}, \{Località \to Prefisso\})$
+* $R_2(\{Località,\ Numero\}, \emptyset)$
+
+Entrambi gli schemi sono in BCNF, ma è andata perduta la dipendenza funzionale $Prefisso\ Numero \to Località$.
+### Perdita di dipendenze
+
+![[Pasted image 20240228114338.png]]
+Dato lo stesso $Prefisso$ e $Numero$ avremmo due $Località$ **differenti**.
+### Correttezza della Conversione in BCNF
+L'algoritmo di conversione in BCNF *termina* quando non ci sono più dipendenze anomale. Per garantire che ciò avverrà, dimostriamo che tutti gli schemi **con solo due attributi** sono in BCNF.
+
+Consideriamo $R(\{A,B\},F)$ e sia $X \to Y \in F$. Dimostriamo che in nessun caso viene violata BCNF:
+* Se $X = \{A\}$ ho due casi:
+	* Se $B \notin Y$, allora $Y \subseteq X$ e la dipendenza è *banale*.
+	* Se $B \in Y$, allora $X$ è una *superchiave*.
+* Se $X = \{B\}$, il caso è simmetrico al precedente.
+* Se $X = \{A,B\}$, allora $Y \subseteq X$ e la dipendenza è *banale*.
+### La Conversione in BCNF Preserva i Dati
+Supponiamo che $R(T,F)$ sia decomposto in $\{R_1(T_2),\ R_2(T_2)\}$, allora deve esistere $X \to Y \in F$ che viola BCNF. Per costruzione $T_1 = X^+_F$ e $T_2 = X \cup (T$ \\ $T_1)$.
+
+Osserviamo che $T_1 \cap T_2 = X$. Dato che $X \to X^+_F \in F^+$, abbiamo che $T_1 \cap T_2 \to T_1 \in F^+$, quindi la decomposizione preserva i dati per il teorema visto precedentemente.
+
+Il risultato si può quindi dimostrare **per induzione** sul numero di passi effettuati dall'algoritmo di conversione in BCNF
+### Proprietà di BCNF
+
+**Pregi**:
+* BCNF garantisce l'**assenza di anomalie** (niente dipendenze anomale)
+* L'algoritmo di conversione in BCNF **preserva i dati**
+* Verificare se uno schema è in BCNF ha costo **esponenziale**
+
+**Difetti**:
+* L'algoritmo di conversione in BCNF ha costo **esponenziale**, perché richiede di calcolare le proiezioni delle dipendenze.
+* L'algoritmo di conversione in BCNF **non preserva le dipendenze** nel caso generale.

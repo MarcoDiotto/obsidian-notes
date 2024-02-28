@@ -381,16 +381,16 @@ Invece di avere una singola funzione hash, abbiamo un **insieme di funzioni hash
 La funzione hash diventa: $$h: U\ x\ \{0,1, ..., m-1\}\  (ordine\ di\ ispezione) \to \{0,1, ..., m-1\}$$
 $h(k,i)$ rappresenta la posizione della chiave $k$ dopo $i$ ispezioni fallite.
 Si richiede che per ogni chiave la **sequenza di ispezioni** <$h(k,0),h(k,1), ..., h(k,m-1)$> sia una *permutazione* di di <$0,1, ..., m-1$> in modo che ogni posizione della tabella hash possa essere considerata come possibile cella in cui inserire una nuova chiave mentre la tabella si riempie.
-#### Operazioni con indirizzamento aperto
+### Operazioni con indirizzamento aperto
 **Ipotesi**: gli elementi della tabella hash sono chiavi senza dati satellite: la chiave è identica all'elemento che contiene la chiave.
-##### **Insert**
+#### **Insert**
 ```c
 Hash_insert(T, k)
 	i = 0
 	trovato = false
 	repeat
 		j = h(k,i)
-		if T[j] == NIL
+		if T[j] == NIL // or T[j] == DELETED
 			T[j] = k
 			trovato = true
 		else
@@ -403,7 +403,7 @@ Hash_insert(T, k)
 ```
 
 **Post**: inserisce l'indice della tabella dove ha memorizzato la chiave $k$ oppure segna un errore se la tabella è piena.
-##### **Search**
+#### **Search**
 
 ```c
 Hash_search(T,k)
@@ -422,4 +422,76 @@ Hash_search(T,k)
 		return NIL
 ```
 
-**Post**: restituisce j se la cella $j$ coontiene $k$ oppure `NIL` se la chiave $k$ non si trova nella tabella $T$.
+**Post**: restituisce j se la cella $j$ contiene $k$ oppure `NIL` se la chiave $k$ non si trova nella tabella $T$.
+#### Delete
+
+La **delete** con l'indirizzamento aperto causa delle problematiche. Supponiamo ad esempio di voler inserire l'elemento 12 nella seguente tabella hash:
+
+![[Pasted image 20240228085628.png]]
+
+Notiamo quindi che l'operazione di cancellazione può comportare l'*impossibilità di accedere ad alcune chiavi*.
+
+**Soluzione**: usare un valore speciale che diciamo essere `DELETED` invece di `NIL` per marcare una  cella come vuota a causa di una cancellazione. In particolare:
+* *Bisogna modificare* l'operazione di **insert** per trattare la cella con `DELETED` come se fosse vuota in modo da poter inserire una nuova chiave in quella posizione.
+* *Non bisogna modificare* l'operazione di **search** perché la cella contiene un valore che non corrisponde a quello cercato.
+
+**Svantaggio**: il tempo di ricerca non dipende più soltanto dal fattore di carico, pertanto, in presenza di un *elevato numero di cancellazioni*, è preferibile utilizzare il *metodo di concatenamento*.
+### Metodi di scansione (o ispezione)
+
+**Hashing con permutazioni indipendenti ed uniformi**: ogni chiave ha la stessa probabilità di avere come sequenza di ispezioni una delle $m!$ permutazioni di <$0,1, ..., m-1$>, ovvero:
+*  $h(k,0)$ distribuisca in modo uniforme ed indipendente su $m$ celle.
+* $h(k,1)$ distribuisca in modo uniforme ed indipendente su $m-1$ celle.
+* $h(k,2)$distribuisca in modo uniforme ed indipendente su $m-2$ celle.
+$\simeq$ ogni esecuzione distribuisce in modo uniforme ed indipendente.
+#### Ispezione Lineare
+
+Data una funzione hash ausiliaria: $h': U \to \{0,1 ... m-1\}$, il numero dell'ispezione lineare usa la funzione hash: $$h(k,i) = (h'(k)+i)\cdot mod\ m $$ 
+$$per\ i = 0 ... m-1$$
+
+![[Pasted image 20240228092421.png]]
+
+La prima cella esaminata è $T[h^i(k)]$, poi continua a scandire tutte le celle sequenzialmente fino alla cella $m-1$ e poi riprende dalla cella $0$ fino a $h^i(k)-1$.
+
+*Nota*: la prima ispezione determina l'intera sequenza di ispezione $\to$ ci sono soltanto $m$ sequenze di ispezioni distinte.
+
+**Vantaggi**: facile da implementare.
+
+**Svantaggi**: *agglomerazione primaria* $\to$ si formano lunghe file di celle occupate che aumentano il tempo di ricerca.
+
+![[Pasted image 20240228093140.png]]
+
+Una cella vuota preceduta da $i$ celle occupate ha probabilità $\frac{i+1}{m}$ di essere la prossima cella occupata $\to$ *le lunghe file tendono ad essere sempre più lunghe.*
+#### Ispezione Quadratica
+
+$$h(k,i) = (h'(k) + c_1, + c_2 \cdot i^2)\cdot mod\ m$$
+dove:
+* $h'$ è una funzione hash ausiliaria.
+* $c_1$ e $c_2 \neq 0$ sono costanti.
+* $i =0,1 ... m-1$.
+
+La prima posizione determina l'intera sequenza $\to$ ci sono soltanto $m$ sequenze di ispezione distinte.
+
+**Svantaggio**: *addensamento/agglomerazione secondario* $\to$ se due chiavi $k_1$ e $k_2$ distinte $k_1 \neq k_2$ hanno lo stesso valore hash ausiliario $h'(k_1) = h'(k_2)$ allora hanno la *stessa* sequenza di ispezioni $\to$ *forma più lieve di agglomerato*.
+#### Doppio Hashing
+
+$$h(k,i) = (h_1(k) + i \cdot h_2(k))\cdot mod\ m$$
+dove:
+* $h_1$ e $h_2$ sono funzioni ausiliarie.
+* $i = 0 ... m-1$
+
+**Esempio**:
+
+![[Pasted image 20240228095810.png]]
+
+##### Come costruire una funzione hash col doppio hashing?
+
+Il valore $h_2(k)$ deve essere **relativamente primo** ($\to MCD = 1)$ con la dimensione $m$ della tabella hash perché venga ispezionata l'intera tabella.
+
+Due possibili modi:
+* Si può scegliere $m$ come **potenza di 2** e definire $h_2$ in modo che produca sempre un **numero dispari**: $$m = 2^p\ \ \ \ \ h(k) = 2(h'(k) + 1)$$
+* Si può scegliere $m$ **primo** e definire $h_2$ in modo che generi un **numero intero positivo minore di $m$**:
+	* $m$ primo 
+	* $h_1(k) = k\cdot mod\ m$
+	* $h_2(k) = 1+(k\cdot mod\ m')$ con $m' < m$
+
+**Vantaggio**: Doppio hashing usa $\Theta(m^2)$ sequenze di ispezioni, perché ogni possibile coppia $(h_1(k),\ h_2(k))$ produce una sequenza di ispezione *distinta*.

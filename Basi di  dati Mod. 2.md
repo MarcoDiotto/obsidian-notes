@@ -1,12 +1,13 @@
 
-# Dipendenze Funzionali e Chiusura
+# Anomalie e Dipendenze Funzionali
 ___
 
-## Anomalie e dipendenze funzionali
+## Teoria della Normalizzazione
 
 Poiché un oggetto può essere modellato in maniera differente, sorge il dubbio su quale sia la forma migliore per modellarlo.
 
 La teoria della $\color{red}normalizzazione$ si occupa di risolvere questi problemi.
+## Qualità di Schemi Relazionali
 
 ![[Pasted image 20240212092142.png]]
 * $\color{red} Rindonzanza \ dei \ dati$ : anomalie in presenza di aggiornamenti
@@ -17,7 +18,7 @@ La teoria della $\color{red}normalizzazione$ si occupa di risolvere questi probl
 
 La $\color{red} teoria \  della \ normalizzazione$ fornisce una serie di strumenti/algoritmi per stabilire in modo rigoroso la bontà di uno schema relazionale e per migliorare schemi relazionali esistenti.
 
-### Notazione
+## Notazione
 * Lettere maiuscole all'inizio dell'alfabeto (es: $A, B, C$) : attributi
 * Lettere maiuscole ala fine dell'alfabeto  es: ($T, X, Y$) : insieme di attributi
 * $R(T)$ : schema relazionale costruito sugli attributi di $T$
@@ -26,19 +27,19 @@ La $\color{red} teoria \  della \ normalizzazione$ fornisce una serie di strumen
 * $t[X]$ : ennupla ottenuta da $t$ considerando i soli attributi $X$
 
 
-### Dipendenza Funzionale
+## Dipendenza Funzionali
 
-$\textbf{Definizione dipendenza funzionale}$
+### Definizione dipendenza funzionale
 Sia $R(T)$ uno schema di relazione e siano $X$, $Y$ due insiemi di attributi non vuoti tali che $X$ $\cup$ $Y$ $\subseteq$ $T$, una dipendenza funzionale è un qualsiasi vincolo della forma X $\rightarrow$ Y
 
-$\textbf{Definizione di soddisfacibilità}$
+### Definizione di soddisfacibilità
 Un'istanza $r$ di $R(T)$ soddisfa la dipendenza funzionale $X$ $\rightarrow$ $Y$ se e solo se ogni coppia di ennuple in $r$ che coincide su $X$ coincide anche su $Y$.
 Formalmente chiediamo $\forall t1, t2 \in r : t_1[X] = t_2[X] \implies t_1[Y] = t_2[Y]$.
 
-$\textbf{Definizione di implicazione}$
+### Definizione di implicazione
 Sia $R(T, F)$ uno schema di relazione. Diciamo che $F$ *implica logicamente* la dipendenza funzionale $X \rightarrow Y$ , indicato con $F \vDash X \rightarrow Y$, se e solo se ogni istanza valida di $R(T, F)$ soddisfa anche $X \rightarrow Y$.
 
-### Assiomi di Armstrong
+## Assiomi di Armstrong
 
 Come possiamo dimostrare che $F \vDash X \rightarrow Y$ ? E’ una proprietà difficile da dimostrare, perché quantifica su tutte le possibili istanze valide.
 
@@ -64,17 +65,15 @@ Se $X \rightarrow YZ$, allora $X \rightarrow Y$.
 $\textbf{Indebolimento}$
 Se $X \rightarrow Y$ allora $XZ \rightarrow Y$.
 ## Problema dell'implicazione
-#### Definizione di Chiusura di F
+### Definizione di Chiusura di F
 Dato un insieme $F$ di dipendenze funzionali, la *chiusura* di $F$ è definita come l'insieme $F^+ = \{X \rightarrow Y\ |\ F \vdash X \rightarrow Y\}$.
-#### Definizione Problema dell'implicazione
+### Definizione Problema dell'implicazione
 Il *problema dell'implicazione* corrisponde a decidere, dati $F$ e $X \rightarrow Y$ se  $X \rightarrow Y \in F^+$ oppure no.  
 
 **Nota**: calcolare $F^+$ applicando gli assiomi di Armstrong ha costo *esponenziale* e pertanto è un modo *algoritmicamente inefficiente* per risolvere il problema dell'implicazione.
-
-#### Definizione chiusura di X 
+### Definizione chiusura di X 
 Sia $R(T,F)$ uno schema di relazione.  Dato $X \subseteq T$, la *chiusura* di $X$ rispetto ad $F$ e definita come l'insieme $X_{F}^{+} = \{ A \in T\ | \ F \vdash X \rightarrow A\}$ .
-
-#### Teorema
+### Teorema
 $F \vdash X \rightarrow Y$ se e solo se  $Y \subseteq X^+_F$.
  
  $\color{red} \textbf{Dimostrazione}$
@@ -84,23 +83,23 @@ $F \vdash X \rightarrow Y$ se e solo se  $Y \subseteq X^+_F$.
  
 **Nota**: calcolare $F^+$ utilizzando il teorema appena descritto ha costo *polinomiale* e pertanto è *algoritmicamente efficiente*.
 
-#### Calcolo di $X^+_F$
+### Calcolo di $X^+_F$
 
 ![[Pasted image 20240214110454.png]]
 
-#### Valutazione della complessità
+### Valutazione della complessità
 * Il *while* esterno viene eseguito al più $a$ volte.
 * Il *for* interno viene eseguito al più $d$ volte.
 * *Verificare l'inclusione di insiemi ordinati* di cardinalità al più $a$ nel *for* interno ha costo $O(a)$.
 Pertanto la complessità totale dell'algoritmo è $O(a^2d)$.
-# Chiavi
+# Chiavi e Copertura Canonica
 ___
 ## Chiavi e attributi primi
-#### Definizione di superchiave
+### Definizione di superchiave
 Dato uno schema di relazione $R(T,F)$, un insieme di attributi $X \subseteq T$ è una *superchiave* di $R$  $\iff$ $X \rightarrow  T \in F^+$.
-#### Definizione di Chiave
+### Definizione di Chiave
 Una *chiave* è una superchiave minimale, cioè una superchiave tale che nessuno dei suoi sottoinsiemi propri sia a sua volta una superchiave.
-#### Definizi0ne di attributi primi
+### Definizi0ne di attributi primi
 Un attributo è *primo* $\iff$ appartiene ad almeno una chiave.
 
 ## Verifica di Superchiave
@@ -128,10 +127,11 @@ Si consideri la relazione $R(T,G)$ con $T = ABCDEF$ e $G = \{AB \rightarrow C,\ 
 * $D$ non può essere rimosso: $AB^+_G = ABCEF$
 ## Trovare una chiave
 Dato $R(T, F)$, è possibile trovare una sua chiave in tempo *polinomiale*. L’idea dell’algoritmo è di partire da $T$ e rimuovere uno ad uno tutti gli attributi che non sono indispensabili per derivare $T$.
-#### Algoritmo
+## Algoritmo per trovare una Chiave
+
 ![[Pasted image 20240214112747.png]]
 
-**Esempio**:
+### Esempio
 Sia $G = \{AB \rightarrow C,\ E \rightarrow A,\ A\rightarrow E,\ B\rightarrow F\}$.  Costruiamo una chiave:
 * Inizializziamo $K_0 = ABCDEF$
 * Rimuoviamo $A$ da $K_0:\ BCDEF^+_G = ABCDEF$ quindi $A$ deve essere rimosso e aggiorniamo la chiave $K_1 = BCDEF$
@@ -154,33 +154,30 @@ Dato $R(T,F)$ trovare *tutte* le chiavi ha costo *esponenziale*, perché ogni so
 
 **Nota**: se un attributo non compare mai alla destra di una dipendenza funzionale, allora esso deve fare parte di tutte le chiavi. L’insiemi di tali attributi sarà il primo che testeremo.
 
-## Algoritmo per trovare l'Insieme delle Chiavi
+### Algoritmo per trovare l'Insieme delle Chiavi
 
 ![[Pasted image 20240214114822.png]]
 ## Verifica di Primalità
 Ad oggi non esiste un *algoritmo efficiente* per trovare tutte gli attributi primi se non *trovare tutte le chiavi*
 ## Forma Canonica
 Abbiamo visto vari algoritmi che operano sull'*insieme delle dipendenze funzionali*. Per questo motivo è utile portare tale insieme ad una **forma canonica** equivavente all'origine
-#### Definizione di equivalenza
+### Definizione di equivalenza
 Due insiemi di dipendenza funzionale $F$ e $G$ sono **equivalenti**, indicato con $F \equiv G$ $\iff$ $F^+ = G^+$.
 Se $F=G$ allora $F \equiv G$, ma **in generale non vale il contrario** 
-#### Definizione di Attributo Estraneno
+### Definizione di Attributo Estraneno
 Sia $X \rightarrow Y \in F$. L'attributo $A \in X$ è detto **estraneo** $\iff$ $X$ \\ $\{A\}  \rightarrow Y \in F^+$.
-#### Definizione di Dipendenza Ridondante
+### Definizione di Dipendenza Ridondante
 La dipendenza $X \rightarrow Y \in F$ è **ridondante** $\iff$ $X\rightarrow Y \in (F$ \\ $\{X\rightarrow Y\})^+$. 
-# Copertura Canonica
-___
-## Forma Canonica
+### Definizione e Proprietà di Forma Canonica
 La **forma canonica** è un metodo per scrivere un insieme di dipendenze funzionali equivalente, che ci permette di eseguire  vari algoritmi
 **Proprietà**:
 * $|Y| =1$
 * $X$ non contiene *attributi estranei*
 * $X \to Y$ non è *ridondante*
-
-#### Copertura Canonica
+## Copertura Canonica
 $G$ è **copertura canonica** di $F \iff F  \equiv G$ e $G$ è in forma canonica.
 **Teorema**: per ogni insieme di dipendemze funzionali $F$ esiste una copertura canonica
-#### Algoritmo per determinare la copertura canonica
+### Algoritmo per determinare la copertura canonica
 Segue 3 passi:
 * Decompone tutte le dipendenze funzionali che hanno più attributi sulla destra $X \to Y \implies \{ X \to A | A \in Y\}$.
 * Togliere dalla parte sinistra delle dipendenze gli attributi che non impediscono di derivare la dipendenza stessa. $X \to A \implies X$ \\ $Z | A \in (X$ \\ $Z)^+_F$.
@@ -208,18 +205,18 @@ ___
 Schemi di scarsa qualità soffrono di **anomalie** che vanno ad ostacolare le operazioni di inserimento, cancellazione ed aggiornamento dei dati.
 
 ![[Pasted image 20240226155107.png]]
-### Decomposizione di Schemi
+## Decomposizione di Schemi
 L'eliminazione di anomalie è tipicamente basata sulla **decomposizione** di schemi *mal definiti* in schemi *più piccoli*, equivalenti ma più disciplinati
 
 ![[Pasted image 20240226155352.png]]
-#### Definizione di Proiezione
+### Definizione di Proiezione
 Dato uno schema $R(T,F)$ e $Z \subseteq T$, la **proiezione** di $F$ su $Z$ è definita come l'insieme $\pi_Z(F) = \{X \to Y \in F^+ | X \cup Y \subseteq Z\}$.
-#### Definizione di Decomposizione
+### Definizione di Decomposizione
 Dato uno schema $R(T,F)$, una sua **decomposizione** è un insieme di schemi $\rho = \{R_1(T_1,F_1) ... R_n(T_n, F_n)\}$ tale che $\bigcup_i T_i = T, \forall i : T_i \neq \emptyset$ e $\forall i : F_i = \pi_{T_i}(F)$.
 
 *Nota*: visto che gli $F_i$ sono determinati da $F$ e dai $T_i$ per **proiezione**, per leggibilità indicheremo una **decomposizione** di $R(T,F)$ con la notazione più compatta $\rho = \{R_1(T_1) ... R_n(T_n)\}$.
 
-### Proprietà delle Decomposizioni
+## Proprietà delle Decomposizioni
 Sebbene decomporre uno schema possa correggere le **anomalie**, non tutte le decomposizioni sono desiderabili:
 
 * **Perdita di informazione**: la decomposizione va ad introdurre dei *dati spuri*, che possono inficiare la correttezza di alcune query $\to$ (introduce *informazioni sbagliate*)
@@ -227,7 +224,7 @@ Sebbene decomporre uno schema possa correggere le **anomalie**, non tutte le dec
 
 *Proprietà desiderabili*: una buona decomposizione dovrebbe eliminare le anomalie, ma preservare i dati e le dipendenze
 
-### Decomposizioni con Perdita di Informazione
+## Decomposizioni con Perdita di Informazione
 
 ![[Pasted image 20240226162104.png]]
 
@@ -236,20 +233,20 @@ Facend0 la join fra le tabelle ottengo due possibili numeri di telefono
 Qual è il numero di telefono del proprietario della macchina targata $CG153SE$?
 * $\pi_{Telefono}(\sigma_{Macchina = CG153SE}(R)) = \{423567\}$
 * $\pi_{Telefono}(\sigma_{Macchina = CG153SE}(R_1 \bowtie R_2)) = \{423567,542635\}$
-### Decomposizioni che Preservano i Dati
+## Decomposizioni che Preservano i Dati
 In generale un'operazione di decomposizione può *introdurre nuovi dati*, come formalizzato dal seguente teorema.
-#### Teorema
+### Teorema
 Sia $\rho = \{R_1(T_1) ... R_n(T_n)\}$ una decomposizione di $R(T,F)$, allora per ogni istanza $r$ di $R(T,F)$ si ha $r = \pi_{T_1})(r) \bowtie ... \bowtie \pi_{T_n}(r)$.
 
 Una decomposizione **preserva i dati** ( non perde informazione) quando ciò non si verifica.
-#### Definizione di Decomposizione che Preserva i Dati
+### Definizione di Decomposizione che Preserva i Dati
 La decomposizione $\rho = \{R_1(T_1) ... R_n(T_n)\}$ di $R(T,F)$ **preserva i dati** $\iff$ per ogni istanza $r$ di $R(T,F)$ si ha $r = \pi_{T_1})(r) \bowtie ... \bowtie \pi_{T_n}(r)$.
 
-#### Teorema per verificare se una decomposizione preserva i dati
+### Teorema per verificare se una decomposizione preserva i dati
 Sia $\rho = \{R_1(T_1), R_2(T_2)\}$ una decomposizione di $R(T,F)$, si ha che $\rho$ preserva i dati $\iff T_1 \cap T_2 \to T_1 \in F^+$ oppure $T_1 \cap T_2 \to T_2 \in F^+$.
 
 Questo permette di ricondurre il problema di determinare se una certa decomposizione binaria preserva i dati al *problema dell'implicazione*, che ha costo **binomiale**.
-##### Dimostrazione
+#### Dimostrazione
 Sia $\rho = \{R_1(T_1), R_2(T_2)\}$ una decomposizione di $R(T,F)$, dimostriamo che se $T_1 \cap T_2 \to T_1 \in F^+$ allora $\rho$ conserva i dati:
 * Sia $r$ un'istanza valida di $R(T,F)$ e $s = (\pi_{T_1}r) \bowtie (\pi_{T_2}r)$, dobbiamo dimostrare che per ogni $t \in s$ abbiamo anche $t \in r$. $\to$ (che ogni riga di $r$ sia in $s$ e viceversa, dove $r$ è la tabella iniziale e $s$ l'unione delle due proiezioni $T_1$ e $T_2$).
 * Per definizione di $s$ esistono due tuple $u,v \in r$ con $u[T_1] = t[T_1],\ v[T_2] = t[T_2]$ e $u[T_1 \cap T_2] = v[T_1 \cap T_2] = t[T_1 \cap T_2]$.
@@ -258,7 +255,7 @@ Il caso $T_1 \cap T_2 \to T_2 \in F^+$ è analogo.
 
 Se: $$\frac{t \in s \to t \in v}{\exists u,v \in r\ |\ u[T_1] = t[T_1],\ v[T_2] = t[T_2]}$$ $$u[T_1 \cap T_2] = t[T_1 \cap T_2]$$ $$v[T_1 \cap T_2] = t[T_1 \cap T_2] \overset{per\ ipotesi}\to v[T_1] = t[T_1]$$ quindi $u = t$.
 
-#### Esempio
+### Esempio
 Si consideri $R(A,B,C,D)$ con $F = \{A \to BC\}$.
 La decomposizione binaria $\{R_1(A,B,C), R_2(A,D)\}$ *preserva i dati*:
 * $T_1 = \{A,B,C\}$ e $T_2 = \{A,D\}$
@@ -266,7 +263,7 @@ La decomposizione binaria $\{R_1(A,B,C), R_2(A,D)\}$ *preserva i dati*:
 * $A^+_F = \{A,B,C\} = T_1$ quindi $T_1 \cap T_2 \to T_1 \in F^+$$\to$ (vedo se $A^+_F$ dipende da $T_1 \cap T_2$)
 
 ![[Pasted image 20240226170943.png]]
-#### Esempio 2
+### Esempio 2
 Si consideri $R(A,B,C,D)$ con $F = \{A \to B, C \to D\}$.
 La decomposizione binaria $\{R_1(A,B), R_2(C,D)\}$ *non preserva i dati*:
 * $T_1 = \{A,B\}$ e $T_2 = \{C,D\}$
@@ -274,7 +271,7 @@ La decomposizione binaria $\{R_1(A,B), R_2(C,D)\}$ *non preserva i dati*:
 * Abbiamo quindi $\{T_1 \cap T_2 \to T_1, T_1 \cap T_2 \to T_2\} \cap F^+ = \emptyset$
 
 ![[Pasted image 20240226172306.png]]
-### Decomposizioni con perdita di dipendenze
+## Decomposizioni con perdita di dipendenze
 
 ![[Pasted image 20240226172426.png]]
 *Nota*: la macchina può avere un solo proprietario.
@@ -282,33 +279,32 @@ La decomposizione binaria $\{R_1(A,B), R_2(C,D)\}$ *non preserva i dati*:
 Supponiamo di voler inserire (Luca Bianchi, $421448$, $CG153SE$)
 * Nel primo caso violerei la dipendenza Macchina $\to$ Proprietario (avremo cioè la stessa macchina con due proprietari)
 * Nel secondo caso non me ne posso accorgere se non dopo giunzione.
-### Decomposizioni che Preservano le Dipendenze
+## Decomposizioni che Preservano le Dipendenze
 Una decomposizione **preserva le dipendenze** $\iff$ l'unione delle dipendenze indotte sui singoli schemi equivale (cioè ha le stesse chiusure) alle dipendenze dello schema originale.
-#### Definizione di Decomposizione che Preserva Le Dipendenze
+### Definizione di Decomposizione che Preserva Le Dipendenze
 La decomposizione $\rho = \{R_1(T_1) ... R_n(T_n)\}$ di $R(T,F)$ **preserva le dipendenze** $\iff \bigcup_i \pi_{T_i}(F) \equiv F$.
 
 Per *verificarlo algoritmicamente* applichiamo la definizione:
 * Calcoliamo le proiezioni $\pi_{T_i}(F) = \{X \to Y \in F^+\ |\ X \cup Y \subseteq T_i\}$
 * Verifichiamo se $\bigcup_i \pi_{T_i}(F) \equiv F$
-### Verificare l'Equivalenza
-#### Teorema
+## Verificare l'Equivalenza
+### Teorema
 $F \equiv G \iff F \subseteq G^+$ e $G \subseteq F^+$.
-##### Dimostrazione
+#### Dimostrazione
 * Sia $F \equiv G$ allora $F^+ = G^+$ per definizione. Dato che si ha $F \subseteq F^+$ e $G \subseteq G^+$, ottengo $F \subseteq G^+$ e $G \subseteq F^+$ come desiderato.
 * Poiché $F \subseteq G^+$, osservo che $F^+ \subseteq (G^+)^+ = G^+$. Analogamente da $G \subseteq F^+$ ottengo $G^+ \subseteq (F^+)^+ = F^+$. Concludo che $F^+ = G^+$.
-#### Teorema
+### Teorema
 $F \equiv G \iff F \subseteq G^+$ e $G \subseteq F^+$.
-
 Sia $G = \bigcup_i \pi_{T_i}(F)$, per dimostrare che $F \equiv G$ osserviamo che:
 * $F \subseteq G^+$ è verificabile  tramite il *problema dell'implicazione*, perché equivale a verificare che $\forall X \to Y \in F$ abbiamo $Y \subseteq X^+_G$
 * $G \subseteq F^+$ vale per definizione, quindi non serve neppure verificarlo
 Ci manca quindi solo da calcolare $G = \bigcup_i \pi_{T_i}(F)$ per avere un algoritmo che verifica se le dipendenze sono verificate o meno.
-### Calcolo delle Proiezioni
+## Calcolo delle Proiezioni
 Non è possibile calcolare $G = \bigcup_i \pi_{T_i}(F)$ in modo efficiente, perché il calcolo delle singole proiezioni $\pi_{T_i}(F)$ ha costo **esponenziale**.
 
 ![[Pasted image 20240226174736.png]]
 
-### Riassunto
+## Riassunto
 Alla luce di quanto discusso, possiamo verificare se la decomposizione $\rho = \{R_1(T_1) ... R_n(T_n)\}$ di $R(T,F)$ preserva le dipendenze tramite il seguente algoritmo:
 * Calcola le proiezioni $\pi_{T_1}(F)$ per ogni $i \in [1,n]$
 * Calcola $G = \bigcup_i \pi{T_i}(F)$
@@ -332,7 +328,7 @@ A questo punto possiamo calcolare: $$G = \pi_{AB}(F) \cup \pi_{BC}(F) = \{A \to 
 * $B \to C$: Abbiamo $C \in B^+_G = BAC$
 * $C \to A$: abbiamo $A \in C^+_G = CBA$
 Concludiamo che la decomposizione in esame preserva le dipendenze.
-### Ottimizzare la verifica
+## Ottimizzare la verifica
 Per fortuna non ci interessa davvero calcolare $G = \bigcup_i \pi_T{T_i}(F)$, ma ci basta verificare che per ogni $X \to Y \in F$ abbiamo $Y \subseteq X^+_G$. In effetti esiste un algoritmo che calcola $X^+_G$ in tempo **polinomiale** senza calcolare $G$.
 
 ![[Pasted image 20240226181722.png]]
@@ -362,11 +358,11 @@ Passiamo alla dipendenza $C \to A$:
 * Consideriamo  $R_2(\{B,C\})$,abbiamo: $(\{C\} \cap \{B,C\})^+_F \cap \{B,C\} = C^+_F \cap \{B,C\} = \{B,C\}$, quindi aggiungiamo  $B$ ad $FC(C,F,\rho)$
 * Consideriamo $R_1(\{A,B\})$, abbiamo: $(\{B,C\} \cap \{A,B\})^+_F \cap \{A,B\} = B^+_F \cap \{A,B\} = \{A,B\}$ quindi aggiungiamo $A$ ad $FC(C,F,\rho)$
 * Otteniamo quindi $A \in FC(C,F,\rho) = \{A,B,C\}$
-### Teorema
+## Teorema
 In generale la preservazione dei dati è **indipendente** dalla preservazione delle dipendenze. Esiste però un teorema che collega le due proprietà, che è particolarmente utile perché applicabile a decomposizioni non binarie.
 
 **Teorema**: Sia $\rho = \{R_1(T_1) ... R_n(T_n)\}$ una decomposizione di $R(T,F)$ che preserva le dipendenze e tale che almeno uno degli insiemi $T_j$ sia una superchiave per $R(T,F)$, allora $\rho$ preserva anche i dati.
-# Lezione 5
+# Forme Normali
 ___
 ## Introduzione
 L'obbiettivo delle forme normali è garantire che uno schema sia di buona qualità e viene spesso ottenuto tramite un processo di **normalizzazione** basato su una decomposizione dello schema di partenza.
@@ -380,7 +376,7 @@ L'obbiettivo delle forme normali è garantire che uno schema sia di buona qualit
 Uno schema di relazione $R(T,F)$ è in BCNF $\iff$ per ogni dipendenza funzionale $X \to Y \in F^+$ tale che $Y \nsubseteq X$ si ha che $X$ è una superchiave.
 
 Verificare se uno schema è in BCNF ha costo **polinomiale**.
-### Esempio
+#### Esempio
 Si consideri $Prodotti(\{Articolo,\ Magazzino,\ Quantità,\ Indirizzo\},\ F)$ con $F = \{Articolo\ Magazzino \to Quantità, Magazzino \to Indirizzo\}$. Dato che $\{Magazzino\}^+_F = \{Magazzino,\ Indirizzo\}$, lo schema non è in BCNF.
 ### Dipendenze Anomale
 Una dipendenza che viola BCNF è detta **anomala**. Nel nostro esempio abbiamo una dipendenza anomala $Magazzinio \to Indirizzo$.
@@ -397,7 +393,7 @@ Sia $R(T,F)$ lo schema di partenza:
 * Calcola le proiezioni $F_1 = \pi_{T_1}(F)$ e $F_2 = \pi_{T_2}(F)$
 * Decomponi ricorsivamente $R_1(T_1,F_1)$ e $R_2(T_2,F_2)$ in $\rho_1$ e $\rho_2$
 * Ritorna la loro unione $\rho_1 \cup \rho_2$
-### Esempio
+#### Esempio
 Si consideri $Telefoni(\{Prefisso,\ Numero,\ Località\},\ F)$ con $$F =\{Prefisso\ Numero \to Località,\ Località \to Prefisso\}$$
 La dipendenza $Località \to Prefisso$ viola BCNF, dato che: $$\{Località\}^+_F = \{Località,\ Prefisso\}$$
 Applicando l'algoritmo di conversione in BCNF, abbiamo:

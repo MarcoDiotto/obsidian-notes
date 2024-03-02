@@ -199,6 +199,8 @@ $$Considero:\ (r \cap s) \forall t_1, t_2 \in r \cap s\ allora\ t_1,t_2 \in r$$
 * Si consideri lo schema di relazione $R(A,B,C,D)$ con dipendenze $F = \{AB \to C, C \to D, D \to A\}$. Si trovino tutte le dipendenze non banali derivabili da $F$ e tutte le chiavi di $R$.
 $$\frac{F \vdash X \to Y}{F \vdash X \to Z | Z \in \mathcal{P}(Y)}$$
 $$\color{white} A \to A, C \to CDA, \to D \to DA, \color{green} AB \to ABCD \color{white}, AC \to ACD, AD \to AD,\color{green}BC \to BCDA \color{white},BD \to BDAC, CD \to CDA, ABC \to ABCD, ABD \to ABCD, ACD \to ACD, BCD \to ABCD$$
+
+Ulteriori esercizi risolti al [seguente link](https://mega.nz/file/B3sUhBjS#9mDUkgxGb5tXJDyfJ6c1d-2qCti-GCZiO8YcLy4vFb0).
 # Decomposizione di Schemi
 ___
 ## Anomalie

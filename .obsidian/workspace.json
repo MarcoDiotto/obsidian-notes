@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "3d6166ec3f34a27a",
+        "id": "e4b65ee8b36f9a86",
         "type": "tabs",
         "children": [
           {
-            "id": "bb9ea36a057bf1df",
+            "id": "21411eac8889e6e4",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Basi di  dati Mod. 2.md",
+                "file": "Analisi dei Dati.md",
                 "mode": "source",
                 "source": false
               }
@@ -69,8 +69,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "5a3146de85d04ed0",
@@ -86,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Basi di  dati Mod. 2.md",
+                "file": "Analisi dei Dati.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Basi di  dati Mod. 2.md",
+                "file": "Analisi dei Dati.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Basi di  dati Mod. 2.md"
+                "file": "Analisi dei Dati.md"
               }
             }
           }
@@ -147,25 +146,24 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "bb9ea36a057bf1df",
+  "active": "21411eac8889e6e4",
   "lastOpenFiles": [
-    "Pasted image 20240228115047.png",
-    "Pasted image 20240228114818.png",
-    "Pasted image 20240228114703.png",
-    "Pasted image 20240228114338.png",
-    "Pasted image 20240228112314.png",
-    "Pasted image 20240228112020.png",
-    "Pasted image 20240228103632.png",
     "Algoritmi e Strutture di Dati.md",
-    "Utilità/Pasted image 20240228095810.png",
-    "Utilità/Pasted image 20240228093140.png",
-    "Utilità/Pasted image 20240228092421.png",
+    "Utilità/Pasted image 20240229114904.png",
+    "Utilità/Pasted image 20240229114650.png",
+    "Utilità/Pasted image 20240229110952.png",
+    "Analisi dei Dati.md",
+    "Basi di  dati Mod. 2.md",
+    "Utilità/AD2324-unita1-base.pdf",
+    "Utilità/Pasted image 20240228115047.png",
+    "Utilità/Pasted image 20240228114818.png",
+    "Utilità/Pasted image 20240228114703.png",
+    "Utilità/Pasted image 20240228114338.png",
+    "Utilità/Pasted image 20240228112314.png",
+    "Utilità/Pasted image 20240228112020.png",
+    "Utilità/Pasted image 20240228103632.png",
     "Sistemi Operativi Mod. 2.md",
     "Utilità/cheatsheet.md",
-    "Utilità/Pasted image 20240228085628.png",
-    "Utilità/AD2324-unita1-base.pdf",
-    "Basi di  dati Mod. 2.md",
-    "Analisi dei Dati.md",
     "Utilità/AD2324-lab2.html",
     "Utilità/AD2324-lab2 1.html",
     "Programmazione ad Oggetti Mod. 2.md",

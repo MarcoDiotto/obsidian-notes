@@ -35,7 +35,6 @@ Consideriamo un campione casuale di dimensioni $n \rightarrow (X_1 ... X_n)$.
 
 Le statistiche stesse sono **variabili casuali**. Anche in questo caso bisogna stare attenti a non applicare le statistiche a campioni falsati da **errori** **non** **campionari**.
 ### Media Campionaria
-
 Supponiamo che le osservazioni $X_i$ siano variabili i.i.d con valore atteso $E(X) = \mu$ e varianza $Var(X) = \sigma^2$. 
 La media campionaria è  uno stimatore di popolazione $\mu = E(X)$.
 ### Stime e Stimatori 
@@ -47,11 +46,11 @@ Se il campione è *ben costruito*, al crescere di $n$, lo *stimatore*:
 * si osservano *stime* difficilmente lontane da $\theta$
 
 **Proprietà dello Stimatore**:
-* Uno *stimatore* è **non** **distorto** se $E(\hat{\theta} = \theta)$ per tutti i valori di $\theta$. La **distorsione** dello stimatore è $Bias(\hat{\theta}) = E(\hat{\theta} - \theta)$. Lo stimatore non distorto non **sottostima** né **sovrastima** il parametro.
+* Uno *stimatore* è **non** **distorto** se $E(\hat{\theta}) = \theta$ per tutti i valori di $\theta$. La **distorsione** dello stimatore è $Bias(\hat{\theta}) = E(\hat{\theta} - \theta)$. Lo stimatore non distorto non **sottostima** né **sovrastima** il parametro.
 *Esempio*:
 $$ E(\overline{X}) = \frac{1}{n} \cdot \sum_{i=1}^n E(X_i) = \frac{1}{n} \cdot \sum_{i = 1}^n \mu = \mu$$
 
-* Uno *stimatore* è **consistente** se al crescere della dimensione campionaria $n$ il suo errore campionrio converge a 0. $$Pr(|\hat{\theta} - \theta| > \epsilon) \rightarrow 0\ per\ n \rightarrow \infty,\ per\ qualsiasi\ \epsilon > 0$$ ovvero: $$\hat{\theta} \overset{p}{\to}  \theta\ per\ n \rightarrow \infty$$ la **consistenza** si può verificare con la **Legge dei grandi numeri**, o con la **Diseguaglianza di Chebyshev**, ma solo se i dati sono indipendenti. Vediamo un *esempio* con la media campionaria $\overline X$.
+* Uno *stimatore* è **consistente** se al crescere della dimensione campionaria $n$ il suo errore campionario converge a 0. $$Pr(|\hat{\theta} - \theta| > \epsilon) \rightarrow 0\ per\ n \rightarrow \infty,\ per\ qualsiasi\ \epsilon > 0$$ ovvero: $$\hat{\theta} \overset{p}{\to}  \theta\ per\ n \rightarrow \infty$$ la **consistenza** si può verificare con la **Legge dei grandi numeri**, o con la **Diseguaglianza di Chebyshev**, ma solo se i dati sono indipendenti. Vediamo un *esempio* con la media campionaria $\overline X$.
 * Per la **legge dei grandi numeri** $\overline X \overset{p}{\to} \mu$, per $n \to \infty$.
 * Per la **Disuguaglianza di Checyshev**: $$Pr(|\overline X - \mu| > \epsilon) \leq \frac{Var(\overline X)}{\epsilon^2}$$ Siccome:$$Var(\overline X) = Var(\frac{1}{n} \cdot \sum_{i = 1}^n Var[X_i]) = \frac{1}{n^2} \cdot \sum_{i = 1}^n Var[X_i] = \frac{\sigma^2}{n}$$ Abbiamo che: $$Pr(|\overline X - \mu| > \epsilon) \leq \frac{\sigma^2 / n}{\epsilon^2} \to 0\ per\ n \to \infty$$
 $\color{red} \textbf{Teorema}$
@@ -460,4 +459,7 @@ with(antivirus, plot(jitter(x), jitter(y), xlab = "Esecuzioni antivirus", ylab =
 
 ![[Pasted image 20240227115636.png]]
 
-Due esempi vengono riportati nel secondo laboratorio al [seguente link](obsidian://open?vault=obsidian-notes&file=Utilit%C3%A0%2FAD2324-unita1-base.pdf)
+Due esempi vengono riportati nel secondo laboratorio al [seguente link](https://mega.nz/file/BjUQTZwD#iYoqvoX_IAJopybZxiz6T2JDCEo2WPCZPvzjcsSKrtg).
+# Esercizi Unità 1
+___
+Gli esercizi della prima unità sono presenti al [seguente link](https://mega.nz/file/1vl0HYQR#hSawX1aW9HCw1VAvp2S6GKMQJ-_66g1zZE36EU2gkjE).

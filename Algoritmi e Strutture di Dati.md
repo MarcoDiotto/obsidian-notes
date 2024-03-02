@@ -1,4 +1,4 @@
-# Lezione I
+# Ordinamento in O(n)
 ___
 ##  Ordinamenti di confronto
 
@@ -72,9 +72,6 @@ Perciò per $n$ sufficientemente grandi coincide col termine più grande
 $$h \geq log\ n! \geq log(\frac{n}{e})^n = n\ log(\frac{n}{e}) = n (log\ n - log\ e) = n (log\ n - \Theta(1)) = \Omega(n\ log\ n)$$
 
 $\color{green}Corollario$: Heapsort e Mergesort sono algoritmi di ordinamento per confronto asintoticamente ottimali. La dimostrazione si deriva dal fatto che il loro limite superiore del tempo di esecuzione $O(n log n)$ corrisponde al limite inferiore $\Omega(n log n)$ nel caso peggiore.
-
-___
-
 ## Counting Sort
 
 **Assunzione**: i numeri da ordinare sono interi in un intervallo limitato da $0$ a $k$ per qualche intero $k$
@@ -103,10 +100,6 @@ L'algoritmo parte dal fondo per essere $\color{green} stabile$.
 ##### Tempo di esecuzione
 Il primo ciclo costa $\Theta(k)$, il secondo $\Theta(n)$, il terzo $\Theta(k)$ e l'ultimo $\Theta(n)$, pertanto il tempo di esecuzione è $\color{red}\Theta(k + n)$.
 In particolare se $k$ è limitato superiormente da $n$ il tempo di esecuzione è $\color{red}\Theta(n)$, tuttavia se la condizione non è verificata l'algoritmo non è conveniente.
-
-
-# Lezione 2
-___
 ## Radix Sort
 
 * Aumenta l'applicabilità del **Counting Sort**.
@@ -185,15 +178,13 @@ $\Theta(d(n+k))$ con $d =$ **#cifre** e $k=$ **numero di valori che vogliamo**.
 Se rappresento il numero in base $n$ ogni cifra varia fra $[0...n-1]$. 
 Per rappresentare un numero nell'intervallo $[0...n^4-1]$ in base $n$ uso $\color{green}\log_n(n^4) = 4$. 
 
-# Lezione 3
+# Tabelle Hash
 ___
-## Tabelle Hash
 Nell'applicazione ha bisogno:
 * *Insieme dinamico* su cui sono definite le operazioni **instert**, **delete** e **search**.
 * Ogni elemento ha una *chiave* estratta dall'*universo*  $U = \{0,1...w-1\}$  dove $v$ non è troppo grande.
 * Nessun elemento ha la stessa chiave (*chiavi distinte*).
-
-### Array
+## Array
 
 Si può utilizzare un array `T[0...w-1]`:
 * Ogni posizione (o *cella*) corrisponde ad una *chiave* in $U$.
@@ -495,3 +486,86 @@ Due possibili modi:
 	* $h_2(k) = 1+(k\cdot mod\ m')$ con $m' < m$
 
 **Vantaggio**: Doppio hashing usa $\Theta(m^2)$ sequenze di ispezioni, perché ogni possibile coppia $(h_1(k),\ h_2(k))$ produce una sequenza di ispezione *distinta*.
+### Analisi dell'hashing ad indirizzamento aperto
+Analisi in termini del *fattore di carico* ($\alpha = \frac{n}{m}$). con $0 \leq \alpha \leq 1$.
+
+**Ipotesi**:
+* Si assuma hashing c0n *permutazioni indipendenti e uniformi*: ogni chiave ha la stessa probabilità di avere come sequenza di ispezione una delle $m!$ permutazioni di <$0,1 ... m-1$> indipendentemente dalle altre chiavi.
+* *Nessuna cancellazione*
+
+#### Teorema
+Nell'ipotesi di hashing con *permutazioni indipendenti e uniformi* e nello stesso tempo assumendo che *non avvengano cancellazioni*, data una tabella hash ad **indirizzamento aperto** con un fattore di carico $\alpha = \frac{n}{m}< 1$, il numero atteso di ispezioni in una **ricerca senza successo** è al massimo $\frac{1}{1-\alpha}$.
+#### Dimostrazione (Intuizione)
+$\alpha < 1 \to$ ci sono delle celle vuote, dunque mi fermo alla prima cella vuota (con `NIL`).
+* Una prima ispezione è sempre eseguita.
+* Seconda ispezione $=$ probabilità che la prima ispezione abbia trovato la cella occupata ($= \alpha = \frac{n}{m}$).
+* Terza ispezione $=$ probabilità che la seconda ispezione abbia trovato la cella occupata ($= \frac{n}{m} \cdot \frac{n-1}{n-1}$)
+* i-esima ispezione $=$ probabilità che la precedente ispezione abbia trovato la precedente (=$\frac{n}{m} \cdot \frac{n-1}{n-1} \cdot \frac{n-2}{m-2} \cdot ...$), in cui ogni termine è maggiorato da $\alpha$.
+Il numero di ispezioni atteso pertanto è: $$1 + \alpha + \alpha^2 + \alpha^3 + ... \leq \sum_{i=o}^\infty \alpha^i = \frac{1}{1-\alpha}\ \ \ \ \ |\alpha| < 1$$
+#### Interpretazione 
+Se $\alpha$ è costante, una ricerca senza successo viene eseguita in tempo medio costante $\Theta(1)$.
+* Se $\alpha = 0.5$ (tabella piena a metà), il numero medio di ispezioni è $\frac{1}{1-\frac{1}{2}} = 2$
+* Se $\alpha = 0.9$ (piena al $90\%$) il numero medio di ispezioni è $\frac{1}{1-\frac{9}{10}} = 10$
+Pertanto le prestazioni **degradano rapidamente** quando si riempie la tabella.
+
+**Corollario**: l'inserimento di un elemento in una tabella hash ad **indirizzamento aperto** con fattore di carico $\alpha$ richede in media non più di $\frac{1}{1-\alpha}$ ispezioni, nell'ipotesi di hashing con *permutazioni indipendenti ed uniformi*, e assumendo che non avvengano cancellazioni.
+
+**Conclusione**: un elemento è inserito solo se c'è spazio nella tabella, e quindi $\alpha < 1$. L'inserimento di una chiave richiede una ricerca senza successo seguita dalla sistemazione della chiave nella prima cella vuota che abbiamo trovato. Dunque il numero atteso di ispezioni è al massimo $\frac{1}{1-\alpha}$.
+#### Teorema
+Data una tabella hash ad **indirizzamento aperto** con un fattore di carico $\alpha < 1$, il numero atteso di ispezioni in una **ricerca con successo** è al massimo $\frac{1}{\alpha} \cdot ln(\frac{1}{1-\alpha})$ nell'ipotesi di hashing con *permutazioni indipendenti ed uniformi*, assumendo che *non avvengano cancellazioni* e che ogni chiave nella tabella abbia la stessa probabilità di essere cercata.
+#### Interpretazione
+* $\alpha = 0.5 \to$ ricerca con successo è minore di 1.387
+* $\alpha = 0.9 \to$ ricerca con successo è minore di 2.559
+
+![[Pasted image 20240229110952.png]]
+# Programmazione Dinamica
+___
+La **programmazione dinamica** è una tecnica di progettazione di algoritmi.
+
+Si applica quando:
+* Un problema si riduce ad un insieme di sotto-problemi più piccoli
+* Diversamente dal *divide et impera*, i sotto-problemi sono **sovrapposti**. $\to$ molti problemi si ripetono, così un approccio *divide et impera* risolve tante volte lo stesso problema, quindi sarebbe **inefficiente**
+
+**Idea**: risolvere ogni sotto-problema una sola volta memorizza la soluzione $\to$ utilizzo la soluzione quando incontro di nuovo lo stesso sotto-problema.
+
+In genere è adatta a **problemi di ottimizzazione**:
+* molte possibili soluzioni
+* ogni soluzione ha un costo
+* voglio **una** soluzione **ottima** (di costo minimo o massimo)
+
+Per sviluppare un algoritmo di **programmazione dinamica**:
+* caratterizzazione della struttura di una soluzione ottima
+* definizione ricorsiva del *valore* di una soluzione ottima
+* calcolo del valore di una soluzione ottima:
+    * approccio **top-down**
+    * approccio **bottom-up**
+* individuazione di una soluzione ottima sulla base delle informazioni calcolate al passo precedente
+## Taglio delle Aste
+Un'azienda produce aste d'acciaio e le vende a pezzi.
+* le aste prodotte hanno lunghezza $n$
+* sul mercato i pezzi hanno un prezzo che dipende dalla lunghezza
+* Il costo del taglio è irrilevante
+$\to$ Dobbiamo trovare il modo di tagliare le aste che massimizzi il guadagno.
+**Input**:
+* asta di lunghezza $n$
+* tabella di prezzi $p_i,\ i=1 ... n$
+**Output**:
+* determinare $r_n$, ovvero il ricavo massimo per un'asta di lunghezza $n$ che si può ottenere tagliando l'asta e vendendo i pezzi.
+
+**Esempio**:
+
+![[Pasted image 20240229114650.png]]
+
+**In quanti modi posso tagliare un'asta di lunghezza n?**
+
+![[Pasted image 20240229114904.png]]
+
+Sapendo che i pezzi sono interi $> 0$, in ogni posizione $1,2 ... n-1$ posso decidere se tagliare o meno $\to 2 \cdot 2 \cdot 2 ... \cdot 2\ (n-1\ volte) = 2^{n-1}$.
+
+Pertanto analizzare esplicitamente tutti i possibili modi di tagliare è **inefficiente** $\to \Theta(2^n).$
+
+Il ricavo massimo $r_n$ per un asta di lunghezza $n$ è definibile in maniera **ricorsiva**:
+*  $r_o = 0$
+* $r_n = max\{p_n,\ r_1 + r_{n-1},\ r_2 + r_{n-2},\ ...\}$ quindi taglio in qualche posizione $i = 1 ... n-1$ e massimizzo il ricavo per i pezzi ottenuti.
+
+Quando, come in questo caso, la soluzione è esprimibile come combinazione di soluzioni ottime ottime di sotto-problemi, si dice che vale **la proprietà della sotto-struttura ottima**.

@@ -117,3 +117,97 @@ A **response** on the other hand uses them as following:
 * **start line**:
 * **header**:
 * **body**:
+
+# //TODO : sistemare appunti precedenti e aggiungere ultime lezioni
+## Basic Authentication
+* The client sends a **request** to access a certain resource.
+* If the resource is protectect, the server inserts the following header in the **response**: `WWW-Authenticate: Basic realm= "<realm-name>"`, together with the status code 401.
+* The client asks username and password to the user and encodes the data as a string: `<crd> = base64(<username> : <password>)`.
+* The user agent for every subsequent request inserts the header `Authentication: Basic <crd>`.  base-64 encoding is then decoded and checked by the server.
+### Base-64 encodind
+Is an algorithm used to encode a generic byte stream to a string containing only alphanumeric characters.
+
+*Important*: base-64 is not meant to encrypt the data, so `user:password` is just **obfuscated** and not secure at all.
+
+**Why not just send `<username>:<password>` without encoding then?**
+* Non plain ASCII characters in the password can safely inserted into the HTTP headers
+* String is obfuscated to prevent humans from reading the password if the HTTP traffic is observed $\to$ seemed reasonable in the 90's.
+
+### Problems of Basic Authentication
+* Anyone can easily decode user credentials. This is the same security level as sending `username/password` without encryption.
+* Even if the authentication is used for non-critical applications, user may still recycle passwords used for other websites or sensible application.
+* Even if the authentication happens correctly, the provided resource may be connected to other servers
+* **Server spoofing**: client cannot verify the true identity of the server
+
+**Solution**: use basic autentication with HTTPS only.
+## Digest Authentication
+*Rationale*: 
+	a server does not necessarily need to receive the password (shared secret) from the client. A **digest** is sufficient to prove that a client knows the correct password
+
+**Hashing functions** are commonly used to compute those digest
+
+*Problem*: 
+	since a password always generates same digest, anyone eavesdropping on the channel can steal the digest and use it to autenticate without knowing the password $\to$ **replay attack**.
+### [[Algoritmi e Strutture di Dati#Tabelle Hash| Hash Function]]
+A hash function can convert any message(string) to a fixed length sequence of (random-like) bytes.
+
+**Features**:
+* Same messages generate same hashes.
+* It is *one-way*.
+* Collisions are possible but extremely rare.
+
+### Nonce
+To avoid the **replay attack**: 
+* The server gives a **nonce** (a random, non-secret string) to the client.
+* The client gives the password and the nonce to the server.
+* The hash is now generated using the password and the nonce.
+
+Using this method the digest is different in every connection.
+### Andvantages of Digest Authentication
+* Password is not sent in cleartext
+### Problems of Digest Authentication
+* Different security profiles may lead to insecure implementations
+* Server's true identity cannot be verified $\to$ we can only confirm that the server is the same entity that generated the challenge (*man-in-the-middle attack is still possible*)
+  ```mermaid
+  flowchart LR
+  C-- req -->M
+  M-- req -->S
+  S-- 401 digest, Nounce -->M
+  M-- Nounce -->C
+  ```
+  ```mermaid
+  flowchart LR
+  C -- Digest -->M
+  M -- Digest -->S
+  ```
+* MD5 alorithm is no more considered secure.
+
+# JSON Web Token
+## Cookies and SPA
+Authentication mechanisms based on the HTTP protocol (ex. *cookies*) are traditionally used in the web apps where the content, or a large part of the business logic, is managed by the server.
+```mermaid
+flowchart LR
+	Browser-- credentials -->Server
+	Server-- queries -->Database
+	Database-- user details -->Server
+	Server-- cookies -->Browser
+```
+Cookies where used only to store an identifier.
+## Traditional Approach
+* Before every other operation the server must validate the user session.
+* The server entirely manages business logics.
+
+```mermaid
+flowchart LR
+	Browser-- cookies -->Server
+	Server-- validation -->Server
+	Server-- resource -->Browser
+```
+### Negative implacts
+* **Reduce scalability**: a server must keep session data in memory for every user at any given time $\to$ *reason for the timeout*. 
+* **Increased coupling between server and client**: business logic must be primarily managed by the server $\to$ *client strictly bounded to the server*.
+
+## SPA Approach
+A **Single Page Application** is designed to *minimize the interaction with the server*
+
+**Goal**: Exchange only the data strictly required for its execution.

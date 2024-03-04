@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "e4b65ee8b36f9a86",
+        "id": "4bb202c8ddcb39d3",
         "type": "tabs",
         "children": [
           {
-            "id": "21411eac8889e6e4",
+            "id": "aed3e3d40dc88079",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Analisi dei Dati.md",
+                "file": "Tecnologie e Applicazioni Web.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Analisi dei Dati.md",
+                "file": "Tecnologie e Applicazioni Web.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Analisi dei Dati.md",
+                "file": "Tecnologie e Applicazioni Web.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Analisi dei Dati.md"
+                "file": "Tecnologie e Applicazioni Web.md"
               }
             }
           }
@@ -146,28 +146,31 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "21411eac8889e6e4",
+  "active": "aed3e3d40dc88079",
   "lastOpenFiles": [
     "Algoritmi e Strutture di Dati.md",
+    "Tecnologie e Applicazioni Web.md",
+    "Algoritmi.md",
+    "().md",
+    "[[Algoritmi.md",
+    "Utilità/Pasted image 20240304110204.png",
+    "Utilità/Pasted image 20240304104346.png",
+    "Utilità/Pasted image 20240304104050.png",
+    "Basi di  dati Mod. 2.md",
+    "Utilità/Pasted image 20240304092900.png",
+    "Utilità/Pasted image 20240304092458.png",
+    "Utilità/Pasted image 20240304091615.png",
+    "Analisi dei Dati.md",
     "Utilità/Pasted image 20240229114904.png",
     "Utilità/Pasted image 20240229114650.png",
     "Utilità/Pasted image 20240229110952.png",
-    "Analisi dei Dati.md",
-    "Basi di  dati Mod. 2.md",
     "Utilità/AD2324-unita1-base.pdf",
     "Utilità/Pasted image 20240228115047.png",
-    "Utilità/Pasted image 20240228114818.png",
-    "Utilità/Pasted image 20240228114703.png",
-    "Utilità/Pasted image 20240228114338.png",
-    "Utilità/Pasted image 20240228112314.png",
-    "Utilità/Pasted image 20240228112020.png",
-    "Utilità/Pasted image 20240228103632.png",
     "Sistemi Operativi Mod. 2.md",
     "Utilità/cheatsheet.md",
     "Utilità/AD2324-lab2.html",
     "Utilità/AD2324-lab2 1.html",
     "Programmazione ad Oggetti Mod. 2.md",
-    "Tecnologie e Applicazioni Web.md",
     "Untitled.md",
     "Utilità",
     "Analisi dei Dati",

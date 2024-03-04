@@ -568,4 +568,126 @@ Il ricavo massimo $r_n$ per un asta di lunghezza $n$ è definibile in maniera **
 *  $r_o = 0$
 * $r_n = max\{p_n,\ r_1 + r_{n-1},\ r_2 + r_{n-2},\ ...\}$ quindi taglio in qualche posizione $i = 1 ... n-1$ e massimizzo il ricavo per i pezzi ottenuti.
 
-Quando, come in questo caso, la soluzione è esprimibile come combinazione di soluzioni ottime ottime di sotto-problemi, si dice che vale **la proprietà della sotto-struttura ottima**.
+Quando, come in questo caso, la soluzione è esprimibile come combinazione di soluzioni ottime di sotto-problemi, si dice che vale **la proprietà della sotto-struttura ottima**.
+### Caratterizzazione più semplice
+* Tagliare un pezzo in modo definitivo
+* suddividere ulteriormente la parte che resta in modo ottimale
+
+**Formulazione ricorsiva**:
+* $r_0 = 0$
+* $r_n = max_{1 \leq i \leq n}\{p_i + r_{n-i}\}$
+
+![[Pasted image 20240304104346.png]]
+
+### Algoritmo per il taglio dell'asta
+
+**Input**:
+* `p[1...m]` con $m \geq n$: vettore di prezzi, in `p[i]` è contenuto il prezzo di un'asta di lunghezza $i$ con $i \geq 0$.
+* `n`: lunghezza dell'asta da tagliare. 
+
+**Output**:
+	ricavo massimo $r_n$
+
+```c
+Cut_rod(p,n)
+	if n == 0
+		return 0
+	else
+		q = -1  // -inf se i prezzi fossero annche negativi
+	for i = 1 to n
+		q = max(q, p[i] + Cut_rod(p, n-i))
+	return q
+```
+
+$T(n)$ è il numero di chiamate ricorsive di `Cut_rod` quando la chiamata viene fatta con il secondo parametro uguale ad $n$
+
+$$\left\{ \begin{array}{}  1 \ \ \ \ per\ n = 0 \\ 1 + \sum_{i = 1}^{n}T(n - i)\ \ \ \ \ per\ n > 0 \end{array} \right.$$
+$$T(n) = 1 + \sum_{i = 1}^{n}T(n - i) = 1 + \sum_{j = 0}^{n-1}T(j)\ con\ j = n-i$$
+### Dimostrazione
+* $(n == 0) \to T(0) = 1 = 2^0$ per definizione
+* $(n > 0)$ Assumiamo vero che per $n$ valga $T(n) = 2^n$ e lo dimostro per $n + 1$: $$T(n +1) = 1 + \sum_{j = 0}^{(n+1)-1}T(j) = 1 + \sum_{j = 0}^{n - 1 }T(j) + T(n) = T(n) + T(n) = 2T(n)$$ quindi $$T(n + 1) = 2 T(n) = 2 \cdot 2^n = 2^{n+1}$$ La complessità di `Cut_rod` è quindi esponenziale: $T(n) = O(2^n)$.
+### Albero di ricorsione
+
+![[Pasted image 20240304110204.png]]
+
+### Osservazioni
+* Lo stesso sotto-problema viene risolto più volte
+* I sotto-problemi distinti sono pochi.
+
+$\to$ se noi memorizziamo la soluzione dei sotto-problemi una volta calcolata, la possiamo riutilizzare se incontriamo lo stesso sotto-problema.
+
+**Se**:
+* I sotto-problemi distinti sono un numero **polinomiale**
+* Ciascuno si risolve in tempo **polinomiale** (data la soluzione dei sotto-problemi), memorizzando le soluzioni ed evitando di ricalcolarle si ottiene un algoritmo polinomiale.
+
+**2 possibilità**:
+* *top-down* : salva in una tabella(vettore, hash) le soluzioni dei problemi già risolti $\to$ **memoization** 
+* *bottom-up* : ordina i sotto-problemi in base alla dimensione, iniziando dai sotto-problemi più piccoli, e memorizza le soluzioni ottenute.
+### Algoritmo top-down
+
+```c
+Memoized_cut_rod
+	Sia r[0...n] un nuovo vettore
+	for i = 0 to n
+		r[i] = -1       //r[i] ricavo ottimo per lunghezza i
+	return Memoized_cut_rod_aux(p,n,r)
+
+Memoized_cut_rod_aux(p,j,n)
+	if r[j] < 0
+		if j == 0       //si può eliminare settando prima
+			r[j] = 0    //r[0] = 0 nella funzione principale
+		else
+			q = -1
+			for i = 1 to j
+				q = max(q, p[i] + Memoized_cut_rod_aux(p,j-i,
+													   r))
+			r[j] = q
+	return r[j] 
+```
+
+**Costo**:
+Una chiamata ricorsiva per risolvere un problema precedentemente risolto termina immediatamente. Dunque si giunge al ramo `else` **una sola volta** per ciascun sotto-problema $j = 1,2, ..., n$.
+Per risolvere un sotto-problema di dimensioni $j$, il ciclo `for` effettua $j$ iterazioni del ciclo `for` per tutte le chiamate ricorsive di `Memoized_cut_rod` è: $$\sum_{j = i}^{n} j = \frac{n(n + 1)}{2} = \Theta(n^2)$$Il tempo di esecuzione di `Memoized_cut_rod` è: $$T(n) = \Theta(n) + \Theta(n^2) = \Theta(n^2) $$
+### Algoritmo bottom-up
+
+```c
+Bottom_up_cut_rod(p,n)
+	Sia r[0...n] un vettore
+	r[0] = 0
+	for j = 1 to n
+		q = -1
+		for i = 1 to j
+			q = max(q, p[i] + r[j-i])
+		r[j] = q
+	return r[n]
+```
+
+**Costo**: $$\sum_{j = 1}^{n}\Theta(1) \cdot j = \Theta(1) \cdot \frac{(n \cdot (n + 1))}{2} = \Theta(n^2)$$
+### Trovare la soluzione ottima
+
+* `r[0...n]` con `r[j]` ricavo ottenuto per il problema di dimensione $j$.
+* `s[1...n]` con `s[j]` posizione del primo taglio che determina la soluzione ottima.
+
+```c
+Ext_bottom_up_cut_rod(p,n)
+	r[0...n]
+	s[1...n]
+	r[0] = 0
+	for j = 1 to n
+		q = -1
+		for i = 1 to j
+			if q < p[i] + r[j - i]
+			q = p[i] + r[j-i]
+			s[j] = i
+		r[j] = q
+	return r,s
+
+Print_cut_rod_solution(p, n)
+	r,s = Ext_bottom_up_cut_rod(p,n)
+	while n > 0
+		print s[n]
+		n = n - s[n]
+```
+
+**Costo**:
+`Ext_bottom_up_cut_rod` costa $\Theta(n^2)$ mentre il ciclo `while` costa $O(n)$, quindi il costo totale è $$\Theta(n^2) + O(n) = O(n^2).$$

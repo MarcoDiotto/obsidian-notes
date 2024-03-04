@@ -449,3 +449,69 @@ Il risultato si può quindi dimostrare **per induzione** sul numero di passi eff
 **Difetti**:
 * L'algoritmo di conversione in BCNF ha costo **esponenziale**, perché richiede di calcolare le proiezioni delle dipendenze.
 * L'algoritmo di conversione in BCNF **non preserva le dipendenze** nel caso generale.
+## Terza Forma Normale(3NF)
+### Definizione
+Uno schema di relazione $R(T,F)$ è in **3NF** $\iff$ per ogni dipendenza funzionale $X \to Y \in F^+$ tale che $Y \nsubseteq X$ si ha che $X$ è una *superchiave* oppure gli attributi di $X$ \\ $Y$ sono primi.
+
+Verificare se uno schema è in 3NF ha costo **esponenziale**.
+
+*Osservazione*: per definizione ogni schema in BCNF è anche in 3NF ma non viceversa.
+## Esempio
+Si consideri $Telefoni(\{Prefisso,\ Numero,\ Località\},\ F)$ con $$F = \{Prefisso\ Numero \to Località,\ Località \to prefisso\}.$$
+Calcoliamo le chiavi, osservando che $Numero$ deve fare parte di tutte:
+* $\{Numero\}^+_F = \{Numero\}$
+* $\{Numero,\ Prefisso\}^+_F = \{Numero,\ Prefisso,\ Località\}$
+* $\{Numero,\ Località\}^+_F = \{Numero,\ Località,\ Prefisso\}$
+
+Dato che $\{Numero,\ Prefisso\}$ e $\{Numero,\ Località\}$ sono chiavi, si ha che ogni attributo è *primo*, e quindi lo schema è in 3NF.
+### Conversione in 3NF
+L'algoritmo di conversione in 3NF è anche detto **algoritmo di sintesi**, perché basato sulla generazione di nuovi schemi più piccoli.
+
+Sia $R(T,F)$ lo schema di partenza:
+* Costruisci $G$, una copertura canonica di $F$.
+* Sostituisci in $G$ ciascun insieme di dipendenze $X \to A_1, ..., X \to A_n$
+* Per ogni $X \to Y \in G$ crea un nuovo schema $S_i(XY)$
+* Elimina ogni schema contenuto in un altro schema
+* Se la decomposizione non contiene alcuno schema i cui attributi costituiscano una superchiave per $R$, aggiungi un nuovo schema $S(W)$ dove $W$ è una chiave di $R$ (*garantisce la preservazione dei dati*).
+### Esempio
+Sia $R(\{A,B,C,D\},\ \{AB \to C,\ C \to D,\ D \to E\})$, osserviamo che l'insieme delle dipendenze è già in forma canonica. Otteniamo quindi:
+* $R_1(\{A,B,C\})$ tramite $AB \to C$
+* $R_2(\{C,D\})$ tramite $C \to D$
+* $R_3(\{B,D\})$ tramite $D \to B$
+
+Nessuno schema è contenuto in un altro, quindi nessuno di essi viene eliminato. Poiché $\{A,B,C\}$ è una superchiave di $R$, non è necessario aggiungere altri schemi.
+### La conversione in 3NF Preserva i Dati e le Dipendenze
+#### Preservazione delle dipendenze
+Poiché per ogni $X \to Y \in G$ viene creato uno schema $S_i(XY)$, abbiamo $X \to Y \in \pi_{XY}(G)$, quindi $G$ è contenuto nell'unione delle proiezioni.
+#### Preservazione dei dati
+L'ultimo passo della conversione in 3NF garantisce che la decomposizione contenga almeno uno schema i cui attributi formano una superchiave dello schema iniziale. Poiché la decomposizione preserva le dipendenze, essa deve preservare anche i dati per il teorema visto.
+### 3NF ed Anomalie
+Si consideri $Telefoni(\{Prefisso,\ Numero,\ Località\},\ F)$ con $$F = \{Prefisso\ Numero \to Località,\ Località \to Prefisso\}.$$
+Abbiamo già visto che lo schema è in 3NF, ma non garantisce l'assenza di **anomalie**. In particolare si noti la *replicazione del prefisso*:
+
+![[Pasted image 20240304091615.png]]
+### Proprietà di 3NF
+**Pregi**:
+* L'algoritmo di conversione in 3NF **preserva i dati e le dipendenze**.
+* L'algoritmo di conversione in 3NF ha costo **polinomiale**, perché non richiede il calcolo delle proiezioni.
+
+**Difetti**:
+* Verificare se uno schema è in 3nF ha costo **esponenziale**, perché richiede di identificare gli attributi primi.
+* Uno schema in 3NF può ancora contenere **anomalie**.
+### Strategie per Schemi di Scarsa Qualità
+#### Strategia 1
+Convertiamo lo schema in BCNF per eliminare le anomalie. Se notiamo che la conversione non ha preservato le dipendenze, ci accontentiamo di una conversione in 3NF
+#### Strategia 2
+Convertiamo lo schema in 3NF in modo da preservare dati e dipendenze, sperando di essere fortunati e rimuovere tutte le anomalie. Questo di verifica in particolare se la conversione produce in realtà BCNF.
+### Dipendenze Multivalore
+Una nuova forma di anomalie non prevenuta neppure da BCNF si può verificare in presenza di **attributi moltivalore indipendenti**. Per esempio la relazione sottostante non ha dipendenze funzionali non banali.
+
+![[Pasted image 20240304092458.png]]
+C'è però una forte ridondanza: se ci sono $m$ docenti e $n$ libri di testo, si memorizzano $m \times n$ righe.
+### Dipendenze Multivalore
+Si può fare di meglio, memorizzando solo $m + n$ righe.
+
+![[Pasted image 20240304092900.png]]
+
+La teoria della normalizzazione è stata perciò generalizzata per rimuovere anche questo tipo di anomalie dovute **dipendenze multivalore** (4NF).
+## Esercizi

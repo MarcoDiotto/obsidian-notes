@@ -222,7 +222,7 @@ public class ProveJDK1
 	}
 }
 ````
-# Lezioni 3, 4, 5, 6
+# Lezioni 3, 4, 5, 6,7
 ___
 ## Creazione di iteratori
 In java ogni interfaccia deve avere un *file a parte* (o essere *nested*), pertanto ogni blocco di codice corrisponderà ad un diverso file.
@@ -232,9 +232,9 @@ flowchart RL
 	A[/Iterator/]--> D[/Iterable/]
 ```
 ```mermaid
-flowchart TB
-	A[/Iterable/] --> B[/Collection/]
-	B --> C[/List/]
+flowchart BT
+	B[/Collection/] --> A[/Iterable/]
+	C[/List/] --> B
 ```
 
 ```java
@@ -270,7 +270,19 @@ public interface Collection<T> extends Iterable<T>{
 	
 	default void clear();
 	
-	boolean contains(T x);
+	default boolean contains(T x){
+		Iterator<T> it = iterator();
+		
+		while (it.hasNext()) {
+			T e = it.next();
+			
+			if (e.equals(x))
+				return true;
+		}
+		
+		return false;
+	}
+}
 	
 	boolean isEmpty();
 	
@@ -459,21 +471,6 @@ public class ArrayList<T> implements List<T>{
 	}
 	
 	@Override
-	public boolean contains(T x){
-		
-		Iterator<T> it = iterator();
-		
-		while(it.hasNext()){
-			T o = it.next();
-			
-			if(x.equals(o))
-				return true;
-		}
-		
-		return false;
-	}
-	
-	@Override
 	public void remove(T x){
 		
 		for(int i = 0; i < size(); ++i){
@@ -498,20 +495,20 @@ package tinyjdk;
 public class LinkedList<T> implements List<T>{
 	
 	// non-static nested class
-	private class Node{
+	protected class Node{ //meglio protected per sottoclassi
 		
 		public T data;
 		public Node next;
 		
-		public Node(T data, Node next){
+		public Node(T data, Node next){ // argument forwarding
 			
 			this.data = data;
 			this.next = next;
 		}
 	}
 	
-	private Node head;
-	private int sz;
+	protected Node head; //meglio protected per sottoclassi
+	protected int sz;    //meglio protected per sottoclassi
 	
 	public LinkedList(){
 		this.head = null;
@@ -535,6 +532,7 @@ public class LinkedList<T> implements List<T>{
 	@Override
 	public void clear(){
 		head = null;
+		sz = 0;
 		/*
 			garbage collector multishot perché gli elementi
 			in coda hanno ancora reference type.
@@ -546,6 +544,148 @@ public class LinkedList<T> implements List<T>{
 	@Override
 	public void size(){
 		return sz;
+	}
+	
+	protected Node getNode(int i){ //meglio protected per 
+								 //sottoclassi
+	
+		if (i < 0 || i >= size())
+			throw new RuntimeException
+			          (String.format("LinkedList.getNode(): 
+			           index %d is out of bound size(): %d",
+			           i, size()));
+		
+		Node n = head;
+		
+		for(; i > 0; --i)
+			n = n.next;
+	}
+	
+	@Override
+	public T get(int i){
+		/*
+		if (i < 0 || i >= size())
+			throw new RuntimeException
+			          (String.format("LinkedList.get(): index 
+			            %d is out of bound size(): %d",
+			            i, size()));
+		
+		Node n = head;
+		
+		for(; i > 0; --i)
+			n = n.next;
+		
+		return n.data;
+		BRUTTO!
+		*/
+		return getNode(i).data;
+	}
+	
+	@Override
+	public T set(int i, T x){
+	/*
+	if (i < 0 || i >= size())
+			throw new RuntimeException
+			          (String.format("LinkedList.set(): index 
+			            %d is out of bound size(): %d",
+			            i, size()));
+		
+		Node n = head;
+		
+		for(; i > 0; --i)
+			n = n.next;
+		
+		T old = n.data;
+		n.data = x;
+		return old;
+		BRUTTO!
+		*/
+		
+		// senza binding dovrei chiamare 2 volte getNode();
+		//il binding serve per riusare un dato.
+		Node n = getNode(i);
+		T old = n.data;
+		n.data = x;
+		return old;
+	}
+	
+	@Override
+	public Iterator<T> iterator(){
+	
+		return new Iterator(){
+		
+			private Node n = head;
+			
+			@Override
+			public boolean hasNext(){
+				
+				return n != null;
+			}
+			
+			@Override
+			public T next(){
+				
+				T r = n.data;
+				n = n.next;
+				return r;
+			}
+		}
+	}
+	
+	@Override
+	public void remove(T x){
+		//scorriamo senza iteratore perché ci serve il nodo
+		Node n = head;
+		if(head != null){
+			if(n.data.equals(x)){
+				head = n.next;
+				--sz;
+			}
+			else{
+				while(n.next != null){
+					if(n.next.data.equals(x)){
+						n.next = n.next.next;
+						--sz;
+						return;
+					}
+					n = n.next;
+				}
+			}
+		}
+	}
+}
+```
+
+```java
+package tinyjdk
+
+public interface Set<T> extends Collection<T>{
+	
+}
+```
+
+```java
+package tinyjdk
+
+public class StructuralSet<T> implements Set<T> {
+	
+	//sostanzialmente uno stub ber Arraylist
+	
+	private List<T> l = new ArrayList<>();
+	
+	@Override
+	public void add(T x){
+		if(!l.contains(x))
+			l.add(x);
+	}
+	
+	@Override
+	public void clear(){
+		l.clear();
+	}
+	
+	public boolean isEmpty(){
+		return l.isEmpty();
 	}
 }
 ```
@@ -602,7 +742,6 @@ f(7); // --> 7 = type argument
 Alla creazione di un campo in Java  (prima della chiamata al costruttore), questo viene inizializzato a  `NULL`, se è un **reference type**, a 0 se è un **int**.
 Di conseguenza quando viene chiamato il costruttore, c'è già della memoria allocata (8 Byte per i pointer, 4 per gli int), il compilatore sa quanto allocare sulla base della sommatoria dei campi della classe.
 Viene inoltre creata una tabella, detta **Virtual Table**, che contiene pointer ai metodi della classe, i quali puntano alla prima istruzione dei corrispondenti metodi. Ciò avviene perché quando una classe istanziata viene passata a qualcos'altro si crea **subsumpion**, e di conseguenza alla chiamata di un metodo della classe si può recuperare quest'ultimo dalla virtual table della stessa. Grazie all'uso delle virtual table Java implementa il **Dynamic Dispatching**. Quando viene creato un oggetto, viene prima allocato lo spazio necessario per i campi ed in seguito la virtual table, che contiene anche i metodi sottoposti ad **Override**.
-
 ## Anonymous Class
 
 ```java

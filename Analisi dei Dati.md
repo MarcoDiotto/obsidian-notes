@@ -195,8 +195,8 @@ Utilizzati per confrontare *diverse popolazioni* o *sotto-popolazioni*:
 
 ![[Pasted image 20240222100529.png]]
 *Nota*: il professore consiglia di usare il **grafico a bolle** (a sinistra dell'esempio) o il **cheatring** (che vedremo nel 2° laboratorio).
-#  Laboratorio 1: Media Campionaria
-___
+##  Laboratorio 1: Media Campionaria
+
 ```r
 popolazione <- rexp(n = 5000, rate = 1/40)
 media.pop <- mean(popolazione)
@@ -277,9 +277,8 @@ abline(h = media.pop, lty = dashed, col = "red", lwd = 1.5)
 
 ![[Pasted image 20240227112702.png]]
 
-# Laboratorio 2: Analisi Descrittive
-___
-## Sintesi Numeriche
+## Laboratorio 2: Analisi Descrittive
+### Sintesi Numeriche
 Iniziamo utilizzando i dati sui tempi di elaborazione dei processi presentati nel Capitolo 8 del Baron (2014)
 
 Per leggere i dati si usa il seguente comando:
@@ -329,7 +328,7 @@ Q3 <- quantile(cpu, probs = 0.75, type = 2)
 Q3 - Q1
 ```
 
-## Sintesi Grafiche
+### Sintesi Grafiche
 Per creare **istogrammi** si utilizza `hist`:
 ```r
 isto <- hist(cpu, main = "Tempi elaborazione CPU", xlab = "Tempo (sec)"
@@ -460,6 +459,111 @@ with(antivirus, plot(jitter(x), jitter(y), xlab = "Esecuzioni antivirus", ylab =
 ![[Pasted image 20240227115636.png]]
 
 Due esempi vengono riportati nel secondo laboratorio al [seguente link](https://mega.nz/file/BjUQTZwD#iYoqvoX_IAJopybZxiz6T2JDCEo2WPCZPvzjcsSKrtg).
-# Esercizi Unità 1
-___
+## Esercizi Unità 1
 Gli esercizi della prima unità sono presenti al [seguente link](https://mega.nz/file/cr1X0TJQ#sl-Tx23PS25I2uQyT1n5bJeXihw8t1i77Fw1o5035A4).
+# Stime
+___
+## Modelli statistici
+Supponiamo che i dati $x = (x_1, ..., x_n)$ provengano da una variabile casuale la cui distribuzione proviene da un parametro ignoto $\theta$.
+
+*Terminologia*: 
+	i dati sono generati da un **modello statistico** indicizzato da un parametro $\theta$ ignoto e appartenente allo **spazio parametrico** $\Theta \in \mathbb{R}^k$
+
+Il *modello statistico* è:
+* nel caso discreto una **classe di funzione di probabilità** $\mathbb{P}(x;\theta)$
+* nel caso continuo una **classe di densità** $\mathcal{f}(x;\theta)$
+
+**Esempi dal Baron**:
+
+![[Pasted image 20240305112724.png]]
+![[Pasted image 20240305112747.png]]
+## Il Metodo dei Momenti
+Il **metodo dei monìmenti** è il più semplice metodo per stimare il parametro di un modello statistico.
+
+Questo metodo costruisce uno stimatore di $\theta$ confrontando:
+* **Momenti di popolazione** $\to$ momenti teorici del modello statistico assunto.
+* **Momenti campionari** $\to$ caratterizzano i dati osservati
+
+## Momenti
+* Il $k$-esimo momento di popolazione è: $$\mu_k = \mathbb{E}(X^k)$$
+* Il $k$-esimo momento campionario è: $$M_k = \frac{1}{n}\sum_{i = 1}^{n} X^k_i\ \ \ \ \ \ \ (M_1 = \overline{X})$$ con valore osservato: $$m_k = \frac{1}{n}\sum_{i = 1}^{n} x^k_i\ \ \ \ \ \ \ (m_1 = \overline{x})$$
+
+*Nota*: Il Baron non differenzia fra $M_k$ e $m_k$
+
+Quindi:
+* $M_k$ è uno **stimatore** di $\mu_k$
+* $m_k$ è una **stima** di $\mu_k$
+## Momenti Centrali
+* Il $k$-esimo momento centrale di popolazione è: $$\mu_k' = \mathbb{E}(X - \mu)^k$$
+* Il $k$-esimo momento centrale campionario è: $$M_k' = \frac{1}{n}\sum_{i = 1}^{n}(X_i - \overline{X})^k\ \ \ \ \ \ \ (M'_2 = \frac{S^2(n-1)}{n})$$ con valore osservato: $$m_k' = \frac{1}{n}\sum_{i = 1}^{n}(x_i - \overline{x})^k\ \ \ \ \ \ \ (m'_2 = \frac{s^2(n-1)}{n})$$
+
+*Nota*: Il Baron non differenzia fra $M_k'$ e $m_k'$
+
+Quindi:
+* $M_k'$ è uno **stimatore** di $\mu_k'$
+* $m_k'$ è una **stima** di $\mu_k'$
+## Ancora sul Metodo dei Momenti
+Per stimare il parametro $\theta$ si risolve il sistema di $k$ equazioni ottenuto uguagliando i $k$ momenti di popolazione ai rispettivi $k$ elementi campionari:
+
+![[Pasted image 20240305114309.png]]
+*Nota*: si sceglie fra momenti semplici e centrali puramente in base alla convenienza.
+
+**Esempio dal Baron**:
+
+![[Pasted image 20240305114401.png]]
+## Ancora sul tempo di elaborazione:
+Torniamo al campione dei 30 tempi di elaborazione: 
+
+![[Pasted image 20240305114550.png]]
+
+Quale modello statistico descrive accuratamente questi dati?
+
+## La Distribuzione Gamma
+Distribuzione continua per osservazioni positive: $$\mathcal{f}(x;\alpha;\lambda) = \frac{\lambda^\alpha}{\Gamma(\alpha)}x^{\alpha - 1} e^{-\lambda x},\ \ \ \ (x > 0)$$ Dove $\Gamma(\cdot)$ è la **funzione gamma**.
+
+Parametro $\theta = (\alpha,\lambda)$:
+* **Parametro di forma** $\alpha > 0$
+* **Parametro di frequenza** $\lambda > 0$
+
+**Spazio parametrico**: $\Theta \in \mathbb{R}_+ \times \mathbb{R}_+$ dove $\mathbb{R}_+$ sono i numeri reali positivi
+
+Quando $\alpha = 1$ la distribuzione gamma si riduce alla distribuzione esponenziale: $$\mathcal{f}(x,\lambda) = \lambda e^{-\lambda x},\ \ \ \  x > 0$$
+![[Pasted image 20240305115307.png]]
+
+## Stima con il metodo dei momenti dei parametri di una distribuzione gamma
+
+![[Pasted image 20240305115404.png]]
+
+## Il Metodo della Massima Verosimiglianza
+
+Lo stimatore di massima verosimiglianza è quel valore del parametro $\theta$ che massimizza la **funzione di verosimiglianza** ("likelyhood").
+
+La funzione di verosimiglianza è *proporzionale* alla probabilità di osservare ciò che è stato effettivamente osservato.
+
+Nel **caso discreto** la funzione di verosimiglianza è proporzionale alla funzione di probailità congiunta dei dati: $$L(\theta) \alpha\ \ \mathbb{P}(X_1 = x_1, ..., X_n = x_n; \theta)$$ che in un campione casuale semplice diventa: $$L(\theta)\alpha\ \ \prod_{i = 1}^{n} \mathbb{P}(X_i = X_i; \theta)$$
+## Esempio
+Una software house dichiara che il suo software per il riconoscimento facciale ha un’accuratezza del 80% in condizioni ‘difficili’ (volto parzialmente coperto e bassa luminosità). Un blogger dopo diversi esperimenti afferma che in realtà l’accuratezza del software  è pari al 70%.  Incuriositi dalla disputa, effettuiamo un esperimento su 15 fotografie di volti da ‘riconoscere in condizioni difficili’ e troviamo che solo in 11 fotografie il volto viene riconosciuto correttamente. Cosa concludiamo? Di seguito proviamo a dare una prima risposta con la funzione di verosimiglianza.
+Indichiamo con $\theta$ la ‘vera’ proporzione di fotografie in cui il volto è riconosciuto correttamente nonostante le condizioni difficili. Innanzitutto, dobbiamo individuare un modello statistico che descrive il ‘meccanismo generatore dei dati’. In questo caso, il modello più ragionevole sembra essere quello binomiale. La verosimiglianza per $\theta$ è, quindi proporzionale alla  probabilità di osservare 11 successi su 15 prove in un  modello binomiale con probabilità di successo $\theta$: $$L(\theta) = \binom{15}{11}\ \theta^{11}(1 - \theta)^4$$
+Se avesse ragione la software house allora il valore osservato della verosimiglianza sarebbe: $$L(0.8) = \binom{15}{11}\ 0.8^{11}0.2 = 0.19$$
+![[Pasted image 20240305122217.png]]
+
+Se avesse invece ragione il blogger: $$L(0.7) = \binom{15}{11}\ 0.7^{11}0.3^4 = 0.22$$
+![[Pasted image 20240305122647.png]]
+
+La verosimiglianza del blogger è più alta e possiamo quantificare la preferenza che il nostro esperimento gli accorda con il rapporto delle verosimiglianze:
+
+![[Pasted image 20240305122749.png]]
+
+e concludere che, alla luce del nostro esperimento, è 17% ‘più verosimile’ l’ipotesi del blogger.  Notiamo che i fattori binomiali si cancellano Infatti, tutte le procedure basate sulla verosimiglianza sono invarianti rispetto a termini costanti che appaiono nelle verosimiglianza. Per questo motivo la verosimiglianza è definita come proporzionale alla probabilità di osservare i dati.  I termini costanti possono essere, quindi, rimossi dal calcolo della verosimiglianza.
+## La log-verosimiglianza
+La log-verosimiglianza è definita come: $$\mathcal{l}(\theta) = log\ L(\theta).$$Siccome il logaritmo è una funzione crescente,  massimizzare $L(\theta)$ o $\mathcal{l}(\theta)$ è **equivalente**.
+
+Conviene massimizzare $\mathcal{l}(\theta)$ perché le derivate delle somme sono più facile delle derivate dei prodotti.
+
+Inoltre quando la massimizzazione avviene numericamente, $L(\theta)$ può creare problemi per i valori molto piccoli che spesso assume.
+
+Nel caso discreto la log-verosimiglianza è: $$\mathcal{l}(\theta) = \sum_{i = 1}^{n} log\ \mathbb{P}(X_i = x_i; \theta).$$
+**Esempio dal Baron**:
+
+![[Pasted image 20240305121439.png]]
+![[Pasted image 20240305121507.png]]

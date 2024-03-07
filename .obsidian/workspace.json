@@ -4,45 +4,22 @@
     "type": "split",
     "children": [
       {
-        "id": "380ba6d74b5bf618",
+        "id": "66df20d0e1522c99",
         "type": "tabs",
         "children": [
           {
-            "id": "64ec6637f90ad81c",
+            "id": "1c80cd53267f7731",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Analisi dei Dati.md",
-                "mode": "source",
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "9eba9e2139487a0d",
-            "type": "leaf",
-            "state": {
-              "type": "image",
-              "state": {
-                "file": "Utilità/Pasted image 20240305114309.png"
-              }
-            }
-          },
-          {
-            "id": "292ae9ae9e92001e",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Analisi dei Dati.md",
+                "file": "Tecnologie e Applicazioni Web.md",
                 "mode": "source",
                 "source": false
               }
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -108,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Analisi dei Dati.md",
+                "file": "Tecnologie e Applicazioni Web.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -125,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Analisi dei Dati.md",
+                "file": "Tecnologie e Applicazioni Web.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -148,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Analisi dei Dati.md"
+                "file": "Tecnologie e Applicazioni Web.md"
               }
             }
           }
@@ -169,23 +146,22 @@
       "templates:Insert template": false
     }
   },
-  "active": "292ae9ae9e92001e",
+  "active": "1c80cd53267f7731",
   "lastOpenFiles": [
-    "Utilità/Pasted image 20240305112747.png",
-    "Utilità/Pasted image 20240305114309.png",
-    "Analisi dei Dati.md",
-    "Utilità/Pasted image 20240305122749.png",
-    "Utilità/Pasted image 20240305122647.png",
-    "Utilità/Pasted image 20240305122217.png",
-    "Utilità/Pasted image 20240305122156.png",
-    "Utilità/Pasted image 20240305121507.png",
-    "Utilità/Pasted image 20240305121439.png",
-    "Utilità/Pasted image 20240305115404.png",
-    "Utilità/Pasted image 20240305115307.png",
-    "Utilità/Pasted image 20240305114550.png",
-    "Algoritmi e Strutture di Dati.md",
-    "Basi di  dati Mod. 2.md",
     "Programmazione ad Oggetti Mod. 2.md",
+    "Analisi dei Dati.md",
+    "Utilità/Pasted image 20240307101329.png",
+    "Utilità/Pasted image 20240307101303.png",
+    "Utilità/Pasted image 20240307101205.png",
+    "Utilità/Pasted image 20240307100555.png",
+    "Utilità/Pasted image 20240307093227.png",
+    "Utilità/Pasted image 20240307091513.png",
+    "Utilità/Pasted image 20240307091458.png",
+    "Utilità/Pasted image 20240307090649.png",
+    "Basi di  dati Mod. 2.md",
+    "Algoritmi e Strutture di Dati.md",
+    "Utilità/Pasted image 20240306101557.png",
+    "Utilità/Pasted image 20240306092634.png",
     "Sistemi Operativi Mod. 2.md",
     "Tecnologie e Applicazioni Web.md",
     "Algoritmi.md",

@@ -536,11 +536,11 @@ Quando $\alpha = 1$ la distribuzione gamma si riduce alla distribuzione esponenz
 
 ## Il Metodo della Massima Verosimiglianza
 
-Lo stimatore di massima verosimiglianza è quel valore del parametro $\theta$ che massimizza la **funzione di verosimiglianza** ("likelyhood").
+Lo stimatore di massima verosimiglianza è quel valore del parametro $\theta$ che massimizza la **funzione di verosimiglianza** ("likelihood").
 
 La funzione di verosimiglianza è *proporzionale* alla probabilità di osservare ciò che è stato effettivamente osservato.
 
-Nel **caso discreto** la funzione di verosimiglianza è proporzionale alla funzione di probailità congiunta dei dati: $$L(\theta) \alpha\ \ \mathbb{P}(X_1 = x_1, ..., X_n = x_n; \theta)$$ che in un campione casuale semplice diventa: $$L(\theta)\alpha\ \ \prod_{i = 1}^{n} \mathbb{P}(X_i = X_i; \theta)$$
+Nel **caso discreto** la funzione di verosimiglianza è proporzionale alla funzione di probailità congiunta dei dati: $$L(\theta) \propto \mathbb{P}(X_1 = x_1, ..., X_n = x_n; \theta)$$ che in un campione casuale semplice diventa: $$L(\theta)\propto \prod_{i = 1}^{n} \mathbb{P}(X_i = X_i; \theta)$$
 ## Esempio
 Una software house dichiara che il suo software per il riconoscimento facciale ha un’accuratezza del 80% in condizioni ‘difficili’ (volto parzialmente coperto e bassa luminosità). Un blogger dopo diversi esperimenti afferma che in realtà l’accuratezza del software  è pari al 70%.  Incuriositi dalla disputa, effettuiamo un esperimento su 15 fotografie di volti da ‘riconoscere in condizioni difficili’ e troviamo che solo in 11 fotografie il volto viene riconosciuto correttamente. Cosa concludiamo? Di seguito proviamo a dare una prima risposta con la funzione di verosimiglianza.
 Indichiamo con $\theta$ la ‘vera’ proporzione di fotografie in cui il volto è riconosciuto correttamente nonostante le condizioni difficili. Innanzitutto, dobbiamo individuare un modello statistico che descrive il ‘meccanismo generatore dei dati’. In questo caso, il modello più ragionevole sembra essere quello binomiale. La verosimiglianza per $\theta$ è, quindi proporzionale alla  probabilità di osservare 11 successi su 15 prove in un  modello binomiale con probabilità di successo $\theta$: $$L(\theta) = \binom{15}{11}\ \theta^{11}(1 - \theta)^4$$
@@ -556,6 +556,9 @@ La verosimiglianza del blogger è più alta e possiamo quantificare la preferenz
 
 e concludere che, alla luce del nostro esperimento, è 17% ‘più verosimile’ l’ipotesi del blogger.  Notiamo che i fattori binomiali si cancellano Infatti, tutte le procedure basate sulla verosimiglianza sono invarianti rispetto a termini costanti che appaiono nelle verosimiglianza. Per questo motivo la verosimiglianza è definita come proporzionale alla probabilità di osservare i dati.  I termini costanti possono essere, quindi, rimossi dal calcolo della verosimiglianza.
 ## La log-verosimiglianza
+
+![[Pasted image 20240307093227.png]]
+
 La log-verosimiglianza è definita come: $$\mathcal{l}(\theta) = log\ L(\theta).$$Siccome il logaritmo è una funzione crescente,  massimizzare $L(\theta)$ o $\mathcal{l}(\theta)$ è **equivalente**.
 
 Conviene massimizzare $\mathcal{l}(\theta)$ perché le derivate delle somme sono più facile delle derivate dei prodotti.
@@ -567,3 +570,81 @@ Nel caso discreto la log-verosimiglianza è: $$\mathcal{l}(\theta) = \sum_{i = 1
 
 ![[Pasted image 20240305121439.png]]
 ![[Pasted image 20240305121507.png]]
+
+## Caso Continuo
+Nel caso continuo, la probabilità di osservare esattamente un certo valore $x$ è $\mathbb{P}(X = x) = 0$.
+
+Per un valore "piccolo" $h$ abbiamo che: $$\mathbb{P}(x - h < X < x + h) = \int_{x-h}^{x+h}\mathcal{f}(x;\theta) dx \sim 2h\mathcal{f}(x;\theta)$$
+![[Pasted image 20240307090649.png]]
+
+Nel caso continuo il metodo della massima verosimiglianza **massimizza** la probabilità di osservare dei **valori vicini** a ciò che è stato effettivamente osservato: $$L(\theta) \propto \mathcal{f}(x_1, ..., x_n; \theta)$$
+Nel caso di un campione casuale abbiamo: $$L(\theta) \propto \prod_{i = 1}^{n} \mathcal{f}(x_i; \theta)$$
+La corrispondente log-verosimiglianza è (a meno di termini costanti che eliminiamo): $$\mathcal{l}(\theta) = \sum_{i = 1}^{n} log\ \mathcal{f}(x_i; \theta)$$
+**Esempio dal Baron**:
+
+![[Pasted image 20240307091458.png]]
+![[Pasted image 20240307091513.png]]
+## Problemi regolari di stima
+Lo stimatore di massima verosimiglianza gode di importanti proprietà che valgono sotto *opportune assunzioni di regolarità*.
+
+Una delle assunzioni è che stiamo lavorando con un **problema di stima regolare**.
+
+La più rilevante condizione affinché un problema di stima sia regolare è che il **supporto** (= spazio in cui si muove la variabile) delle variabili casuali **non dipende dal parametro del modello**.
+
+Le altre assunzioni sono più tecniche e richiedono che la funzione di probabilità (nel caso discreto) o di densità (nel caso continuo) sia **sufficientemente regolare**.
+
+In particolare la funzione di probabilità/densità deve avere **derivate finite** fino ad un certo ordine.
+## Esempi
+Esempi di **problemi regolari di stima** sono stimare:
+* I parametri $\mu$ e $\sigma^2$ di una variabile casuale normale
+* Il parametro $\lambda$ di una variabile casuale di Poisson
+* il parametro $p$ di una variabile casuale binomiale
+
+Un esempio di **problema non regolare di stima** è stimare il parametro $\theta$ di una variabile uniforme nell'intervallo $[0,\theta]$.
+
+Quest'ultimo non è un problema di stima regolare perché il supporto della variabile è $[0,\theta]$, cioè dipende dal parametro stesso.
+## Verosimiglianza e problemi regolari di stima
+Nei problemi regolari di stima, lo **stimatore di massima verosimiglianza** si trova ispezionando le derivate prime e seconde della (log-)verosimiglianza.
+
+La derivata prima della log-verosimiglianza si chiama **funzione punteggio** (o **score function**).
+
+I punti stazionari della verosimiglianza sono gli **zeri della funzione punteggio**, cioè i punti $\tilde{\theta}$ che risolvono l'**equazione di verosimiglianza**: $$\frac{d}{d\theta}\mathcal{l}(\tilde{\theta}) = 0$$ Un punto stazionario di $\mathcal{l}(\theta)$ è **un massimo locale** se la derivata seconda calcolata in quel punto è **negativa** $$\frac{d^2}{d\theta^2}\mathcal{l}(\tilde{\theta}) =<0$$
+## Esempio di problema regolare di stima
+Consideriamo un campione casuale semplice  dalla variabile casuale con densità: $$\mathcal{f}(x; \beta) = \begin{cases} \frac{\beta}{x^{\beta + 1}}, \ \ \ se\ x > 1, \beta > 1\\  0\ \ \ \ \ \ \ \ \ \  atrimenti   \end{cases}$$
+La verosimiglianza per $\beta$ è $$L(\beta) = \beta^n \prod_{i = 1}^n X_i^{-(\beta + 1)}$$ 
+La log-verosimiglianza è (a meno di termini costanti): $$\mathcal{l}(\beta) = n\ log(\beta) - \beta \sum_{i = 1}^n log X_i$$
+La funzione punteggio è $$\mathcal{l}'(\beta) = \frac{n}{\beta} - \sum_{i = 1}^{n} log X_i$$
+L'equazione di verosimiglianza è: $$\frac{n}{\beta} - \sum_{i = 1}^{n} log X_i = 0$$
+La soluzione dell'equazione di verosimiglianza è $$\tilde{\beta} = \frac{n}{\sum_{i = 1}^{n} log X_i}$$
+e coincide con lo stimatore di massima verosimiglianza poiché $$\mathcal{l}''(\beta) = - \frac{n}{\beta^2} < 0$$
+Quindi la stima di massima verosimiglianza è $$\tilde{\beta} = \frac{n}{\sum_{i  = 1}^{n} log X_i}$$
+## Esempio di problema non regolare di stima
+Consideriamo un campione casuale semplice dalla variabile casuale con densità $U(0;\theta)$ ovvero: $$\mathcal{f}(x;\theta) = \begin{cases} \frac{1}{\theta}\ \ \ \ se\ x \in [0; \theta]\\ 0\ \ \ \ altrimenti \end{cases}$$
+La verosimiglianza di $\theta$ è: $$L(\theta) = \begin{cases} \frac{1}{\theta^n}\ \ \ \ se\ 0 \leq X_i \leq \theta\ per\ ogni\ i\\ 0\ \ \ \ altrimenti \end{cases}$$
+ovvero: $$L(\theta) = \begin{cases} \frac{1}{\theta^n}\ \ \ \ se\ max_iX_i \leq \theta\ e\ min_iX_i \geq 0\\ 0\ \ \ \ altrimenti \end{cases}$$
+*Esempio con un ipotetico dataset di 50 osservazioni in cui il massimo delle osservazioni vale 5*:
+
+![[Pasted image 20240307100555.png]]
+
+Lo stimatore di massima verosimiglianza è $\hat{\theta} = max_iX_i$
+
+Il massimo di $L(\theta)$ non può essere trovato tramite differenziazione di $L(\theta)$ (o di $\mathcal{l}(\theta)$) perché si trova in **un punto di discontinuità**.
+## Errori standard
+Gli errori standard servono a misurare la **precisione** degli stimatori.
+
+*Reminder della terminologia di Statistica*:
+* **accuratezza** $\to$ concetto opposto di **distorsione**.
+* **precisione** $\to$ opposto di **variabilità**.
+## Stimare gli errori standard
+Gli errori standard solitamente sono **funzione del parametro stesso** e quindi *vanno a loro volta stimati*.
+
+**Esempio del Baron**:
+
+![[Pasted image 20240307101205.png]]
+
+Tuttavia stimare gli errori standard può essere complicato anche in modelli semplici.
+
+**Esempio del Baron**:
+
+![[Pasted image 20240307101303.png]]
+![[Pasted image 20240307101329.png]]

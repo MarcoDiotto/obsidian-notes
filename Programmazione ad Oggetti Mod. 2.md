@@ -1,6 +1,4 @@
-# Lezione 1
-___
-## Introduzione
+# Introduzione
 
 I *paradigmi* di programmazione sono quello **operativo** e quello **funzionale**.
 All'interno di tali *paradigmi* ci sono vari *stili di programmazione*.
@@ -62,7 +60,7 @@ Main b = a;
 La variabile b è un *alias*, ovvero un altro pointer allo stesso oggetto. Le **classi** sono i *tipi*, gli **oggetti** sono i *valori* (o *istanze*).
 Un linguaggio è *ad oggetti* quando offre il **subtyping** (ovvero una forma di **polimorfismo**).
 
-## Polimorfismo
+# Polimorfismo
 
 ```java
 public class Main{
@@ -127,9 +125,7 @@ L'*override* serve a modificare metodi preesistenti nelle sottoclassi e di conse
 **Dynamic Dispatching** : dopo la chiamata del metodo viene utilizzato il tipo dinamico                                                              dell'oggetto, conosciuto a runtime.
 **Subsumption** : possibilità di assegnare ad una cosa meno specifica, una più specifica.
 
-# Lezione 2
-___
-## Classi e Interfacce
+# Classi e Interfacce
 
 *Estendere*  (`extends`) ed *implementare* (`implements`) un'interfaccia sono concetti equivalenti.
 Le *interfacce* non hanno costruttori.
@@ -221,10 +217,9 @@ public class ProveJDK1
 		}
 	}
 }
-````
-# Lezioni 3, 4, 5, 6,7
-___
-## Creazione di iteratori
+```
+
+# Creazione di iteratori
 In java ogni interfaccia deve avere un *file a parte* (o essere *nested*), pertanto ogni blocco di codice corrisponderà ad un diverso file.
 
 ```mermaid
@@ -236,7 +231,7 @@ flowchart BT
 	B[/Collection/] --> A[/Iterable/]
 	C[/List/] --> B
 ```
-
+# TinyJDK
 ```java
 package tinyjdk;
 
@@ -659,40 +654,6 @@ public class LinkedList<T> implements List<T>{
 ```java
 package tinyjdk
 
-public interface Set<T> extends Collection<T>{
-	
-}
-```
-
-```java
-package tinyjdk
-
-public class StructuralSet<T> implements Set<T> {
-	
-	//sostanzialmente uno stub ber Arraylist
-	
-	private List<T> l = new ArrayList<>();
-	
-	@Override
-	public void add(T x){
-		if(!l.contains(x))
-			l.add(x);
-	}
-	
-	@Override
-	public void clear(){
-		l.clear();
-	}
-	
-	public boolean isEmpty(){
-		return l.isEmpty();
-	}
-}
-```
-
-```java
-package tinyjdk
-
 public static class IndexOutOfBoundsException extend Exception{
 		public IndexOutOfBoundsException(string msg){
 			super(msg);
@@ -727,22 +688,22 @@ public class ArrayListIterator<T> implements Iterator<T> {
 * In `Iterable<T>`, `T` $\to$ **type argument**
 
 *Nota*: senza i **generics** si rischia di subsumere troppo con `Objects`.
-## Type Parameter e Type Argument
+# Type Parameter e Type Argument
 ```java
 void f(int n){...} // --> n = type parameter
 f(7); // --> 7 = type argument
 ```
 **Type Parameter** determina il nome dei tipi, mentre **Type Argument** lo usa.
-## Eccezioni Checked e Unchecked
+# Eccezioni Checked e Unchecked
 * Le eccezioni **unchecked** non hanno bisogno della keyword `throws`ne del costrutto `try{...}catch{...}`,  tuttavia potrebbero non essere raccolte.
 * Al contrario le eccezioni **checked** ne hanno bisogno e devono essere propagate gerarchicamente.
 * Se l'anomalia *non è frequente* meglio scegliere un'**eccezione unchecked**.
 * Se l'anomalia *è frequente* ed è ritenuta un *secondo possibile esito del codice* megio scegliere un **eccezione checked**.
-## Virtual Table e Dynamic Dispatching
+# Virtual Table e Dynamic Dispatching
 Alla creazione di un campo in Java  (prima della chiamata al costruttore), questo viene inizializzato a  `NULL`, se è un **reference type**, a 0 se è un **int**.
 Di conseguenza quando viene chiamato il costruttore, c'è già della memoria allocata (8 Byte per i pointer, 4 per gli int), il compilatore sa quanto allocare sulla base della sommatoria dei campi della classe.
 Viene inoltre creata una tabella, detta **Virtual Table**, che contiene pointer ai metodi della classe, i quali puntano alla prima istruzione dei corrispondenti metodi. Ciò avviene perché quando una classe istanziata viene passata a qualcos'altro si crea **subsumpion**, e di conseguenza alla chiamata di un metodo della classe si può recuperare quest'ultimo dalla virtual table della stessa. Grazie all'uso delle virtual table Java implementa il **Dynamic Dispatching**. Quando viene creato un oggetto, viene prima allocato lo spazio necessario per i campi ed in seguito la virtual table, che contiene anche i metodi sottoposti ad **Override**.
-## Anonymous Class
+# Anonymous Class
 
 ```java
 (...)new Iterator<T>() {
@@ -787,6 +748,91 @@ public Iterator<T> iterator(){
 }
 ```
 
-## Metodi == e equals
+# Metodi == e equals
 * `==`: se i due elementi sono **reference type** controlla i puntatori, se **value type** fa un vero confronto, è **polimorfo** e **omogeneo** (funziona con due oggetti dello stesso tipo),
 * `equals`: è un metodo della classe `Object` reso standard, è **polimorfo per subtype** ed è **eterogeneo**. In genere si usa `equals` per fare una deep copy. $\to$ *è un semplice metodo*.
+
+# TinyJDK: Set
+I **Set** sono strutture dati:
+* *Lineari*.
+* *Senza random access*.
+* *Senza duplicati* $\to$ grazie ad `equals`.
+
+```java
+package tinyjdk
+
+public interface Set<T> extends Collection<T>{
+	
+}
+```
+
+```java
+package tinyjdk
+
+public class StructuralSet<T> implements Set<T> {
+	
+	//sostanzialmente uno stub per Arraylist
+	
+	private List<T> l = new ArrayList<>();
+	
+	@Override
+	public void add(T x){
+		if(!l.contains(x))
+			l.add(x);
+	}
+	
+	@Override
+	public void clear(){
+		l.clear();
+	}
+	
+	@Override
+	public boolean isEmpty(){
+		return l.isEmpty();
+	}
+	
+	@Override
+	public void remove(T x){
+		l.remove(x);
+	}
+	
+	@Override
+	public int size(){
+		return l.size();
+	}
+	
+	@Override
+	public Iterator<T> iterator(){
+		return l.iterator;
+	}
+}
+```
+
+**Stub**: wrapper minimale.
+
+Per evitare gli stub potremmo usare `extends Arraylist` tuttavia in questo caso avremmo il random access e nelle sottoclassi non si possono rimuovere metodi della superclasse, poiché si *perderebbe il polimorfismo*.  Possiamo quindi usare usa **superclasse astratta**.
+
+```java
+package tinyjdk
+
+public abstract class AbstractCollection<T> implements Collection <T> {
+	protected Object a[];
+	protected int sz;
+	
+	
+}
+```
+
+```java
+package tinyjdk;
+
+public class ArrayList2<T> extends AbstractCollection<T>{
+
+
+}
+```
+
+# Confronti in informatica
+* **Strutturale** $\to$ confronto deep (in java con `equals`). 
+* **Shallow** $\to$ confronto shallow  (in java con `==`).
+* **Hash** $\to$ confronta usando gli hash. 

@@ -520,6 +520,7 @@ Data una tabella hash ad **indirizzamento aperto** con un fattore di carico $\al
 ![[Pasted image 20240229110952.png]]
 # Programmazione Dinamica
 ___
+## Introduzione
 La **programmazione dinamica** è una tecnica di progettazione di algoritmi.
 
 Si applica quando:
@@ -691,3 +692,94 @@ Print_cut_rod_solution(p, n)
 
 **Costo**:
 `Ext_bottom_up_cut_rod` costa $\Theta(n^2)$ mentre il ciclo `while` costa $O(n)$, quindi il costo totale è $$\Theta(n^2) + O(n) = O(n^2).$$
+![[Pasted image 20240306085649.png]]
+
+## Longest Common Subsequence (LCS)
+
+*Cominciamo con un esempio tratto dalla bio-informatica*:
+
+* Adenina
+* Guanina
+* Citosina
+* Timina
+
+Un filamento di DNA si può rappresentare come una stringa sull'alfabeto $\{A,G,C,T\}$.
+
+**Edit distance**: il minimo numero di operazioni da fare ad una stringa per renderla uguale all'altra stringa.
+*Esempio*
+ *  $s_1 = A,C,T,A,C,C,T,G$
+* $s_2 = A,T,C,A,C,C$
+* Posso **inserire**, **cancellare**, **copiare** e nuovamente **copiare** un carattere. L'**edit distance** in questo caso è pertanto data da **4 operazioni**.
+
+### LCS
+
+![[Pasted image 20240306090837.png]]
+
+* Indichiamo una **sequenza** con: $X = x_1 ... x_n$
+* Una **sottosequenza** di $X = x_1 ... x_n$ è $x_{i1} ... x_{ik}$ tale che $i_1 ... i_k \in \{1 ... m\}$ con $i_1 < i_2 < ... < i_k$   una *successione strettamente crescente* <$i_1 ... i_k$> di indici di $X$.
+### Problema LCS
+Date due sequenze:
+* $X = x_1 ... x_m$
+* $Y = y_1 ... y_n$
+
+Trovare una sequenza $W$ che sia:
+* sottosequenza di $X$ e $Y$
+* di lunghezza massima
+
+*Osservazione 1*:
+Non vi è un'unica LCS di due sequenze $X$ e $Y$
+*Esempio*: $A,C$ e $C,A$ $\to$ $A \cdot C \in LCS$
+
+Indichiamo con $LCS(X,Y)$ l'**insieme** delle $LCS$ di $X$ e $Y$.
+
+*Osservazione 2*:
+Un algoritmo di **brute-force**:
+*  genera  tutte le sottosequenze di $X$
+*  verifico se è sottosequeza di $Y$
+*  tiene la più lunga
+
+Le sottosequenze di $X = x_1 ... x_m$ sono $2^n$ perché possiamo scegliere se prendere ogni carattere o meno.
+
+L'algoritmo di brute-force costa $O(2^n) \to$ **inefficiente**
+### Risoluzione del Problema 
+#### PASSO 1. Caratterizzazione della Struttura della Soluzione Ottima
+
+**Prefissi**: Data $X = x_1 ... x_m$ per $k \leq m$ indichiamo con $X^k$ il prefisso di lunghezza $k$ di $X$ $$X^k = x_1 ... x_k$$
+*Esempio*:
+![[Pasted image 20240306092634.png]]
+
+In generale $X = x_1 ... x_m$ ha $m+1$ prefissi, quindi se si riduce il problema LCS di $X$ e $Y$ al problema sui prefissi $\to O(m \cdot n)$ sotto-problemi.
+* $X = x_1 ... x_m$
+* $Y = y_1 ... y_n$ 
+
+#### Teorema (Sottostruttura Ottima per LCS)
+Siano:
+* $X = x_1 ... x_m$
+* $Y = y_1 ... y_n$ e 
+* $W = w_1 ... w_k \in LCS(X,Y)$
+
+Allora:
+1) se $x_m = y_n$ allora $w_k = x_m = y_n$ e $W^{k-1} \in LCS(X^{m-1},Y^{n-1})$
+2) se $x_m \neq y_n$:
+	1) se $w_k \neq x_m$ allora $W^{k-1} \in LCS(X^{m-1},Y)$
+	2) se $w_k \neq y_n$ allora $W^{k-1} \in LCS(X,Y^{n-1})$
+
+#### Dimostrazione
+1) se, per assurdo, $w_k \neq x_m$ allora potrei costruire una sequenza $W_{xm}$ che risulterebbe essere comune a $X$ e a $Y$ e sarebbe di lunghezza $k + 1$. $\to$ **ASSURDO** perché $W$ non sarebbe più $LCS(X,Y)$ in quanto sappiamo che $|W| = k$. Quindi deve essere che $w_k = x_m = y_m$.
+   
+   $W^{k-1}$ è una sottosequenza comune di $X^{m-1}$ e $Y^{n-1}$. Supponiamo per assurdo che ci sia una sottosequenza $W' \in LCS(X^{m-1},Y^{n-1})$ e $|W'| > |W^{k-1}| = k-1$. Possiamo concatenare a $W'$ il carattere $x_m = y_m \to W'x_m$ sottosequenza comune di $X$ e $Y$ e $|W'x_m| > k + 1 - k > k$ cioè $|W'x_m| > k \to$ **ASSURDO** perché $k$ è la lunghezza massima dell'$LCS(X,Y)$.
+
+2) se $x_m \neq y_n$
+	1)  se $w_k \neq x_m$ allora $W$ è una sottosequenza comune a $X^{m-1}$ e $Y$. Vorremmo dimostrare che $W \in LCS(X^{m-1},Y)$. Se ci fosse una sottosequenza comune $W'$ di $X^{m-1}$ e $Y$ più lunga di $W\ (|W'| > k)$ sarebbe anche sottosequennza di $X$ e $Y$ $\to$ **ASSURDO** perchè contraddico l'ipotesi che $W \in LCS(X,Y)$ perchè $|W'| > |W|$.
+	2) Analogo.
+
+#### PASSO 2. Soluzione ricorsiva per il valore della soluzione ottima
+Date:
+* $X = x_1 ... x_m$
+* $Y = y_1 ... y_m$
+
+Indichiamo con $c[i,j] =$ lunghezza $LCS(X^i,Y^j)$ con:
+* $0 \leq i \leq m$
+* $0 \leq j \leq n$
+
+![[Pasted image 20240306101557.png]]

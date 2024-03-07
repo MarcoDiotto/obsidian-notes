@@ -515,3 +515,231 @@ Si può fare di meglio, memorizzando solo $m + n$ righe.
 
 La teoria della normalizzazione è stata perciò generalizzata per rimuovere anche questo tipo di anomalie dovute **dipendenze multivalore** (4NF).
 ## Esercizi
+# Vincoli di Integrità
+___
+## Introduzione
+Molto spesso i dati salvati all'interno di un database devono soddisfare determinati **vincoli di integrità** dipendenti dalla semantica dei dati.
+* Garantire che certi attributi abbiano sempre un valore $\to$ (NOT NULL)
+* Garantire che un certo insieme di attributi sia una chiave $\to$ (PRIMARY KEY, UNIQUE)
+* Garantire l'integrità referenziale $\to$ (vincoli su FOREIGN KEY)
+* Garantire determinati vincoli sui valori degli attributi, anche in relazione fra loro.
+
+**Esempi**:
+* Garantire che l'età di una persona sia sempre un numero positivo
+* Garantire che il primario di un ospedale sia anche un dottore.
+## NOT NULL
+Il più semplice vincolo che possiamo esprimere è che un certo attributo non deve mai essere impostato a **NULL**.
+
+**Esempio**:
+```SQL
+CREATE TABLE Movies (
+	title    CHAR(100) NOT NULL,
+	year     INT,
+	lenght   INT,
+	genre    CHAR(10)
+)
+```
+
+## Chiavi -UNIQUE
+Data una tabella $R(T)$ ed un insieme di attributi $X \subseteq T$, possiamo specificare che *nessuna coppia di tuple in $R(T)$ coincida su tutti gli attributi in $X$*, a meno che almeno uno di essi non sia NULL.
+
+**Esempio**:
+```SQL
+CREATE TABLE Movies(
+	title    CHAR(100) NOT NULL,
+	year     INT,
+	lenght   INT,
+	genre    CHAR(10),
+	UNIQUE (title, year)
+)
+```
+*Nota*: se riguarda un singolo attributo può essere dichiarata anche in-line
+
+## PRIMARY KEY
+Il vincolo **PRIMARY KEY** si comporta come UNIQUE  ma impone in aggiunta il vincolo NOT NULL per tutti gli attributi specificati.
+
+**Esempio**:
+```SQL
+CREATE TABLE Movies(
+title    CHAR(100),
+year     INT,
+lenght   INT,
+genre    CHAR(10),
+PRIMARY KEY (title, year)
+)
+```
+*Nota*: se riguarda un singolo attributo può essere dichiarata anche in-line
+## FOREIGN KEY
+Dati una tabella $R(T)$ ed $X \subseteq T$, possiamo specificare un vincolo di **integrità referenziale** secondo cui $X$ è una **chiave esterna** di $R(T)$:
+* Il vincolo deve riferire una tabella $S(U)$ ed un insieme di attributi in $Y \subseteq U$, dichiarati PRIMARY KEY o UNIQUE
+* per ogni tupla $t \in R(T)$ tale che tutti gli attributi in $X$ sono diversi da NULL, deve esistere una tupla $t' \in S(U)$ tale che $T[X] = t'[Y]$
+
+*Nota*: implicitamente richiediamo $|X| = |Y|$
+
+Possiamo indicare che un attributo è una chiave esterna subito dopo la dichiarazione dello stesso:
+```SQL
+REFERENCES <table> (<attribute>)
+```
+
+oppure alla fine di tutte le dichiarazioni:
+```SQL
+FOREIGN KEY (<attributes>) REFERENCES <table> (<attributes>)
+```
+
+**Esempio**:
+```SQL
+CREATE TABLE MovieExec(
+	name      CHAR(50),
+	address   VARCHAR(255),
+	code      INT PRIMARY KEY,
+	netWorth  INT
+)
+
+CREATE TABLE Studio(
+	name      CHAR(30) PRIMARY KEY,
+	address   VARCHAR(255),
+	president INT,
+	FOREIGN KEY (president) REFERENCES MovieExec(code)
+)
+```
+
+In questo caso *è possibile avere uno studio senza presidente* ma *non è possibile avere un presidente che non sia anche un produttore esecutivo*.
+## Mantenimento dell'Integrità Referenziale
+```SQL
+CREATE TABLE MovieExec(
+	name      CHAR(50),
+	address   VARCHAR(255),
+	code      INT PRIMARY KEY,
+	netWorth  INT
+)
+
+CREATE TABLE Studio(
+	name      CHAR(30) PRIMARY KEY,
+	address   VARCHAR(255),
+	president INT,
+	FOREIGN KEY (president) REFERENCES MovieExec(code)
+)
+```
+
+Le seguenti operazioni su `Studio` sono **impedite**:
+* Inserimento di una tupla il cui attributi `president` non è NULL e non coincide con l'attributo `code` di una tupla in `MovieExec`.
+* Aggiornamento di una tupla per cambiare il suo attributo `president` ad un valore non NULL che non coincide con l'attributo `code` di una tupla in `MovieExec`.
+* Ci sono ulteriori casi problematici.
+
+Le seguenti operazioni su `MovieExec` sono **pericolose**:
+* Cancellazione di una tupla il cui attributo `code` coincide con l'attributo `president` di qualche tupla in `Studio`.
+* Aggiornamento di una tupla per cambiare il suo attributo `code` in modo tale che non coincida più con l'attributo `president` di qualche tupla in `Studio`.
+
+Questi casi possono essere gestiti tramite diverse **politiche di integrità**.
+## Politiche di Integrità Referenziale
+SQL mette a disposizione tre politiche per gestire i due casi descritti:
+* **Default**: rifiuta la modifica.
+* **CASCADE**: applica la stessa modifica (DELETE o UPDATE) sulle tuple che fanno uso della chiave esterna.
+* **SET NULL**: imposta la chiave esterna a NULL sulle tuple che fanno uso della stessa.
+
+*Nota*: possiamo specificare una politica diversa per DELETE e UPDATE, utilizzando la sintassi ON DELETE oppure ON UPDATE seguito da CASCADE oppure SET NULL.
+
+**Esempio**:
+```SQL
+CREATE TABLE Studio(
+	name      CHAR(30) PRIMARY KEY,
+	address   VARCHAR(255),
+	president INT,
+	FOREIGN KEY (president) REFERENCES MovieExec(code)
+		ON DELETE SET NULL
+		ON UPDATE CASCADE
+)
+```
+## CHECK su Attributi
+Possiamo specificare vincoli complessi sul valore di un attributo usando la sintassi **CHECK** seguita da un'espressione booleana fra parentesi:
+* Si può utilizzare qualsiasi espressione ammessa da WHERE.
+* Secondo lo standard SQL si possono riferire altre relazioni tramite sotto-query, ma questo non è supportato nei DBMS commerciali (Postgres).
+* Il vincolo è controllato ogni volta che una tupla assume un nuovo valore per quell'attributo (INSERT o UPDATE).
+
+*Nota*: questo **non è necessariamente sufficiente** a garantire che il vincolo non sia mai violato.
+
+**Esempio 1**:
+```SQL
+CREATE TABLE MovieExec(
+	name      CHAR(50),
+	address   VARCHAR(255),
+	code      INT PRIMARY KEY CHECK (code >= 100000),
+	netWorth  INT
+)
+
+CREATE TABLE Studio(
+	name      CHAR(30) PRIMARY KEY,
+	address   VARCHAR(255),
+	president INT,
+	FOREIGN KEY (president) REFERENCES MovieExec(code)
+)
+```
+
+**Esempio 2**:
+```SQL
+CREATE TABLE Studio(
+	name      CHAR(30) PRIMARY KEY,
+	address   VARCHAR(255),
+	president INT,
+	FOREIGN KEY (president) REFERENCES MovieExec(code)
+)
+```
+
+```SQL
+CREATE TABLE Studio(
+	name      CHAR(30) PRIMARY KEY,
+	address   VARCHAR(255),
+	president INT CHECK (president in (SELECT
+									   FROM MovieExec))
+)
+```
+La seconda forma offre meno garanzie della prima! Se una entry di `MovieExec`cambia il valore di `code`:
+* Nel primo caso possiamo usare una politica di integrità referenziale.
+* Nel secondo caso non è possibile garantire integrità referenziale, perché `Studio` non viene toccata.
+## CHECK su Tuple
+SQL permette di specificare anche vincoli sull'intera tupla piuttosto che sul singolo attributo. Le considerazioni sulla sintassi e sulla semantica sono sostanzialmente le stesse del caso precedente.
+
+```SQL
+CREATE TABLE MovieExec(
+	name      CHAR(50),
+	address   VARCHAR(255),
+	code      INT PRIMARY KEY,
+	netWorth  INT,
+	CHECK (code >= 100000 AND netWorth >= 0)
+)
+```
+*Nota*: in questo semplice esempio avremmo potuto usare anche due CHECK su attributi, che sono potenzialmente più efficienti.
+## CHECK su Attributi o su Tuple?
+* Se un vincolo coinvolge più di un attributo e non è una congiunzione di vincoli su attributi indipendendi, è **necessario ricorrere a CHECK su tuple** per motivi di espressività.
+* Se un vincolo coinvolge un solo attributo, **possiamo scegliere fra i due tipi** ma i *CHECK su attributi sono più efficienti dei CHECK su tuple* dato che devono essere controllati meno di frequente.
+
+**Reminder**:
+* $A \implies B$ equivale a $\lnot A \lor B$
+* $\lnot(A \land B)$ equivale a $\lnot A \lor \lnot B$
+* $\lnot (A \lor B)$ equivale a $\lnot A \land \lnot B$
+## Equivalenze Logice
+Come garantire che **tutti** coloro che soddisfano la proprietà $A$ devono soddisfare la proprietà $B$?
+* Logicamente equivalente a $A \implies B$.
+* Esprimere quindi equivalentemente con $\lnot A \lor B$.
+
+Come garantire che **solo** coloro che soddisfano la proprietà $A$ possono soddisfare la proprietà $B$?
+* Logicamente equivalente a $B \to A$.
+* Esprimibile quindi equivalente con $\lnot B \lor A$.
+## Aggiornare i Vincoli
+Possiamo dare un nome ai vincoli anteponendo alla loro dichiarazione la dicitura, questo ci permette di eliminarli in seguito:
+```SQL
+CONSTRAINT NomeV [FOREIGN KEY, UNIQUE, CHECK, etc.]...
+```
+
+Possiamo **cancellare** un vincolo esistente a partire dal suo nome:
+```SQL
+ALTER TABLE NomeT DROP CONSTRAINT NomeV
+```
+
+Possiamo **inserire** un nuovo vincolo, ricorrendo alla sintassi:
+```SQL
+ALTER TABLE NomeT ADD [CONTRAINT NomeV] DefV
+```
+
+Il vincolo *deve già valere* sulla tabella al momento del suo inserimento. Questa caratteristica è molto desiderabile nella pratica
+La **modifica** di un vincolo non è supportata, ma può essere effettuata tramite una cancellazione seguita da un inserimento.

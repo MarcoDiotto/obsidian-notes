@@ -211,3 +211,33 @@ flowchart LR
 A **Single Page Application** is designed to *minimize the interaction with the server*
 
 **Goal**: Exchange only the data strictly required for its execution.
+
+By managing session data on the client, we gain two big advantages:
+* No memory is used on the server side.
+* Most of the business can me done at user side.
+## Tokens
+An efficient way to implement client-side sessions is by using tokens:
+* The server generates a token at the time of the authentication.
+* The token contains all the information needed to run the business logic for a specific client.
+* The token **is signed** by the server to ensure the client cannot modify it.
+
+## JSON Web Tokens (JWT)
+Open standard to manage token-based authentication.
+
+It is a *base-64-encoded string* composed of:
+* a **header** which specifies the token type and the signature algorithm.
+* A **payload** containing arbitrary data in JSON format.
+* The **digital signature** of both header and payload.
+
+## JWT: Advantages
+
+* JWT contains not only a session identifier but any **additional data** useful to implement part of business logic on client side.
+* Data is **not encrypted** but **signed**, so they cannot be modified without invalidating the signature. It is a sort of "read-only" session data structure for the client.
+
+At every request, the entire token is sent to the server like a cookie (inside a specific HTTP header): 
+```
+Authorization: Bearer <token>
+```
+
+Since it contains all the information associated with a user, the server does not have to keep session data in memory.
+*Trade-off*: bandwidth vs server memory usage.

@@ -1,50 +1,54 @@
-# Lesson 1
+# Introduction
 ___
 ## Internet
 
-* The internet is the $\color{green}global\  system$ of interconnected computer networks that uses the $\color{green}Internet\ Protocol\ Suite$ (TCP/IP) to link devices worldwide.
-* Every device is identified by an $\color{green}address$ and is generally referred to as an $\color{green}host$. Two hosts may communicate even if they have no direct connection.
+* The internet is the **global  system** of interconnected computer networks that uses the **Internet Protocol Suite** (TCP/IP) to link devices worldwide.
+* Every device is identified by an **address** and is generally referred to as an **host**. Two hosts may communicate even if they have no direct connection.
 
-### Protocols
+## Protocols
 
-* A communication protocol is a $\color{green}set\ of\ rules$ for exchanging information over a network.
-* Protocols are usually layered in a $\color{green} stack$.
-* Specifies how data should be $\color{green} packetized,\ adressed,\ transmitted,\ routed$ and $\color{green}received$.
-* $\color{red}Physical\ Layer$: transceiver that drives the signal on the network.
-* $\color{red} Data\ Link\ Layer\ (MAC)$: creates the frames that move across the network.
-* $\color{red}Network\ Layer$: creates the pakets that move across the network.
-* $\color{red}Transport\ Layer\ (TCP/UDP)$: established connection between devices.
-* $\color{red}Application\ Layer$: final layer.
+* A communication protocol is a **set of rules** for exchanging information over a network.
+* Protocols are usually layered in a **stack**.
+* Specifies how data should be **packetized**, **adressed**, **transmitted**, **routed** and **received**.
+* **Physical Layer**: transceiver that drives the signal on the network.
+* **Data Link Layer** (MAC): creates the frames that move across the network.
+* **Network Layer** (IP): creates the pakets that move across the network.
+* **Transport Layer** (TCP/UDP): established connection between devices.
+* **Application Layer**: group of applications requiring network communications.
 
-
+![[Pasted image 20240308155921.png]]
 ## World Wide Web
 
-The world Wide Web is an $\color{green} Information\ System$ in which the items of interests ($\color{green}resources$) are referred to as Uniform Resource Locators($\color{green}URL$)
+The world Wide Web is an **Information System** in which the items of interests (**resources**) are referred to with the Uniform Resource Locators(**URL**).
 
-Resources can be linked by $\color{green}hypertext$ and are accessible over the $\color{green}Internet$. Resources may be accessed by a $\color{green}Web\ Browser$.
+Resources can be linked by **hypertext** and are accessible over the Internet. Resources may be accessed by a **Web Browser**.
+## Architectural bases of the WWW
 
-### Architectural bases of the WWW
-
-* $\color{red}URLs$ are used to identify resources
-* $\color{red}Web\ agents$ communicates using $\color{green}Standardized\ protocols$ that enable interaction through the exchange of messages that adhere to a defined syntax and semantycs.
-* $\color{red}Resources$ have a specific $\color{green}representation$ that can be interpreted (and visualized) by $\color{green}web\ browser$. 
-		Resource $\neq$ representation. `http://www.../cat.jpg` $\rightarrow$ jpg doesn't mean anything for the web browser.
-### Browsing the web
+* **URLs** are used to identify resources
+* **Web agents** communicate using *standardized protocols* that enable interaction through the exchange of messages that adhere to a defined syntax and semantycs.
+* **Resources** have a specific *representation* that can be interpreted (and visualized) by *web browsers*. 
+  Resource $\neq$ representation. `http://www.../cat.jpg` $\rightarrow$ jpg doesn't mean anything for the web browser.
+## Browsing the web
 
 We start with a resource: `http://www.example.org/home.html`
 
-* http is the name of the protocol used to ask for the resource
-* `www.example.org` is the destination name (resolved into an IP address by the DNS (Domain Name System))
-* using the HTTP protocol, the browser asks for the resource `home.html`
+* **http** is the name of the protocol used to ask for the resource
+* `www.example.org` is the **destination name** (resolved into an *IP address* by the *DNS* (Domain Name System))
+* using the HTTP protocol, the browser asks for the **resource** `home.html`
 * The resource is downloaded by the TCP connection.
-* The resource has an associated representation($\color{green} mime-type$).
-# Lesson 2
-___
-**HTTP**: 
+* The resource has an associated representation(**mime-type**).
+# HTTP
+___ 
+## Introduction
+**HTTP** (HyperText Tranfer Protocol) is the principal communication protocol for the web.
+
 * A *protocol* is a set of rules. 
 * It is called *hypertext* because it was once used to transmit only texts 
 * It is used to *transfer* data
 * It's a *request-response* protocol with a *client-server* model 
+
+## Base Concepts
+
   ```mermaid
   flowchart LR
   A[[CLIENT]] --HTPP REQUEST --> B[[SERVER]]
@@ -53,16 +57,38 @@ ___
   D(Static) --> C
   E(Generated on-demands) --> C
   ```
-  Every *resource* has an associated type, called **MIME**, which is simply a *string* formatted as: `<type>/<subtype>`. 
+
+### Client-Server Model
+* HTTP is a **request-response** protocol with a **client-rerver** communication model
+* A typical **HTTP client** is the **web browser**. The core browser functionality is to ask resources to the server (usually HTML pages) to visualize it on screen.
+* An **HTTP server** is a software that responds to the requests performed by one ore more clients.
+
+![[Pasted image 20240308161711.png]]
+### Resources and Resource Type
+ The HTTP server hosts **resources**, which can be **static** or **generated on demand** by other programs.
+ 
+![[Pasted image 20240308162037.png]]
+
+  Every *resource* has an associated type, called **MIME** (Multipurpose Internet Mail Extension), which is simply a *string* formatted as: `<type>/<subtype>`.
+
+![[Pasted image 20240308162134.png]]
+
   **Examples**:
   * the mime type of an HTML document is `text/plain`
   * the mime type of a JPEG image is `image/jpeg`
   * the mime type of JSON strings in `application/json`
+
+
+### Resource Identifier
 Every resource has a name, called **URI** (Uniform Resource Identifier):
 * **URL** (Uniform Resource Locator): identifies a resource by specifying its *location*
 * **URN** (Uniform Resource Name): identifies a resource with an *unique name* $\to$ Not used!
- 
-  HTTP consists of  a sequence of *transactions*, composed by a *request* (client $\to$ server), followed by a *response* (server $\to$ client), formatted in an *HTTP message*
+
+### Request and Response
+  HTTP consists of  a sequence of **transactions**, composed by a **request** (client $\to$ server), followed by a **response** (server $\to$ client), formatted in an *HTTP message*.
+
+![[Pasted image 20240308162359.png]]
+### Methods
   The commands for asking a server to do something are called *HTTP  methods*, the six most common ones are:
   * GET
   * PUT
@@ -70,29 +96,53 @@ Every resource has a name, called **URI** (Uniform Resource Identifier):
   * POST
   * HEAD
   * PATCH
+### Status Code
 Every *server response* must contain a *status code*, the most popular ones are:
 * 200 (Success)
 * 302 (Redirect required)
 * 404 (The resource does not exists)
-# Lesson 3
-___
-* The *scheme* specifies the protocol to use to receive the resource from the server.
-* *User* and *Password* can sometimes be requested to authenticated with the server. If not specified, the default user name is **anonymous**.
-* The *server address* can be a **hostname** (resolved via DNS) or an **IP address**.
-* The server has a *port* on which it is listening for a connection. The port can be omitted and in this case the default value will (**Example**: HTTP default port is 80).
-* The *path* specifies the local location in the server (as a file in the filesystem of the server $\to$ nowadays resources are generated on the fly). The path can be divided into multiple segments separated by /.
-* *Params* allows to specify a list of "key-value" pairs. They refer to the **path**
-* *Query* is again a "key-value" pair used to restrict the resources of the server. They refer to the **resources**. `&` can be used to separate "key-value" pairs.
-* *frag* is used to restrict the area to a specific fragment of the page.
+### Protocol Versions
+* **HTTP/0.9** $\to$ First prototipe relased in 1991. Supports only the GET method and is bugged.
+* **HTTP/1.0** $\to$ First version to be adopted on a large scale. Add differents method and the MIME types.
+* **HTTP/1.0+** $\to$ Added support for keep-alive connections, virtual hosting and proxies.
+* **HTTP/1.1** $\to$ Corrects some bugs and adds may optimizations to improve the performance. It is the currently used version.
+## URL
+A Uniform Resource Locator (**URL**) is a standard name to define and identify resources inside the web.
+* Usually it represent the *entry point* from which the users start browsing the web.
+* Encodes the **resource name**, the **location** where to find it and **how** the browser can retrieve it.
+* The general URL format comprises *9 distincts parts* (not all of them are mandatory).
+
+## URL structure
+```
+<scheme>://<user>:<password>@<host>:<port>/<path>;<params>?<query>#<frag>
+```
+* The **scheme** specifies the protocol to use to receive the resource from the server.
+* **User** and **Password** can sometimes be requested to authenticated with the server. If not specified, the default user name is *anonymous*.
+* The **server address** can be a *hostname* (resolved via DNS) or an *IP address*.
+* The server has a **port** on which it is listening for a connection. The port can be omitted and in this case the default value will (*Example*: HTTP default port is 80).
+* The **path** specifies the local location in the server (as a file in the filesystem of the server $\to$ nowadays resources are generated on the fly). The path can be divided into multiple segments separated by /.
+* **Params** allows to specify a list of "key-value" pairs. They refer to the *path*.
+* Query is again a "key-value" pair used to *restrict* the resources of the server. They refer to the *resources*. `&` can be used to separate "key-value" pairs.
+* **frag** is used to restrict the area to a specific fragment of the page.
+
+![[Pasted image 20240308164840.png]]
+
 ## Absolute and Relative URLs
 * `<a href-=".hammer.html"` is a **relative** URL because it doesn't contain any *schema* nor *hostname*. We need a **base URL** to which concatenate the relative URL. Base URLs can be obtained in 2 ways:
   1) By specifying it using the tag `<base>` in the document header
   2) Using the absolute URL.
 * URLs can only contain symbols from the standard **ASCII**(non-ASCII characters are supported by **IRI**)
 * **Character escaping** in URLs is performed in the following way:`%`+ 2 digits that identifie the character
+## Algorithm to obtain an absolute URL from a relative URL
+
+![[Pasted image 20240308165020.png]]
+
 ## HTTP Connection
+
+![[Pasted image 20240308165500.png]]
+
 HTTP works at an **application** level, so we need other protocols:
-* **TCP** provides a *bidirectional data stream*:
+* **TCP/IP** provides a *bidirectional data stream*:
 	1) **Connection-oriented**
 	2) **Reliable**
 	3) **Ordered** $\to$ data arrives in the same order as they where generated
@@ -100,23 +150,98 @@ HTTP works at an **application** level, so we need other protocols:
 	5) A **TCP connection** is uniquely identified by 4 values: `<source ip> <source port> <destination ip> <destination port>`. Multiple connections with the same IP or port are allowed.
 ## HTTP messages
 After the **TCP connection**, the HTTP protocol expects the exchange of a list of at least **2 messages**:
-* a **request**
-* a **response**
+* a **request** from the client
+* a **response** from the server
 
 A  **general message** is divided in 3 parts:
 * a **start line**: string describing the message followed by a newline
 * a **header**: multiple text lines to define options and properties of the message. The header section end with an empty newline
 * a **body**: generic data
-
+## Request
 A **request** uses those parts as following:
-* **start line**: `<method> <request-URL> <version>`
-* **header** : `<name1> : <value1>  <name2> : <value2>`
-* **body**: *binary*, text data or an empty line
+* **start line**: `<method> <request-URL>`(*Resource path*)  `<version>` (*HTTP version*)
+* **header** : `<name1> : <value1>  <name2> : <value2>  ...`
+* **body**: *binary*, *text data* or an *empty line*.
+## Possible Methods
+* **GET**: Ask the server to *provide* a *certain resource*.
+* **HEAD**: Ask the server to *provide* only the *resource header*.
+  Usages:
+    * Know the type of a resource.
+    * Check if the resource exists.
+    * Check if the resource has been modified.
+* **PUT**: Ask the server to *store* a *certain resource*.
+* **POST**: Used to *send generic data* to the server. The data aren't meant to be stored.
+* **TRACE**: gives *diagnostic data* on the connection topology.
+* **OPTIONS**: Ask the server for a *list of supported functionalities*.
+* **DELETE**: Used to ask the server to *delete* a *resource*.
+* Many other methods.
+## Response
+A **response** is sent by the server to the client *only after a request message is reived*.
+It uses the parts described previously as following:
+* **start line**: `<version> <status> <reason-phrase>`(*text description of the status code*)
+* **header**: `<name1>:<value1>  <name2>:<value2>  ...`
+* **body**: *Binary*, *text data* or an *empty line*.
+## Status
 
-A **response** on the other hand uses them as following:
-* **start line**:
-* **header**:
-* **body**:
+![[Pasted image 20240308172610.png]]
+## Headers
+**HTTP/1.1** defines multiple **headers** according to the message type.
+
+* **General Purpose**:  ![[Pasted image 20240308172931.png]]
+* **Headers Request**: ![[Pasted image 20240308173012.png]]
+  ![[Pasted image 20240308173028.png]]
+* **Headers Response**: ![[Pasted image 20240308173108.png]]
+* **Entity Headers**: ![[Pasted image 20240308173140.png]]
+
+## HTTP Security
+
+**HTTP protocol** does not intrinsically provide functions to garantuee the *security* and *secrecy* of the exchanged data.
+
+With the evolution of the modern web, we faced the need to use a secure protocol to manage bank transactions, authentication etc.
+
+Anyone connected on the same network can potentially eavesdrop on the traffic generated by two entities to steal confidential data or maliciously alter the content (man-in-the-middle attack)
+
+**HTTP security** is implemented by *inserting a new layer* below it. 
+2 options: 
+* **SSL** (Secure Socket Layer).
+* **TLS** (Transport Layer Security).
+
+## HTTPS
+The advantage of using an additional layer is that *the original HTTP protocol remains unchanged*. The underlying connection is just established in a different way.
+
+![[Pasted image 20240308174613.png]]
+
+## HTTPS features
+* **Server Authentication**:  A client can verify the identity of the server to ensure that he is not connected to somebody else faking its identity.
+* **Client Authentication**: The server can verify the client regardless of the built-in HTTP authentication method.
+*  **Transmission Integrity**: It is possible to detect if the transmitted data has been tampered with by a third party agent.
+* **Data Encryption**: The transmitted data are readable only by the client and server pair. Nobody can eavesdrop on the connection to steal sensible data.
+## HTTPS and cryptography
+HTTPS is based on the following techniques:
+* **Symmetric Key Cryptography**: ![[Pasted image 20240308175510.png]]
+* **Asymmetric Key Cryptography**:  Public key to crypt, private key to decrypt. Public key pairs can be freely exchanged. ![[Pasted image 20240308175655.png]]
+* **Digital Signiture**: Private key used to sign a document. Public key used to verify the signature. ![[Pasted image 20240308175746.png]]
+* **Digital Certificate**: ["It is an electronic document used to prove the ownership of a public key"](https://en.wikipedia.org/wiki/Public_key_certificate). It usually contains:
+     * The *subject name*.
+     * The *expiration date*
+     * Information on the *issuer of the certificate*.
+     * The *public key* of the subject.
+  Everything is signed by a trusted *signing authority* that has verified the correspondence between the subject and its publickey.  
+## HTTPS
+When the browser connects using HTTPS, the following operations are performed:
+* The *client* requests the server's *digital certificate*.
+* The *signing authority* is read from the certificate.
+* If the signing authority is known and preinstalled in the browser, the *digital signature* is verified by using the public key of the signing authority.
+* If the signing authority is unknown (or the certificate is self-signed), the browser will warn the user that the server identity cannot be verified. ![[Pasted image 20240308180507.png]]
+* After the certificate check, the *SSL/TLS layer* negotiates the security parameters for use, and a **secure encrypted channel** is established.
+* After that, HTTPS works the same way as HTTP but operates on the **secure channel**.
+## HTTP vs HTTPS
+
+![[Pasted image 20240308180659.png]]
+![[Pasted image 20240308180726.png]]
+![[Pasted image 20240308180804.png]]
+# SESSION & Cookies
+___
 
 # //TODO : sistemare appunti precedenti e aggiungere ultime lezioni
 ## Basic Authentication

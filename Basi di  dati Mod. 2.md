@@ -742,4 +742,209 @@ ALTER TABLE NomeT ADD [CONTRAINT NomeV] DefV
 ```
 
 Il vincolo *deve già valere* sulla tabella al momento del suo inserimento. Questa caratteristica è molto desiderabile nella pratica
+
 La **modifica** di un vincolo non è supportata, ma può essere effettuata tramite una cancellazione seguita da un inserimento.
+## Asserzioni
+Le asserzioni esprimono **imvarianti globali** sull'intero schema relazionale
+```SQL
+CREATE ASSERTION <name> CHECK (<condition>)
+```
+
+La condizione deve essere vera quando l'asserzione è creata è continua a essere tale dopo ogni modifica del database.
+
+*Nota*: le asserzioni sono strettamente **più potenti** dei CHECK, ma molto più complicate da implementare, data la loro inefficienza nessuno dei principali DBMS le implementa.
+
+**Esempio**
+
+Nessuno può  essere il presidente di uno studio senza avere un reddito di almeno 100.000:
+
+```SQL
+CREATE ASSERTION RichPresident CHECK(
+	NOT EXISTS(
+		SELECT Studio.name
+		FROM Studio, MovieExec
+		WHERE Studio.president = MovieExec.code AND
+			  MovieExec.netWorth < 100000
+	)
+);
+```
+
+## Esercizi
+Gli esercizi corretti di trovano alla slide 31 del documento a questo [link](https://mega.nz/file/139GwQyI#XFwQyfcoNjsCtg1LWm14CiP-bz8V-AwuUiUT3gqSBCs).
+## Check o Asserzioni?
+
+![[Pasted image 20240311091904.png]]
+
+Utilizzare *check con sotto-query* è pericoloso in presenza di join o prodotti nelle sotto-query perché può portare ad incongruenze.
+# Triggers
+___
+## Introduzione
+I trigger sono lo standard de facto per il **mantenimento di invarianti globali** nei DBMS, perché possono essere implementati *efficientemente*.
+
+Seguono un paradigma di tipo: **Evento**-**Condizione**-**Azione**:
+
+* Un trigger è associato ad un **evento** che ne determina l’attivazione. Esempi tipici di eventi sono INSERT, DELETE o UPDATE su una certa tabella.
+* Quando un trigger viene attivato, esso può controllare una certa **condizione**. Se la condizione è falsa, il trigger termina
+* Se invece la condizione é vera, viene eseguita la cosiddetta **azione** associata al trigger. L’azione é una sequenza arbitraria di operazioni sullo schema relazionale.
+
+*Nota*: nessuno dei DBMS in commercio si adeguano allo standard per motivi storici.
+## Trigger per Riga e per Statement
+Un evento può coinvolgere righe multiple, quindi SQL fornisce due tipi di trigger diversi:
+
+* **Trigger per riga**: eseguiti per ognuna delle righe coinvolte dall’evento scatenante (*eseguito n volte*). Si può usare OLD ROW e NEW ROW per riferirsi alla tupla coinvolta dall’evento prima e dopo la sua occorrenza. 
+* **Trigger per statement**: eseguiti *una sola volta* per evento scatenante. Si può usare OLD TABLE e NEW TABLE per riferirsi a tutte le tuple coinvolte dall’evento prima e dopo la sua occorrenza. 
+
+*Nota*: è possibile fare uso di OLD TABLE e NEW TABLE anche all’interno di un trigger per riga (la riga viene interpretata come una tabella con una singola tupla al suo interno).
+## Before e After Trigger
+In fase di definizione di un trigger è possibile specificare se l’azione debba essere eseguita prima o dopo l’evento scatenante: 
+
+* **BEFORE trigger**: attivati prima dell’evento scatenante. Di solito vengono utilizzati per impedire l’esecuzione di un’operazione o per modificarne preventivamente il comportamento. 
+* **AFTER trigger**: attivati dopo l’evento scatenante. Hanno visibilità dello stato della base di dati dopo l’esecuzione di un’operazione e quindi sono talvolta necessari per motivi di espressività. 
+
+*Nota*: un AFTER trigger può simulare l’annullamento di un’operazione facendo un rollback dello stato della base di dati alla situazione precedente, ma l’uso di BEFORE trigger è preferibile quando possibile.
+## Progettazione di Trigger
+I trigger forniscono un modo **indiretto** per mantenere invarianti globali: essi non adottano lo stile dichiarativo delle asserzioni. 
+
+Metodologia per il mantenimento di invarianti tramite trigger:
+
+* Quali operazioni possono violare l’invariante? 
+* Il mantenimento dell’invariante può essere controllato per ogni riga coinvolta dall’operazione oppure no? (Trigger per *riga* o per *statement*)
+* Cosa bisogna fare prima o dopo dell’operazione per garantire il mantenimento dell’invariante?
+
+**Esempio 1**:
+
+Supponiamo di volere utilizzare un trigger per garantire che non sia mai possibile abbassare uno stipendio:
+
+ *Quali operazioni possono violare l’invariante?*
+> L’invariante può essere violata da un’operazione di aggiornamento.
+
+ *Il mantenimento dell’invariante può essere controllato per ogni riga coinvolta dall’operazione oppure no?*
+>Si, perché l’informazione è contestuale alla riga modificata.
+
+*Cosa bisogna fare prima o dopo dell’operazione per garantire il mantenimento dell’invariante?*
+>Impedire l’aggiornamento della riga (BEFORE) oppure riportare lo stipendio al valore originale (AFTER).
+
+
+Codice SQL per impedire qualsiasi abbassamento di stipendio:
+```SQL
+CREATE TRIGGER NetWorthTrigger 
+AFTER UPDATE OF netWorth ON MovieExec 
+REFERENCING OLD ROW AS OldTuple, NEW ROW AS NewTuple 
+FOR EACH ROW 
+WHEN (OldTuple.netWorth > NewTuple.netWorth) 
+	UPDATE MovieExec 
+	SET netWorth = OldTuple.netWorth 
+	WHERE code = NewTuple.code;
+```
+
+*Nota*: i trigger possono fare chiamate ricorsive, bisogna stare attenti ai loop infiniti.
+
+**Esempio 2**:
+
+Supponiamo di volere utilizzare un trigger per garantire che la media degli stipendi non scenda mai sotto 500.000:
+
+ *Quali operazioni possono violare l’invariante?*
+> L’invariante può essere violata da un’operazione di inserimento, aggiornamento o cancellazione.
+
+ *Il mantenimento dell’invariante può essere controllato per ogni riga coinvolta dall’operazione oppure no?*
+>Visto che la media è un’informazione globale della tabella, non possiamo ricorrere ad un controllo puntuale per riga.
+
+*Cosa bisogna fare prima o dopo dell’operazione per garantire il mantenimento dell’invariante?*
+>Possiamo mantenere l’invariante annullando l’operazione che l’ha violata, cioè riportando la tabella allo stato originale (AFTER).
+
+Garantire che la media degli stipendi non scenda mai sotto 500.000:
+
+```SQL
+CREATE TRIGGER AvgNetWorthTrigger 
+AFTER UPDATE ON MovieExec 
+REFERENCING OLD TABLE AS OldStuff, NEW TABLE AS NewStuff 
+FOR EACH STATEMENT 
+WHEN (500000 > (SELECT AVG(netWorth) FROM MovieExec)) 
+BEGIN 
+	DELETE FROM MovieExec 
+	WHERE (name, address, code, netWorth) 
+	IN (SELECT * FROM NewStuff); 
+	INSERT INTO MovieExec (SELECT * FROM OldStuff); 
+END;
+```
+
+*Nota*: servon0 trigger analoghi per INSERT e DELETE.
+
+**Esempio 3**:
+
+Supponiamo di volere utilizzare un trigger per garantire che la data di uscita di un film non possa mai essere `NULL`, usando il valore di default 1915 in tal caso:
+
+ *Quali operazioni possono violare l’invariante?*
+> L’invariante può essere violata da un’operazione di inserimento o aggiornamento.
+
+ *Il mantenimento dell’invariante può essere controllato per ogni riga coinvolta dall’operazione oppure no?*
+>Si, perché l’informazione è contestuale alla riga inserita o modificata.
+
+*Cosa bisogna fare prima o dopo dell’operazione per garantire il mantenimento dell’invariante?*
+>Possiamo mantenere l’invariante correggendo il valore della data nella riga, prima o dopo l’operazione.
+
+La data di uscita di un film non può mai essere `NULL` (default a 1915):
+
+```SQL
+CREATE TRIGGER FixYearTrigger 
+BEFORE INSERT ON Movies 
+REFERENCING NEW ROW AS NewRow, NEW TABLE AS NewStuff 
+FOR EACH ROW 
+WHEN NewRow.year IS NULL 
+UPDATE NewStuff SET year = 1915;
+```
+
+*Nota*: serve un trigger analogo per UPDATE.
+## Uso dei Trigger
+
+**Trigger passivi**: tali trigger provocano il fallimento di un’operazione sotto determinate condizioni. 
+Usi tipici: 
+* Definizione di vincoli di integrità (*es.* no abbassamenti di stipendio).
+* Controlli dinamici di autorizzazione (*es.* si possono inserire dati solo se il codice del dipartimento coincide con quello dell’utente che ha richiesto l’operazione).
+
+**Trigger attivi**: tali trigger modificano, anche in modo complesso, lo stato della base di dati in corrispondenza di certi eventi. 
+Usi tipici: 
+* Definizione di vincoli di integrità (*es.* CASCADE). 
+* Meccanismi di auditing e logging.
+* Definizione di business rules (regole aziendali).
+
+**Chiavi Esterne**: è possibile utilizzare i trigger per implementare vincoli di tipo FOREIGN KEY, gestendo sia la politica CASCADE che la politica SET NULL.
+
+**Dipendenze Funzionali**: è possibile utilizzare i trigger per garantire che un’arbitraria dipendenza funzionale $X \to Y$ sia sempre rispettata.
+## Trigger o Vincoli?
+Se avete possibilità di scelta, è **sempre preferibile** utilizzare i diversi tipi di vincoli messi a disposizione dal DBMS invece dei trigger: 
+* I vincoli sono standard e gestiti in modo uniforme da tutti i DBMS. 
+* I vincoli hanno una semantica semplice e non presentano problemi in termini di debugging. 
+* I vincoli garantiscono che una certa proprietà valga già al momento della loro definizione, a differenza dei trigger che sono reattivi. 
+
+Talvolta i trigger sono necessari per la loro espressività, per esempio: 
+* Per invarianti che coinvolgono più di una tabella. 
+* Per invarianti che coinvolgono più righe di una stessa tabella.
+## Triggers in Postgres
+Postgres offre un sistema di trigger potente e fedele allo standard SQL:
+
+```SQL
+CREATE TRIGGER name { BEFORE | AFTER } { evt [ OR ... ] }
+ON table_name
+[ REFERENCING { { OLD | NEW } TABLE AS tab } [ ... ] ] 
+[ FOR EACH { ROW | STATEMENT } ] [ WHEN ( condition ) ]
+EXECUTE FUNCTION func ( args )
+```
+
+Differenze rispetto allo standard: 
+* È possibile usare OR per associare uno stesso trigger a più eventi. 
+* Non è possibile riferire OLD ROW e NEW ROW in REFERENCING, ma c’è un modo custom per accedere a tali righe. 
+* Il corpo del trigger deve essere definito in una **funzione** separata.
+## Funzioni e Trigger
+Postgres supporta la definizione di funzioni scritte in vari linguaggi. Il suo linguaggio nativo è chiamato **PL/pgSQL**. 
+PL/pgSQL può essere usato per definire **trigger functions**, cioè funzioni: 
+* Con trigger come tipo di ritorno.
+* Senza argomenti: il passaggio di parametri avviene in modo custom in fase di creazione del trigger, perché non esiste un chiamante.
+
+```SQL
+CREATE FUNCTION my_trigger() RETURNS trigger AS $$ 
+	trigger function definition 
+$$ LANGUAGE plpgsql;
+```
+
+*Nota*: Il comando CREATE TRIGGER accetta solamente trigger functions.

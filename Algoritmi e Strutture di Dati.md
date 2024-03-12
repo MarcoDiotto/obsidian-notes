@@ -173,7 +173,7 @@ Da cui si deduce che: $[0...n^c-1]$ con $n$ numeri:
 $\color{red} \textbf{Esercizio}$
 * Dimostrare come ordinare $n$ numeri interi compresi nell'intervallo fra $0..n^4-1$ nel tempo $O(n)$.
 
-$\Theta(d(n+k))$ con $d =$ **#cifre** e $k=$ **numero di valori che vogliamo**. 
+$\Theta(d(n+k))$ con $d =$ **# cifre** e $k=$ **numero di valori che vogliamo**. 
 
 Se rappresento il numero in base $n$ ogni cifra varia fra $[0...n-1]$. 
 Per rappresentare un numero nell'intervallo $[0...n^4-1]$ in base $n$ uso $\color{green}\log_n(n^4) = 4$. 
@@ -783,3 +783,128 @@ Indichiamo con $c[i,j] =$ lunghezza $LCS(X^i,Y^j)$ con:
 * $0 \leq j \leq n$
 
 ![[Pasted image 20240306101557.png]]
+![[Pasted image 20240311104929.png]]
+#### PASSO 3. Algoritmo bottom-up
+**Manteniamo**:
+* `c[i,j]` = lunghezza della $LCS(x^i,y^j)$.
+* `b[i,j]` = informazioni utili recuperare la soluzione
+  * $\nwarrow$ se $x_i = y_j \to LCS(x^i,y^j)$ ridotto a $LCS(x^{i-1},y^{j-1})$
+  * $\leftarrow$ se $x_i \neq y_j \to LCS(x^i,y^j)$ ridotto a $LCS(x^{i},y^{j-1})$
+  * $\uparrow$ $x_i \neq y_j \to LCS(x^i,y^j)$ ridotto a $LCS(x^{i-1},y^{j})$
+
+```c
+LCS(X, Y)
+	
+	m = X.length
+	n = y.length
+	
+	//due array
+	b[1...m, 1...n]
+	c[0...m,0...n]
+	
+	for i = 0 to m
+		c[i,0] = 0
+	
+	for j = 0 to n
+		c[0,j] = 0
+	
+	for i = 1 to m
+		for j = 1 to n
+			if x[i] == y[j]
+				c[i,j] = 1 + c[i-1, j-1]
+				b[i,j] = ↖
+			else
+				if c[i-1,j] >= c[i,j-1]
+					c[i,j] = c[i-1, j]
+					b[i,j] = ↑
+			else
+				c[i,j] = c[i,j-1]
+				b[i,j] = ←
+```
+
+![[Pasted image 20240311111308.png]]
+
+#### Complessità dell'algoritmo
+Il primo ciclo ha costo $\Theta(m)$, il secondo $\Theta(n)$ mentre il terzo $\Theta(m \cdot n)$ quindi l'algoritmo ha costo polinomiale $\Theta(n \cdot m)$.
+
+#### PASSO 4. Come si costruisce una soluzione con algoritmo bottom-up
+
+```c
+printLCS(X,Y)
+	
+	b,c = LCS(X,Y)
+	printLCSaux(X,b,X.length,Y.length)
+
+printLCSaux(X,b,i,j)
+	if i > 0 and j < 0
+	if b[i,j] == ↖
+		printLCSaux(X,b,i-1,j-1)
+		print x[i]
+	else if b[i,j] == ↑
+		printLCSaux(X,b,i-1,j)
+	else
+		printLCSaux(X,b,i,j-1)
+```
+
+![[Pasted image 20240311112802.png]]
+#### Complessità dell'algoritmo 
+Il tempo di esecuzione di `printLCSaux` è $O(i+j)$ perché ad ogni chiamata decremento almeno uno fra $i$ e $j$.
+
+Per quanto riguarda `printLCS`, la chiamata a `LCS` ha costo $\Theta(m \cdot n)$ mentre la chiamata a `printLCSaux` ha costo $O(m + n)$, pertanto il costo totale di `printLCS` è $\Theta(m \cdot n)$.
+#### Ottimizzazioni
+Il codice può essere ottimizzato *rispetto all'uso della memoria*, poiché per determinare `c[i,j]` usiamo:
+* `c[i-1,j-1]`
+* `c[i-1,j]`
+* `c[i,j-1]`
+
+Confrontando questi valori posso capire come è stato ottenuto l'**ottimo**.
+#### printLCSaux Ottimizzata
+
+```c
+printLCSaux(X,c)
+	if i > 0 and j > 0
+		if c[i,j] == c[i-1,j]
+			printLCSaux(X,c,i-1,j)
+		else if c[i,j] == c[i,j-1]
+			printLCSaux(X,c,i,j-1)
+		else
+			printLCSaux(X,c,i-1,j-1)
+			print X[i]
+```
+
+**Ossercazione 1**:
+>Non cambia il costo asintotico di memoria, che è sempre dato da $\Theta(m \cdot n)$ poiché devo sempre memorizzare `c`.
+
+**Osservazione 2**
+>Se sono interessato solo alla $\textbf{lunghezza}$ della LCS, posso evitare di mantenere tutta la tabella `c[i,j]` dato che posso che posso calcolare la riga `i+1` utilizzando solo la riga `i`.
+>
+>$\textbf{Da dimostrare}$: si può in utilizzare $min(m,n)$ posizioni, più uno spazio $O(1)$ aggiuntivo.
+#### PASSO 3. Algoritmo top - down
+
+```c
+tdLCS(X,Y)
+	
+	m = x.length
+	n = y.length
+	
+	c[0...m, 0...n] // nuovo vettore
+	//inizializzo tutto a -1
+	c[0...m, 0...n] = -1 // Θ(m * n)
+	
+	return tdLCSaux(X,Y,c,m,n)
+```
+
+#### PASSO 4. Come si costruisce una soluzione con algoritmo top-down
+
+```c
+tdprintLCSaux(X,b,i,j)
+	if c[i,j] == -1
+		if i == 0 or j == 0
+			c[i,j] = 0
+		else if x[i] == y[j]
+			c[i,j] = 1 + tdLCSaux(X,Y,c,i-1,j-1)
+		else
+			c[i,j] = max(tdLCSaux(X,Y,c,i-1,j),
+						 tdLCSaux(X,Y,c,i,j-1))
+	return c[i,j]
+```

@@ -483,3 +483,170 @@ Authorization: Bearer <token>
 
 Since it contains all the information associated with a user, the server does not have to keep session data in memory.
 *Trade-off*: bandwidth vs server memory usage.
+# REST APIs
+___
+## Interoperability
+The need to create techniques and protocols to allow the interoperability of various systems emerged since the advent of first computer networks. 
+
+**Basic principle**:
+>A software system can provide a set of functionalities through standard interfaces defined in advance.
+## API
+**Definition**:
+>An Application Programming Interface (API) defines communication methods and protocols between different software components.
+
+An API is not limited to frameworks and libraries. 
+When functions are deployed throughout the web they are called **Web APIs**.
+## Web APIs in the modern web
+
+Web APIs have been **significant** for the development of the Web as we know it today. 
+
+*Trend*: SPA in which server interaction is limited to services related to data management only (data persistence, consistency, etc.)
+## Example
+Suppose that we want to create an application to manage our university library. 
+
+**Features to implement**:  
+* Search for books, authors, available copies.
+* Insertion of new books/authors/etc.
+* Deletion of books/authors/etc.
+* User management.
+* … CRUD operations.
+
+Such features will be available through a software component *exposing some APIs to be defined*. 
+Problems: 
++ How to encode the data?
++ How to invoke each function?
++ How to give a high-level representation of interfaces? (*ie.* independently to a specific software platform)
+
+## REST: simplicity is the key
+Today’s trend is to use simpler encodings (ex. JSON) and APIs following specific **architectural styles** (like REST) instead of formal **protocols and standard** (like SOAP) 
+
+**RE**presentational **S**tate **T**ransfer is an architectural style defined to help create and organize distributes systems. 
+It is **based on HTTP**
+## REST
+Being a **style**, and not a standard, means that there are *no formal rules* to follow to create a RESTful architecture.
+
+We have instead some **guidelines** and some **constraints** to help defining APIs with this architectural style.
+## Client-Server
+A REST architecture follows the client-server model. 
+* Server **exposes** a set of services and **waits** for requests related to such services. 
+* Requests are **performed** (by the clients) through a certain *communication channel*.
+
+**Goal**: *separation of concerns* between services and front-end.
+## Stateless
+A REST architecture should be *as stateless as possible*.
+Each request done from the client should have *all the information required* for the server to understand it, *without taking advantage* of any stored data.
+**Each request is independent to the others**.
+## Advantages of being stateless
+
+* **Scalability**: By not having to store data between requests (*every request is indipendent from the other*), the server can free resources faster. 
+* **Reliability**: A stateless system can recover from a failure much easier than one that isn’t, since the only thing to recover is the application itself.
+* **Easier implementation**: We don't have race condition nor the need to store data.
+* **Visibility**: Monitoring (logging) the system becomes easy when all the information required is inside the request.
+## Cacheable
+Every response to a request should be explicitly or implicitly set as **cacheable**. By caching the responses we can **bypass** some interactions (*e.g.* to the database) to *improve the performance*.
+
+![[Pasted image 20240311125833.png]]
+
+## Uniform Interface
+A REST architecture *should provide a uniform interface* to all the possible clients:
+* Clients can be **implemented independently** from the server.
+* Client implementation is **easier** because they have **less “options”** on how to use the interfaces. 
+
+*Drawback*: Having a standardized interface for all interactions might decrease the performance when a more optimized form of communication exists.
+## Layered System
+A REST architecture is designed to work properly with the *massive amount* of traffic that exists in the web. 
+Components are separated into **layers** to simplify the complexity and keep component coupling in check.
+
+![[Pasted image 20240311130713.png]]
+## Resources
+The *main building blocks* of a REST architecture are the **resources** (= entities). 
+
+A resource *represent*: 
+* What the **services** are going to be about.
+* The **type of information** that is going to be transferred and their **related actions**.
+* An **abstraction** of anything that can be conceptualized in our application.
+
+A resource *has*:
+* An **identifier** (URL) to uniquely identify a concept at any given time.
+* One or more **representations** describing the structure of the information.
+* Some **metadata** to specify additional useful information (format, last modification date, etc).
+* **Control data**, to specify cache-directives, additional constraints, etc.
+### Identifier
+The resource identifier should provide:
+* A unique way of identification.
+* The full path to the resource 
+
+It is defined using the standard URL syntax specifying the full resource path inside the server system (*e.g.*: `/api/j-k-rowling/books/harry-potter-and-the-halfblood-prince`).
+
+The identifier of each resource must be able to reference it unequivocally at any given point in time. 
+
+**Example of a bad resource identifier**:
+`/api/j-k-rowling/books/last`
+
+REST-style APIs support a whole spectrum of operations that can be performed on a certain resource. 
+REST provides the concept of **actions** that a client can perform against a certain resource. Actions can be *mapped to HTTP methods* whose semantic can be made more specific using the URL’s **query** section.
+
+**Good examples**:
+```HTTP
+GET /api/j-k-rowling/books?filter=last
+GET /api/books?q=[search term]
+PUT /api/j-k-rowling/books/harry-potter-and-the-half-
+     bloodprince?action=like
+```
+
+**Bad example**:
+`GET/api/j-k-rowling/books/harry-potter-and-the-half-bloodprince/like`
+### Representation
+A resource can have multiple representations (ex. an image can be in JPG and PNG format, data is usually in JSON).
+A REST architecture can manage (at the same time) different representations of a certain resource.
+A client can request a specific representation among the different alternatives.
+
+A client can ask for a certain representation in two ways: 
+* **Content negotiation**: HTTP protocol headers are used to communicate what are the available representations and what representations are accepted by the client.
+  ```http
+  Accept: text/html; q=1.0, text/*; q=0.8, image/gif; q=0.6,    image/jpeg; q=0.6, image/*; 
+  q=0.5, */*; q=0.1
+```
+* **Using resource name extension**: Less sophisticated, but easier to implement for common cases (note: not based on mime types):
+  ```http
+  GET /api/v1/books.json
+  GET /api/v1/books.xml
+```
+### Metadata
+A resource can include some metadata to define its structure and other characteristics. 
+A common principle for REST architectures is to *insert links to other resources into resource metadata*.
+
+The main endpoint (*i.e.* root containing all the resources) usually provides **metadata** describing all the *resources managed by the interface*.
+
+```json
+GET /api/v1/ 
+{"metadata": { "links": ["books": { "uri": "/books", "content-type": "application/json"}, "authors": { "uri": "/authors", "content-type": "application/json"}]}
+```
+## Defining a good API
+How to start? What are the guidelines to define a web service with well-defined APIs? 
+
+1. The first step is to model entities (and data) belonging to a certain context (ER diagram, objectoriented models, etc.) .
+    * This allow us to define the resources managed by our system.
+2.  We decide what operations (actions) can be performed on each resource.
+	   * CRUD operations.
+	   * Authorizations (what actions are allowed to a certain client?).
+	   * What options or attributes are required on each action? For example one can retrieve (get) a resource using some filters or limiting its dimension.
+3.  We decide what are the **endpoints** (*i.e.* what is the URL of each resource, what methods are used and what are the possible status codes for each action).
+4. We define the metadata associated to each resource.
+## What makes a good API?
+### Developer Friendly
+Communication protocol must be explicit and supported by multiple platforms. HTTP is the most popular choice. Endpoints should use simple and meaningful names with respect to the corresponding resources.
+
+**Example of badly designed endpoints**:
+```http
+/api/getAllBooks
+/api/submitNewBook
+/api/getNumberOfBooksInStock
+```
+* **Endpoint “explosion”**. We need to create an endpoint for each pair (resource,action) .
+* When we implement a new action it is **not clear** how to name the new endpoint.
+* Must use conventions **known a-priori** (ex camelcase).
+
+![[Pasted image 20240311134515.png]]
+
+*Note*: REST style requires less endpoints to remember and provide an explicit semantics thanks to HTTP methods.

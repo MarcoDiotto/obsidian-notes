@@ -648,3 +648,34 @@ Tuttavia stimare gli errori standard può essere complicato anche in modelli sem
 
 ![[Pasted image 20240307101303.png]]
 ![[Pasted image 20240307101329.png]]
+## Proprietà asintotiche dello stimatore di massima verosimiglianza
+Sotto **assunzioni** che valgono nei problemi che affronteremo in questo corso, lo stimatore di massima verosimiglianza e:
+* **Asintoticamente non distorto**: $$E(\hat{\theta}) \to \theta,\ \ \ \ per\ n \to \infty$$
+* **Consistente**: $$\hat{\theta} \overset{p}\to \theta,\ \ \ \ per\ n \to \infty$$
+* **Asintoticamente normale** con distribuzione limite: $$\hat{\theta} \sim N\{\theta, I(\theta)^{-1}\},\ \ \ \ \textbf{per\ n\ sufficientemente\ grande}$$ dove $I(\theta)$ è l'**informazione attesa di Fisher**.
+## Informazione attesa di Fisher
+L'informazione attesa di Fisher è definita come: $$I(\theta) = E\{-\frac{d^2}{d\theta^2}\mathcal{l}(\theta)\}$$ $$= E \{-\frac{d^2}{d\theta^2} \sum_{i = 1}^n log\ \mathcal{f}(X_i;\theta)\}$$ 
+$$= \sum_{i = 1}^nE \{-\frac{d^2}{d\theta^2} log\ \mathcal{f}(X_i;\theta)\}$$
+Nel caso di un *campione casuale semplice abbiamo*: $$I(\theta) = n\ E \{-\frac{d^2}{d\theta^2} log\ \mathcal{f}(X_i;\theta)\}$$ cioè l'informazione del campione è pari a $n$ volte l'informazione contenuta in una singola osservazione.
+## Informazione attesa e osservata
+
+L'**informazione osservata è definita come**: $$J(\theta) = -\mathcal{l}'' =\sum_{i = 1}^n \{-\frac{d^2}{d\theta^2} log\ \mathcal{f}(X_i;\theta)\} $$ $$ = \sum_{i = 1}^n g(X_i)$$
+La *Legge dei grandi numeri* ci dice che per $n \to \infty$: $$\frac{J(\theta)}{n} \overset{p}\to E\{g(X_1)\} = E \{-\frac{d^2}{d\theta^2} log\ \mathcal{f}(X_i;\theta)\}$$ ovvero $J(\theta) \sim I(\theta)$ per $n$ *sufficientemente grande*.
+
+Differenza fra le due informazioni:
+* $I(\theta)$ e una media dell’informazione in ipotetici  campioni ripetuti.  
+* $J(\theta)$ riflette l’informazione nel particolare campione osservato.
+## Errore standard dello stimatore di massima verosimiglianza
+Sappiamo che per campioni sufficientemente grandi e modelli che rispettino le assunzioni di regolarità: $$\hat{\theta} \sim N\{\theta, I(\theta)^{-1}\}$$ Quindi l'**errore standard** dello stimatore di massima verosimiglianza $\hat{\theta}$ è asintoticamente pari a: $$SE(\hat{\theta}) \sim I(\theta)^{-\frac{1}{2}}\ \ \ \ \ \textbf{per n sufficientemente grande}$$ La **stima dell'errore standard** di $\hat{\theta}$ è: $$\hat{SE}(\hat{\theta}) = I(\hat{\theta})^{\frac{1}{2}}$$
+Alternativamente si può stimare l'errore standard di $\hat{\theta}$ con l'**informazione oservata**: $$\hat{SE}(\hat{\theta}) = J(\hat{\theta})^{\frac{1}{2}}$$ *Nota*: argomenti teorici suggeriscono di preferire la stima con $J$ perchè riflette l’effettiva informazione nei dati.
+## Efficienza
+Lo stimatore di massima verosimiglianza gode di una importante proprietà di ottimalità.
+
+La **diseguaglianza di Cramér-Rao** identifica il limite inferiore della varianza di uno stimatore $\hat{\theta}$ **non distorto** di $\theta$: $$Var(\hat{\theta}) \geq I(\theta)^{-1}$$
+dove $I(\theta)$ è l'informazione attesa di Fisher.
+
+Uno stimatore non distorto la cui varianza raggiunge il limite di Cramér-Rao  è detto **efficiente**.
+
+Lo stimatore di massima verosimiglianza è, quindi, **asintoticamente efficiente**.
+## Esempi
+Gli esempi si trovano alla slide 35 al [seguente link](https://mega.nz/file/Q3kAHQCK#P0YP3k5RwcRSebJIZJ_hhkFGa5pqbaojMK-UXjaBfIs)

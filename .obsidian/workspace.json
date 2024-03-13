@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Tecnologie e Applicazioni Web.md",
+                "file": "Analisi dei Dati.md",
                 "mode": "source",
                 "source": false
               }
@@ -97,7 +97,36 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Tecnologie e Applicazioni Web.md"
+                "file": "Analisi dei Dati.md"
+              }
+            }
+          },
+          {
+            "id": "14cf51bd33d53745",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Analisi dei Dati.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "1005206bcef47b86",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Analisi dei Dati.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
               }
             }
           }
@@ -120,9 +149,13 @@
   },
   "active": "1c80cd53267f7731",
   "lastOpenFiles": [
-    "Pasted image 20240311134515.png",
-    "Pasted image 20240311130713.png",
-    "Pasted image 20240311125833.png",
+    "el.md",
+    "Analisi dei Dati.md",
+    "Programmazione ad Oggetti Mod. 2.md",
+    "Tecnologie e Applicazioni Web.md",
+    "Utilità/Pasted image 20240311134515.png",
+    "Utilità/Pasted image 20240311130713.png",
+    "Utilità/Pasted image 20240311125833.png",
     "Algoritmi e Strutture di Dati.md",
     "Utilità/Pasted image 20240311112802.png",
     "Utilità/Pasted image 20240311112726.png",
@@ -131,13 +164,8 @@
     "Utilità/Pasted image 20240311104929.png",
     "Basi di  dati Mod. 2.md",
     "Utilità/Pasted image 20240311091904.png",
-    "Tecnologie e Applicazioni Web.md",
     "Utilità/Pasted image 20240309094744.png",
     "Utilità/Pasted image 20240309094714.png",
-    "Utilità/Pasted image 20240309094643.png",
-    "Untitled.md",
-    "Programmazione ad Oggetti Mod. 2.md",
-    "Analisi dei Dati.md",
     "Sistemi Operativi Mod. 2.md",
     "Algoritmi.md",
     "().md",

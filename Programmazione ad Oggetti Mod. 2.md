@@ -767,44 +767,26 @@ public interface Set<T> extends Collection<T>{
 ```
 
 ```java
-package tinyjdk
+package tinyjdk;
+public class StructuralSet<T>
+        extends AbstractResizableArray<T>
+        implements Set<T> {
+    @Override
+    public void add(T x) {
+        if (!contains(x))
+            super.add(x);
+    }
 
-public class StructuralSet<T> implements Set<T> {
-	
-	//sostanzialmente uno stub per Arraylist
-	
-	private List<T> l = new ArrayList<>();
-	
-	@Override
-	public void add(T x){
-		if(!l.contains(x))
-			l.add(x);
-	}
-	
-	@Override
-	public void clear(){
-		l.clear();
-	}
-	
-	@Override
-	public boolean isEmpty(){
-		return l.isEmpty();
-	}
-	
-	@Override
-	public void remove(T x){
-		l.remove(x);
-	}
-	
-	@Override
-	public int size(){
-		return l.size();
-	}
-	
-	@Override
-	public Iterator<T> iterator(){
-		return l.iterator;
-	}
+    @Override
+    public void remove(T x) {
+        // TODO
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        // TODO
+        return null;
+    }
 }
 ```
 
@@ -813,26 +795,218 @@ public class StructuralSet<T> implements Set<T> {
 Per evitare gli stub potremmo usare `extends Arraylist` tuttavia in questo caso avremmo il random access e nelle sottoclassi non si possono rimuovere metodi della superclasse, poiché si *perderebbe il polimorfismo*.  Possiamo quindi usare usa **superclasse astratta**.
 
 ```java
-package tinyjdk
+package tinyjdk;
 
-public abstract class AbstractCollection<T> implements Collection <T> {
-	protected Object a[];
-	protected int sz;
-	
-	
+public abstract class AbstractResizableArray<T> implements Collection<T> {
+    protected Object[] a;
+    protected int sz;
+
+    public AbstractResizableArray() {
+        this.a = new Object[10];
+        this.sz = 0;
+    }
+
+    @Override
+    public void add(T x) {
+        if (sz >= a.length) {
+            Object[] old = a;
+            a = new Object[a.length * 2];
+            for (int i = 0; i < old.length; ++i)
+                a[i] = old[i];
+        }
+        a[sz++] = x;
+    }
+
+    @Override
+    public void clear() {
+        sz = 0;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return sz == 0;
+    }
+
+    public abstract void remove(T x);
+
+    @Override
+    public int size() {
+        return sz;
+    }
+
+    public abstract Iterator<T> iterator();
 }
 ```
 
 ```java
 package tinyjdk;
 
-public class ArrayList2<T> extends AbstractCollection<T>{
+public class ArrayList2<T> extends AbstractResizableArray<T> implements List<T> {
+    @Override
+    public void remove(T x) {
+        for (int i = 0; i < size(); ++i) {
+            T o = get(i);
+            if (o.equals(x)) {
+                for (int j = i ; j < size() - 1; ++j)
+                    set(j, get(j + 1));
+                --sz;
+            }
+        }
+    }
 
+    @Override
+    public Iterator<T> iterator() {
+        return new Iterator<T>() {
+            private int pos = 0;
+            @Override
+            public boolean hasNext() {
+                return pos < size();
+            }
 
+            @Override
+            public T next() {
+                return get(pos++);
+            }
+        };
+    }
+
+    @Override
+    public T get(int i) {
+        if (i < sz)
+            return (T) a[i];
+        throw new RuntimeException(String.format("ArrayList.get(): index %d out of bounds %d", i, sz));
+    }
+
+    @Override
+    public T set(int i, T x) {
+        if (i < sz) {
+            T old = get(i);
+            a[i] = x;
+            return old;
+        }
+        throw new RuntimeException(String.format("ArrayList.set(): index %d out of bounds %d", i, sz));
+    }
+
+    @Override
+    public void add(int i, T x) {
+        // TODO
+    }
+
+    @Override
+    public T remove(int i) {
+        // TODO
+        return null;
+    }
 }
 ```
 
+```java
+package tinyjdk;
+
+public class HashSet<T> extends AbstractResizableArray<T> implements Set<T>{
+
+    @Override
+    public void add(T x) {
+        if (!contains(x))
+            super.add(x);
+    }
+    @Override
+    public boolean contains(T x) {
+        Iterator<T> it = iterator();
+        int h = x.hashCode();
+        while (it.hasNext()) {
+            T e = it.next();
+            if (e.hashCode() == h)
+                return true;
+        }
+        return false;
+    }
+    @Override
+    public void remove(T x) {
+        // TODO
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        // TODO
+        return null;
+    }
+}
+```
 # Confronti in informatica
 * **Strutturale** $\to$ confronto deep (in java con `equals`). 
 * **Shallow** $\to$ confronto shallow  (in java con `==`).
 * **Hash** $\to$ confronta usando gli hash. 
+# Sorted Set
+**Sorted set** è una categoria intera di set (non un'implementazione specifica), pertanto viene implementato con un'*interfaccia*.
+
+Il problema è *ordinare cose che non sappiamo cosa sono* $\to$ si demanda a chi implementa l'interfaccia di implementarsi il metodo come preferisce. La stessa cosa avviene con `equals` della classe `Object`.
+
+Sarebbe corretto mettere in `T` la logica del confronto. Bisogna **pretendere** che `T` estenda un oggetto comparabile.
+
+```java
+package tinyjdk;
+
+public interface Comparable<T> {
+	int compareTo(T x);
+}
+```
+
+```java
+package tinyjdk
+
+public interface SortedSet<T extends Comparable<T>> Set<T> {
+	
+	//metodi per conoscere l'elemento più piccolo e più grande
+	T first();
+	T last();
+	
+	//boolean lessThan(T x, T y);
+}
+```
+
+```java
+package tinyjdk;
+import java.util.Collections;
+
+public class StructuralSortedSet<T>
+		extends StructuralSet<T>
+		implements SortedSet<T> {
+		
+		@Override
+		public T first(){}
+		
+		@Override
+		public T last(){}
+		
+		@Override
+		void add(){
+			super.add();
+			sort();
+		}
+		
+	//static <T extends Comparable<T>> void sort(List<T> l);
+	//static <T> void sort(T[] a; Comparator <? super T> c);
+		private void sort(){
+			//Collections.sort()
+			Arrays.sort((T[])a, new Comparator<T>()){
+			
+			@Override
+			public int compare(T o1, To2){
+				return o1.compareTo(o2);
+			}
+			}):
+		}
+}
+```
+
+# Keyword extends
+La keyword **extends** assume 3 significati:
+* Su un'**interfaccia** per ereditare un'**interfaccia padre** (*In java un'interfaccia può avere più padri*).
+* Su una **classe** per ereditare una **classe padre** (*In java una classe può avere un solo padre*).
+* Su un **generic** per dire che ha le caratteristiche di un'**interfaccia**.
+# Utility Class
+*Contenitore di metodi*, **non istanziabile** (e pertanto non pensata per programmare ad oggetti). *Fornisce una serie di metodi statici*.
+# Comparable e Comparator
+* **Comparable** prende un parametro in input e lo confronta con this.
+* **Comparator** prende due parametri in input e li confronta.

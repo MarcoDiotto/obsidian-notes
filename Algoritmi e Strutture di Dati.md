@@ -908,3 +908,52 @@ tdprintLCSaux(X,b,i,j)
 						 tdLCSaux(X,Y,c,i,j-1))
 	return c[i,j]
 ```
+
+#### Complessità dell'algoritmo
+Il numero complessivo di chiamate di `tdLCSaux` è $O(m \cdot n)$ nel caso peggiore, in quanto ogni sotto-problema è risolto **una sola volta** e il costo di tale soluzione è costante $O(1)$ (escluso le sotto-chiamate ricorsive).
+
+Il tempo di esecuzione di `tdLCS` è $\theta(m \cdot n) + O(m \cdot n) = \theta(m \cdot n)$.
+
+![[Pasted image 20240313090034.png]]
+*Nota*: il top-down risolve i sotto-problemi **strettamente necessari**.
+## Elementi di programmazione dinamica
+**A quali problemi si può applicare?**
+> Problemi di ottimizzazione $\to$ insieme molto grande di soluzione, in cui si vuole una soluzione OTTIMA.
+
+*Occorre*:
+* **Sottostruttura ottima**: una soluzione ottima di un problema è combinazione di soluzioni ottime di sotto-problemi.
+* **Ripetizioni di sotto-problemi**: presenza di sotto-problemi *sovrapposti*. Il numero di sotto-problemi distinti risulta essere piccolo rispetto al massimo numero di soluzioni possibili.
+  *Esempi*:
+	 1.  TAGLIO DELLE ASTE  $\to$ soluzioni:  $\Omega(2^n)$,        # sotto-problemi: ($\Theta(n)$)
+	 2. LCS $\to$ soluzioni:  $\Omega(2^n) \rightarrow |X| = m$,        # sotto-problemi: ($\Theta(m \cdot n)$)
+* Se valgono le proprietà (1) e (2) ci sono 2 possibili approcci:
+	1. **Bottom-up**
+		* Risolve i problemi dal più piccolo fino a quello di dimensione desiderata.
+		* L'ordine deve assicurare che ogni problema si riduca a sotto-problemi più piccoli.
+	2. **Top-down**
+		* Si fornisce una soluzione ricorsiva del problema in termini di sotto-problemi.
+		* Si memorizza la soluzione di problemi già risolti.
+* *Confronto*: se per il calcolo della soluzione globale:
+    * Servono **tutti** i sotto-problemi utilizzo **bottom-up**, perché:
+	     1. Non è ricorsiva.
+	     2. Evita alcuni controlli.
+	* Servono solo **alcuni** sotto-problemi utilizzo **top-down** perché:
+		 1. Evita la soluzione di di sotto-problemi inutili.
+		 2. Può essere migliore.
+## Esercizi d'esame
+* Scrivere un algoritmo per individuare, all'interno di una stringa $a_1 ... a_n$ una sottostringa (di caratteri consecutivi) palindroma di lunghezza massima.
+  Dare una caratterizzazione ricorsiva della lunghezza massima `l[i,j]` di una sotto-stringa palindroma di $a_1 ... a_j$.
+  *Esempio*:
+	* COLONNA $\to$ OLO
+
+  ![[Pasted image 20240313094545.png]]
+
+* Un multi-insieme di numeri naturali `arr` è **perfettamente bilanciato** se è possibile partizionarlo in 2 sotto-insiemi che hanno la stessa somma degli elementi in essi contenuti.
+  Dare una caratterizzazione ricorsiva della soluzione.
+  
+  ![[Pasted image 20240313100820.png]]
+
+* Sia `arr` un array di lunghezza `n` di numeri naturali positivi ($> 0$) e sia`k` un numero naturale. Si consideri il problema di determinare il numero di **sotto-sequenze** di `arr` con prodotto $\leq$ `k`.
+  Dare una caratterizzazione ricorsiva del numero di sotto-sequenze con prodotto $\leq$ k.
+  
+  ![[Pasted image 20240313102106.png]]

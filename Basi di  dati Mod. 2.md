@@ -948,3 +948,87 @@ $$ LANGUAGE plpgsql;
 ```
 
 *Nota*: Il comando CREATE TRIGGER accetta solamente trigger functions.
+## Trigger Functions
+Tolti i due vincoli già menzionati, una trigger function può essere una funzione PL/pgSQL arbitraria. 
+In questa lezione ci focalizziamo su un *formato semplificato*:
+
+```SQL
+BEGIN 
+	statement_1; 
+	... 
+	statement_n; 
+END;
+```
+
+dove ogni statement è un’istruzione SQL, un condizionale (IF) oppure un RETURN. Prossimamente discuteremo PL/pgSQL in dettaglio.
+## Passaggio di Parametri
+Quando una trigger function viene invocata da Postgres, vengono create nel suo scope alcune variabili speciali. Le più importanti: 
+* **NEW**: la nuova riga per operazioni di INSERT/UPDATE all’interno di un trigger per riga (NULL nel caso di DELETE).
+* **OLD**: la vecchia riga per operazioni di DELETE/UPDATE all’interno di un trigger per riga (NULL nel caso di INSERT). 
+* **TG_NARGS**: numero di argomenti passati tramite la CREATE TRIGGER.
+* **TG_ARGV**: vettore di argomenti passati tramite la CREATE TRIGGER.
+  
+Ci sono inoltre una serie di variabili informative come TG OP, che dicono quale evento ha scatenato il trigger.
+## Valore di Ritorno
+Una trigger function associata ad un **BEFORE trigger per riga** può: 
+* ritornare NULL per indicare che l’operazione (INSERT, UPDATE o DELETE) sulla riga deve essere abortita.
+* Nel caso di INSERT o UPDATE: ritornare una riga, che diverrà la nuova riga che sarà inserita o sostituirà la riga aggiornata.
+* Se non si vuole interferire con l’operazione: ritornare NEW nel caso di INSERT o UPDATE, ritornare OLD nel caso di DELETE.
+
+Una trigger function deve ritornare NULL in tutti gli altri casi, cioè nel caso di **trigger per statement** ed **AFTER trigger per riga**.
+## Trigger per Riga
+
+```SQL
+CREATE TRIGGER name { BEFORE | AFTER } { evt [ OR ... ] }
+ON table_name
+[ REFERENCING { { OLD | NEW } TABLE AS tab } [ ... ] ]
+FOR EACH ROW
+[ WHEN ( condition ) ]
+EXECUTE FUNCTION func ( args )
+```
+
+*Punti chiave*:
+* Un BEFORE trigger per riga può prevenire operazioni o modificarle.
+* La clausola WHEN può fare riferimento a OLD e NEW per specificare una condizione di attivazione e non può fare uso di sotto-query.
+* È possibile usare REFERENCING per vedere i cambiamenti complessivi nell’intera tabella, non solo nella riga (solo per AFTER trigger).
+## Trigger per Statement
+
+```SQL
+CREATE TRIGGER name { BEFORE | AFTER } { evt [ OR ... ] }
+ON table_name
+[ REFERENCING { { OLD | NEW } TABLE AS tab } [ ... ] ]
+FOR EACH STATEMENT
+EXECUTE FUNCTION func ( args )
+```
+
+*Punti chiave*:
+* Un trigger per statement viene eseguito una volta anche se nessuna riga è coinvolta nell’operazione scatenante.
+* Sebbene la clausola WHEN possa essere usata anche in un trigger per statement, essa è inutile perché OLD e NEW non sono popolati.
+* È possibile usare REFERENCING per vedere i cambiamenti complessivi nell’intera tabella (solo per AFTER trigger).
+## Modello di Esecuzione
+L’ordine di esecuzione dei trigger dipende dal loro **tipo**:
+* I **BEFORE trigger per statement** si attivano *prima di tutti*, per la precisione prima che l’evento abbia inizio.
+* **I BEFORE trigger per riga** si attivano *immediatamente prima di operare sulla riga coinvolta* (anche prima dei CHECK).
+* Gli **AFTER trigger per riga** si attivano *alla fine dell’evento*, ma prima degli AFTER trigger per statement.
+* Gli **AFTER trigger per statement** vengono eseguiti *per ultimi*.
+## Sottigliezze
+Alcune specificità di Postgres da tenere bene a mente:
+* Un trigger per riga ha visibilità dei cambiamenti effettuati sulle righe precedenti, anche nel caso di BEFORE trigger, ma l’ordine di visita delle righe non è predicibile.
+* Se più di un trigger viene definito per lo stesso evento sulla stessa tabella, essi sono eseguiti in ordine **alfabetico** fino a terminazione o finché uno di essi non ritorna NULL (nel caso di BEFORE trigger per riga, in cui altri trigger *per la stessa riga* vengono ignorati).
+* Un trigger può attivare ricorsivamente altri trigger, potenzialmente introducendo **ricorsioni infinite**. Evitare ricorsioni infinite è compito del programmatore.
+## Esempio: Trigger per Dipendenze Funzionali
+Vediamo un modo per garantire la dipendenza funzionale $A \to B$: 
+```SQL
+CREATE TRIGGER FuncDep
+	BEFORE INSERT OR UPDATE ON Relation
+	FOR EACH ROW
+	EXECUTE FUNCTION fix_func_dep ()
+
+CREATE FUNCTION fix_func_dep() RETURNS TRIGGER AS $$
+	IF (EXISTS SELECT * FROM Relation
+		WHERE A = NEW.A AND B != NEW.B)
+	THEN RETURN NULL;
+	END IF;
+	RETURN NEW;
+$$ LANGUAGE plpgsql;
+```

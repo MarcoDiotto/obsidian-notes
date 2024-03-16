@@ -154,7 +154,7 @@ Dato $R(T,F)$ trovare *tutte* le chiavi ha costo *esponenziale*, perché ogni so
 
 **Nota**: se un attributo non compare mai alla destra di una dipendenza funzionale, allora esso deve fare parte di tutte le chiavi. L’insiemi di tali attributi sarà il primo che testeremo.
 
-### Algoritmo per trovare l'Insieme delle Chiavi
+## Algoritmo per trovare l'Insieme delle Chiavi
 
 ![[Pasted image 20240214114822.png]]
 ## Verifica di Primalità
@@ -450,14 +450,13 @@ Il risultato si può quindi dimostrare **per induzione** sul numero di passi eff
 * L'algoritmo di conversione in BCNF ha costo **esponenziale**, perché richiede di calcolare le proiezioni delle dipendenze.
 * L'algoritmo di conversione in BCNF **non preserva le dipendenze** nel caso generale.
 ## Terza Forma Normale(3NF)
-### Definizione
 Uno schema di relazione $R(T,F)$ è in **3NF** $\iff$ per ogni dipendenza funzionale $X \to Y \in F^+$ tale che $Y \nsubseteq X$ si ha che $X$ è una *superchiave* oppure gli attributi di $X$ \\ $Y$ sono primi.
 
 Verificare se uno schema è in 3NF ha costo **esponenziale**.
 
 *Osservazione*: per definizione ogni schema in BCNF è anche in 3NF ma non viceversa.
 ## Esempio
-Si consideri $Telefoni(\{Prefisso,\ Numero,\ Località\},\ F)$ con $$F = \{Prefisso\ Numero \to Località,\ Località \to prefisso\}.$$
+Si consideri $Telefoni(\{Prefisso,\ Numero,\ Località\},\ F)$ con $$F = \{Prefisso,\ Numero \to Località,\ Località \to Prefisso\}.$$
 Calcoliamo le chiavi, osservando che $Numero$ deve fare parte di tutte:
 * $\{Numero\}^+_F = \{Numero\}$
 * $\{Numero,\ Prefisso\}^+_F = \{Numero,\ Prefisso,\ Località\}$
@@ -502,7 +501,7 @@ Abbiamo già visto che lo schema è in 3NF, ma non garantisce l'assenza di **ano
 #### Strategia 1
 Convertiamo lo schema in BCNF per eliminare le anomalie. Se notiamo che la conversione non ha preservato le dipendenze, ci accontentiamo di una conversione in 3NF
 #### Strategia 2
-Convertiamo lo schema in 3NF in modo da preservare dati e dipendenze, sperando di essere fortunati e rimuovere tutte le anomalie. Questo di verifica in particolare se la conversione produce in realtà BCNF.
+Convertiamo lo schema in 3NF in modo da preservare dati e dipendenze, sperando di essere fortunati e rimuovere tutte le anomalie. Questo verifica in particolare se la conversione produce in realtà BCNF.
 ### Dipendenze Multivalore
 Una nuova forma di anomalie non prevenuta neppure da BCNF si può verificare in presenza di **attributi moltivalore indipendenti**. Per esempio la relazione sottostante non ha dipendenze funzionali non banali.
 
@@ -515,6 +514,7 @@ Si può fare di meglio, memorizzando solo $m + n$ righe.
 
 La teoria della normalizzazione è stata perciò generalizzata per rimuovere anche questo tipo di anomalie dovute **dipendenze multivalore** (4NF).
 ## Esercizi
+Gli esercizi di quest'unità si trovano al [seguente link](https://mega.nz/file/Nu9WkRhI#yeXMahz0jqufbNg3Xte7wcI1XNPUyAInbzgcCle7SMI)
 # Vincoli di Integrità
 ___
 ## Introduzione

@@ -650,3 +650,94 @@ Communication protocol must be explicit and supported by multiple platforms. HTT
 ![[Pasted image 20240311134515.png]]
 
 *Note*: REST style requires less endpoints to remember and provide an explicit semantics thanks to HTTP methods.
+
+We should use **standard languages** to encode the data. A good language should be popular enough to simplify its implementation by using publicly available libraries and frameworks (*e.g*: JSON, XML, etc.)
+### Should be extensible
+A good API is never fully “**finished**”, for different reasons:
+* The **business model** can change over time.
+* **New features** are added and the old ones are removed.
+* **New interfaces** might be implemented to follow new emerging technologies (*e.g.* from XML to JSON).
+
+We should use **mechanisms** to explicitly mark the API version:
+* Subsequent releases might broke the **backward compatibility** with older clients.
+* **Features and interfaces** may vary with different API versions.
+
+A common approach is the so called [Semantic Versioning (SemVer)](https://semver.org/).
+Following this principle, is a good idea to *insert the API version* in the endpoint: 
+```HTTP
+URL itself:/api/v1/j-k-rowling/books
+```
+### Documentation
+It is a good practice to produce a **concise documentation** to describe API endpoints.
+*Example of good documentation*:
+* https://developers.facebook.com/docs/graph-api/overview
+
+### Handling of exceptions/errors
+It is common, in particular when developing new APIs, that *wrong API calls are performed by the clients*:
+* Wrong **endpoint names**.
+* Wrong or missing **parameters**.
+
+A good REST-style architecture should return **meaningful error messages**, explaining what’s the problem and how to avoid it.
+### Security
+When designing a new API, we should always take **security** into account:
+* **Authentication**: what clients are allowed to use certain APIs? And how?
+* **Authorizations**: What features a client might use once its identity is verified?
+### Scalability
+
+Good APIs should:
+* Manage **heavy traffic loads** without sacrificing the **performance**.
+* Occupy the **minimum** amount of **resources needed**.
+
+*Suggestion*: keep the architecture **stateless** and divide the functions into **separate independent components**.
+## Case Study
+>Let’s create a web service with REST-style APIs to manage our departmental library. The library should manage multiple books, characterized by different authors and relevant bibliographic info. Department members (students or professors) can borrow paper copies if available. Each book can be lend for a limited period of time
+### Schema
+
+![[Pasted image 20240314143814.png]]
+### Resources
+
+![[Pasted image 20240314143911.png]]
+![[Pasted image 20240314143953.png]]
+### Endpoints
+
+![[Pasted image 20240314144043.png]]
+![[Pasted image 20240314144102.png]]
+![[Pasted image 20240314144122.png]]
+![[Pasted image 20240314144153.png]]
+![[Pasted image 20240314144209.png]]
+### Pagination
+Each resource accessible via GET also supports the following attributes: 
+* `page=<n>`
+* `perpage= <m>` 
+
+Specifying the **current page** and the **number of elements** per page.
+# Containers
+___
+## Introduction
+
+>A container is a sort of “lightweight VM” that can run processes in a sandbox **completely isolated** from all other processes of the host machine in which the container is running.
+
+*Note*: unlike VMs, containers share the same OS kernel with the host.
+
+![[Pasted image 20240314145555.png]]
+## Advantages
+* **Simplified deployments**: a complex application can be packaged in a single component that can be executed without worrying to configure the execution environment.
+* **Fast startup**: since the OS is not fully virtualized, the startup time is reduced.
+* **Portability**: a container can be created and configured on a machine and then executed on a production server without any modification.
+* **Fine-grained control**: a container can provide a single component to other containers. This allows the organization of an application in microservices.
+  **Scalability**: containers can be executed and terminated quickly in accordance with the required workload.
+## Docker Architecture
+
+![[Pasted image 20240314150821.png]]
+![[Pasted image 20240314150840.png]]
+![[Pasted image 20240314150951.png]]
+![[Pasted image 20240314151013.png]]
+## Containers and Images
+* An **image** is a *read-only template* that is used to create a Docker container.
+  An image is based on another image, with some additional customization. 
+  A file named `Dockerfile` is used to *define a new image*. It contains the instruction needed to create an image and run it as a container. 
+  An image is like a **class in OOP**.
+* A **container** is a *runnable instance of an image*. 
+  You can create, start, stop, move, or delete a container using the docker client.
+  A running container can be connected to one or more networks, attached to storage, or used to create a new image based on its current state. 
+  A container is like an **object in OOP**.

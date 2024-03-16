@@ -654,7 +654,7 @@ Sotto **assunzioni** che valgono nei problemi che affronteremo in questo corso, 
 * **Consistente**: $$\hat{\theta} \overset{p}\to \theta,\ \ \ \ per\ n \to \infty$$
 * **Asintoticamente normale** con distribuzione limite: $$\hat{\theta} \sim N\{\theta, I(\theta)^{-1}\},\ \ \ \ \textbf{per\ n\ sufficientemente\ grande}$$ dove $I(\theta)$ è l'**informazione attesa di Fisher**.
 ## Informazione attesa di Fisher
-L'informazione attesa di Fisher è definita come: $$I(\theta) = E\{-\frac{d^2}{d\theta^2}\mathcal{l}(\theta)\}$$ $$= E \{-\frac{d^2}{d\theta^2} \sum_{i = 1}^n log\ \mathcal{f}(X_i;\theta)\}$$ 
+L'**informazione attesa di Fisher** è definita come: $$I(\theta) = E\{-\frac{d^2}{d\theta^2}\mathcal{l}(\theta)\}$$ $$= E \{-\frac{d^2}{d\theta^2} \sum_{i = 1}^n log\ \mathcal{f}(X_i;\theta)\}$$ 
 $$= \sum_{i = 1}^nE \{-\frac{d^2}{d\theta^2} log\ \mathcal{f}(X_i;\theta)\}$$
 Nel caso di un *campione casuale semplice abbiamo*: $$I(\theta) = n\ E \{-\frac{d^2}{d\theta^2} log\ \mathcal{f}(X_i;\theta)\}$$ cioè l'informazione del campione è pari a $n$ volte l'informazione contenuta in una singola osservazione.
 ## Informazione attesa e osservata
@@ -679,3 +679,65 @@ Uno stimatore non distorto la cui varianza raggiunge il limite di Cramér-Rao  �
 Lo stimatore di massima verosimiglianza è, quindi, **asintoticamente efficiente**.
 ## Esempi
 Gli esempi si trovano alla slide 35 al [seguente link](https://mega.nz/file/Q3kAHQCK#P0YP3k5RwcRSebJIZJ_hhkFGa5pqbaojMK-UXjaBfIs)
+## Invarianza
+Una proprietà dello stimatore di massima verosimiglianza molto rilevante è l’**invarianza**:
+>se $\hat{\theta}$ e lo stimatore di massima verosimiglianza di $\theta$ allora $g(\hat{\theta})$ è lo stimatore di massima verosimiglianza di $\psi = g(\theta)$.
+
+**Esempio**:
+Supponiamo che il numero di utenti che si collegano ad un server in un instante di tempo si distribuisca come una *variabile di Poisson* di parametro $\lambda$.
+La stima di massima verosimiglianza di $\lambda$ è $\hat{\lambda} = \overline{X}$.
+Ci interessa stimare la probabilità che il numero di utenti superi un certo *livello critico* $c$.
+Il *parametro di interesse* è: $$\psi = \mathbb{P}(X > c) = 1 - F(c)$$
+L’invarianza dice che lo stimatore di massima verosimiglianza di $\psi$ è: $$\hat{\psi} = 1 - \hat{F}(c)$$ dove $\hat{F}(c)$ è la funzione di ripartizione di una *variabile di Poisson* con parametro $\hat{\lambda}$.
+Supponiamo che la soglia critica per le capacità del server sia $c = 75$ utenti contemporanei.
+In un campione casuale di $25$ instanti di tempo è stato osservato $\overline{x} = 62.7$ utenti contemporanei.
+Lo stima di massima verosimiglianza è $\hat{\lambda} = 62.7$. 
+La stima di massima verosimiglianza di $\psi$ è: $$\hat{\psi} = 1 - \sum_{x = 0}^{75} \frac{e^{-62.5}(62.7)^x}{x!}$$
+Ovvero, utilizzando *R*:
+```R
+1 - ppois(75, lambda = 62.7)
+```
+## Quando il parametro è un vettore
+Nelle gran parte delle applicazioni di interesse, la dimensione del parametro è *maggiore di uno*: $$\theta = \begin{pmatrix} \theta_1 \\ ... \\ \theta_k \end{pmatrix}$$
+I risultati discussi finora si estendono in modo naturale nel caso di un vettore di parametri.
+In particolare, lo stimatore di $\theta$ è un *vettore casuale* (= *vettore di variabili casuali*): $$\hat{\theta} = \begin{pmatrix} \hat{\theta}_1 \\ ... \\ \hat{\theta}_k \end{pmatrix}$$ in cui ogni componente $\hat{\theta}_r\ (r = 1 ... k)$ è una variabile causale.
+
+I primi due momenti di $\hat{\theta}$ sono:
+* Il **vettore dei valori attesi**: $$\mu = \begin{pmatrix} \mu_1 \\ ... \\ \mu_k \end{pmatrix}$$ con $\mu_r = E(\hat{\theta}_r),\ r = 1 ... k$.
+* La **matrice di varianze - covarianze** $\Sigma$: $$\Sigma = \begin{pmatrix} \sigma_1^2 & \sigma_{12} & ... & \sigma_{1k} \\ ... & ... & ... & ...\\ \sigma_{k1} & \sigma_{k2} & ... & \sigma_k^2 \end{pmatrix}$$ con $\sigma_{rs} = Cov(\hat{\theta}_r, \hat{\theta}_s)$ e $\sigma_r^2 = \sigma_{rr},\ r,s = 1 ... k$.
+    * Sulla diagonale si trovano le *varianze*.
+    * In tutte le altre posizioni si trovano le *covarianze*.
+## Lo stimatore di massima verosimiglianza
+Nei problemi di stima ‘regolari’ lo **stimatore di massima verosimiglianza** si ottiene risolvendo le **equazioni di verosimiglianza**: 
+
+![[Pasted image 20240314095552.png]]
+
+La soluzione è lo **stimatore di massima verosimiglianza** se la matrice Hessiana delle derivate seconde è *definita negativa*.
+
+![[Pasted image 20240314095721.png]]
+
+Nei problemi regolari di stima, lo stimatore di massima verosimiglianza ha distribuzione limite **normale multivariata** di dimensione $k$: $$\hat{\theta} \sim MVN_k (\theta, I(\theta)^{-1})\ \ \ \ \textbf{per $n$ sufficientemente grande.}$$ 
+dove $I(\theta)$ è la **matrice dell'informazione attesa**, oppure: $$\hat{\theta} \sim MVN_k (\theta, J(\theta)^{-1})\ \ \ \ \textbf{per $n$ sufficientemente grande.}$$ dove $J(\theta)$ è la **matrice dell'osservazione osservata**.
+
+La matrice dell'informazione attesa è $I(\theta) = E\{J(\theta)\}$ con:
+
+![[Pasted image 20240314100239.png]]
+
+
+* La funzione di densità della distribuzione **normale univariata** è: $$\mathcal{f}(x;\mu,\sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}}\ exp \{-\frac{1}{2\sigma^2}(x - \mu)^2\}$$
+* La funzione di densità della distribuzione **normale multivariata** è: $$\mathcal{f}(x;\mu,\Sigma) = (2\pi)^{-\frac{k}{2}}|\Sigma|^{-\frac{1}{2}}\ exp \{-\frac{1}{2}(x - \mu)^T\Sigma^{-1} (x - \mu)\}$$ dove $|\Sigma|$ è il *determinante* di $\Sigma$.
+
+**Grafico della funzione di densità di una distribuzione normale bivariata**:
+
+![[Pasted image 20240314100831.png]]
+
+## Esempio
+Un esempio si trova alla slide 49 al [seguente link](https://mega.nz/file/Q3kAHQCK#P0YP3k5RwcRSebJIZJ_hhkFGa5pqbaojMK-UXjaBfIs)
+## Conclusione
+Gli stimatori di massima verosimiglianza di $\mu$ e $\sigma^2$ sono:
+* $\hat{\mu} = \overline{X}$
+* $\hat{\sigma}^2 = \frac{1}{n}\sum_{i = 1}^n (X_i - \overline{X})^2$
+
+Le matrici di informazione osservata e attesa coincidono in $\hat{\theta} = (\hat{\mu}, \hat{\sigma}^2)$.
+* L'**errore standard stimato di $\hat{\mu}$** è: $$\hat{SE}(\hat{\mu}) = \frac{\hat{\sigma}}{\sqrt{n}}$$
+* L'**errore standard stimato di $\sigma^2$** è: $$\hat{SE}(\hat{\sigma}^2) = \hat{\sigma}^2 \sqrt{\frac{2}{n}}$$

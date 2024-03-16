@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "66df20d0e1522c99",
+        "id": "9862fc8654370f8f",
         "type": "tabs",
         "children": [
           {
-            "id": "1c80cd53267f7731",
+            "id": "a5ab38368aefaebe",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Basi di  dati Mod. 2.md",
+                "file": "Tecnologie e Applicazioni Web.md",
                 "mode": "source",
                 "source": false
               }
@@ -69,8 +69,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "5a3146de85d04ed0",
@@ -97,7 +96,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Basi di  dati Mod. 2.md"
+                "file": "Tecnologie e Applicazioni Web.md"
               }
             }
           },
@@ -107,7 +106,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Basi di  dati Mod. 2.md",
+                "file": "Tecnologie e Applicazioni Web.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -124,7 +123,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Basi di  dati Mod. 2.md",
+                "file": "Tecnologie e Applicazioni Web.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -147,25 +146,25 @@
       "templates:Insert template": false
     }
   },
-  "active": "1c80cd53267f7731",
+  "active": "a5ab38368aefaebe",
   "lastOpenFiles": [
+    "Utilità/Pasted image 20240314150758.png",
     "Tecnologie e Applicazioni Web.md",
-    "Algoritmi e Strutture di Dati.md",
-    "Utilità/Pasted image 20240313102106.png",
-    "Utilità/Pasted image 20240313100820.png",
-    "Utilità/Pasted image 20240313094545.png",
-    "Utilità/Pasted image 20240313090034.png",
-    "Analisi dei Dati.md",
-    "el.md",
+    "Utilità/Pasted image 20240314151013.png",
+    "Utilità/Pasted image 20240314150951.png",
+    "Utilità/Pasted image 20240314150924.png",
+    "Utilità/Pasted image 20240314150840.png",
+    "Utilità/Pasted image 20240314150821.png",
+    "Utilità/Pasted image 20240314145555.png",
+    "Utilità/Pasted image 20240314144209.png",
+    "Utilità/Pasted image 20240314144153.png",
+    "Utilità/Pasted image 20240314144122.png",
     "Programmazione ad Oggetti Mod. 2.md",
-    "Utilità/Pasted image 20240311134515.png",
-    "Utilità/Pasted image 20240311130713.png",
-    "Utilità/Pasted image 20240311125833.png",
-    "Utilità/Pasted image 20240311112802.png",
-    "Utilità/Pasted image 20240311112726.png",
-    "Utilità/Pasted image 20240311111308.png",
-    "Utilità/cheatsheet.md",
+    "Algoritmi e Strutture di Dati.md",
+    "Analisi dei Dati.md",
     "Basi di  dati Mod. 2.md",
+    "el.md",
+    "Utilità/cheatsheet.md",
     "Sistemi Operativi Mod. 2.md",
     "Algoritmi.md",
     "().md",

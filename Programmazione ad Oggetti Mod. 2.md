@@ -702,8 +702,8 @@ f(7); // --> 7 = type argument
 # Virtual Table e Dynamic Dispatching
 Alla creazione di un campo in Java  (prima della chiamata al costruttore), questo viene inizializzato a  `NULL`, se è un **reference type**, a 0 se è un **int**.
 Di conseguenza quando viene chiamato il costruttore, c'è già della memoria allocata (8 Byte per i pointer, 4 per gli int), il compilatore sa quanto allocare sulla base della sommatoria dei campi della classe.
-Viene inoltre creata una tabella, detta **Virtual Table**, che contiene pointer ai metodi della classe, i quali puntano alla prima istruzione dei corrispondenti metodi. Ciò avviene perché quando una classe istanziata viene passata a qualcos'altro si crea **subsumpion**, e di conseguenza alla chiamata di un metodo della classe si può recuperare quest'ultimo dalla virtual table della stessa. Grazie all'uso delle virtual table Java implementa il **Dynamic Dispatching**. Quando viene creato un oggetto, viene prima allocato lo spazio necessario per i campi ed in seguito la virtual table, che contiene anche i metodi sottoposti ad **Override**.
-# Anonymous Class
+Viene inoltre creata una tabella, detta **Virtual Table**, che contiene pointer ai metodi della classe, i quali puntano alla prima istruzione dei corrispondenti metodi. Ciò avviene perché quando una classe istanziata viene passata a qualcos'altro si crea **subsumpion**, e di conseguenza alla chiamata di un metodo della classe si può recuperare quest'ultimo dalla virtual table della stessa. Grazie all'uso delle virtual table Java implementa il **Dynamic Dispatching**. Quando viene creato un oggetto, viene prima allocato lo spazio necessario per i campi ed in seguito la virtual table, che contiene anche i metodi sottoposti ad **Override**. Il dynamic dispatching non viene applicato ai metodi **statici**.
+# TinyJDK: Anonymous Class
 
 ```java
 (...)new Iterator<T>() {
@@ -798,6 +798,7 @@ Per evitare gli stub potremmo usare `extends Arraylist` tuttavia in questo caso 
 package tinyjdk;
 
 public abstract class AbstractResizableArray<T> implements Collection<T> {
+	//non si può fare la new di un array su generics
     protected Object[] a;
     protected int sz;
 
@@ -937,7 +938,7 @@ public class HashSet<T> extends AbstractResizableArray<T> implements Set<T>{
 * **Strutturale** $\to$ confronto deep (in java con `equals`). 
 * **Shallow** $\to$ confronto shallow  (in java con `==`).
 * **Hash** $\to$ confronta usando gli hash. 
-# Sorted Set
+# TinyJDK: Sorted Set
 **Sorted set** è una categoria intera di set (non un'implementazione specifica), pertanto viene implementato con un'*interfaccia*.
 
 Il problema è *ordinare cose che non sappiamo cosa sono* $\to$ si demanda a chi implementa l'interfaccia di implementarsi il metodo come preferisce. La stessa cosa avviene con `equals` della classe `Object`.
@@ -955,7 +956,7 @@ public interface Comparable<T> {
 ```java
 package tinyjdk
 
-public interface SortedSet<T extends Comparable<T>> Set<T> {
+public interface SortedSet<T extends Comparable<T>> extends Set<T> {
 	
 	//metodi per conoscere l'elemento più piccolo e più grande
 	T first();
@@ -969,15 +970,23 @@ public interface SortedSet<T extends Comparable<T>> Set<T> {
 package tinyjdk;
 import java.util.Collections;
 
-public class StructuralSortedSet<T>
+public class StructuralSortedSet<T extends Comparable<T>>
 		extends StructuralSet<T>
 		implements SortedSet<T> {
 		
 		@Override
-		public T first(){}
+		public T first(){
+			if(isEmpty()) throw NoSuchElementException();
+			
+			return (T) a[0];
+		}
 		
 		@Override
-		public T last(){}
+		public T last(){
+			if(isEmpty()) throw NoSuchElementException();
+			
+			return (T) a[size - 1];
+		}
 		
 		@Override
 		void add(){
@@ -989,12 +998,20 @@ public class StructuralSortedSet<T>
 	//static <T> void sort(T[] a; Comparator <? super T> c);
 		private void sort(){
 			//Collections.sort()
-			Arrays.sort((T[])a, new Comparator<T>()){
 			
-			@Override
-			public int compare(T o1, To2){
-				return o1.compareTo(o2);
-			}
+			T[] a = (T[]) this.a; //shadowing
+			
+			Arrays.sort(a, size(), new Comparator<T>() {
+			/*
+				la compare di comparator non è statica 
+				perché, se così fosse, non avrebbe 
+				dynamic dispatching.
+			*/
+				@Override
+				public int compare(T o1, To2){	
+			//compare ritorna un int -> three way semantics
+					return o1.compareTo(o2);
+				}
 			}):
 		}
 }
@@ -1010,3 +1027,8 @@ La keyword **extends** assume 3 significati:
 # Comparable e Comparator
 * **Comparable** prende un parametro in input e lo confronta con this.
 * **Comparator** prende due parametri in input e li confronta.
+# Funzioni Binarie
+Sono funzioni che operano su **due** oggetti (fra queste vengono inclusi anche gli *operatori*).
+In java possono essere implementate in 2 modi:
+* `this.method(Object o)` $\to$ metodo di `this`.
+ * `method(Object o1, Object o2)` $\to$ metodo che opera su due argomenti `o1` e `o2`.

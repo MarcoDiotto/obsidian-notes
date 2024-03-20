@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Programmazione ad Oggetti Mod. 2.md",
+                "file": "Basi di  dati Mod. 2.md",
                 "mode": "source",
                 "source": false
               }
@@ -69,8 +69,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "5a3146de85d04ed0",
@@ -97,7 +96,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Programmazione ad Oggetti Mod. 2.md"
+                "file": "Basi di  dati Mod. 2.md"
               }
             }
           },
@@ -107,7 +106,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Programmazione ad Oggetti Mod. 2.md",
+                "file": "Basi di  dati Mod. 2.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -124,7 +123,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Programmazione ad Oggetti Mod. 2.md",
+                "file": "Basi di  dati Mod. 2.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -147,25 +146,26 @@
       "templates:Insert template": false
     }
   },
-  "active": "a5ab38368aefaebe",
+  "active": "5d8ee0621af1eeeb",
   "lastOpenFiles": [
+    "Untitled.md",
     "Basi di  dati Mod. 2.md",
+    "Utilità/Pasted image 20240320113027.png",
+    "Utilità/Pasted image 20240320112630.png",
+    "Utilità/Pasted image 20240320112545.png",
+    "Utilità/Pasted image 20240320112240.png",
+    "Utilità/Pasted image 20240320112134.png",
+    "Utilità/Pasted image 20240320111643.png",
+    "Tecnologie e Applicazioni Web.md",
+    "Programmazione ad Oggetti Mod. 2.md",
     "Algoritmi e Strutture di Dati.md",
     "Utilità/Pasted image 20240318112937.png",
     "Utilità/Pasted image 20240318112806.png",
     "Utilità/Pasted image 20240318112239.png",
     "Utilità/Pasted image 20240318111702.png",
-    "Utilità/Pasted image 20240318111315.png",
-    "Utilità/Pasted image 20240318110422.png",
-    "Utilità/Pasted image 20240318110048.png",
-    "Utilità/Pasted image 20240318104952.png",
-    "Utilità/Pasted image 20240318104023.png",
-    "Programmazione ad Oggetti Mod. 2.md",
     "Analisi dei Dati.md",
     "2024-03-16.md",
     "Sistemi Operativi Mod. 2.md",
-    "Tecnologie e Applicazioni Web.md",
-    "Utilità/Pasted image 20240314150758.png",
     "el.md",
     "Utilità/cheatsheet.md",
     "Algoritmi.md",

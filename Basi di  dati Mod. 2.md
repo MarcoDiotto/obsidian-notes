@@ -1307,3 +1307,319 @@ LANGUAGE plpgsql;
 Una procedura può essere invocata tramite il comando `CALL`. Questo è il metodo più moderno per gestire funzioni senza risultato:
 * **Prima** di Postgres 11: comando `PERFORM`.
 * Una procedura differisce da una funzione `void` solo nella gestione delle **transazioni**.
+# Sicurezza del Database
+___
+## Introduzione
+Tutti i DBMS principali implementano meccanismi di
+* **Autenticazione**: identificare chi sta operando sul database.
+* **Autorizzazione**: determinare chi può fare cosa (tramite permessi)
+
+L’autenticazione è normalmente effettuata tramite l’utilizzo di un *nome utente ed una password*. E’ un prerequisito per l’autorizzazione.
+### Controllo degli Accessi
+Il **controllo degli accessi** è il meccanismo con cui viene verificato che chi richiede un’operazione sia effettivamente autorizzato a farla.
+## Autenticazione
+La gestione degli utenti non fa parte dello standard SQL. Ci focalizziamo sull’implementazione di Postgres, ma altri DBMS sono simili. 
+Il modo più semplice per creare utenti è tramite la sintassi: 
+
+```SQL
+CREATE USER NomeUtente WITH PASSWORD NuovaPwd 
+```
+
+Ulteriori opzioni popolari da aggiungere in coda al comando: 
+* `SUPERUSER`: l’utente ignora tutti i controlli di sicurezza.
+* `CREATEDB`: consente la creazione di nuovi database.
+* `VALID UNTIL ts`: specifica la durata massima della password.
+
+Postgres permette di controllare il processo di autenticazione tramite il *file di configurazione* `pg hba.conf`.
+È possibile specificare il **metodo di autenticazione** desiderato per ciascuna richiesta di autenticazione, definita da una quadrupla che include:
+* **Tipo di connessione**: locale, remota, cifrata (via TLS)... 
+* **Database**: lista di database o keyword all 3 utente: lista di utenti o keyword all.
+* **Indirizzo**: hostname, indirizzo IP, range di IP... 
+
+La *prima quadrupla che fa match* definisce il metodo di autenticazione. Se non si trova alcuna quadrupla valida, l’autenticazione è *vietata*.
+
+I metodi di autenticazione supportati includono: trust, reject, password, MD5, SCRAM, peer...
+## Metodi di Autenticazione: Password
+Protocollo per l’utente `peter` con password `123456`:
+* In fase di creazione utente, il **server** salva `y = 123456`.
+* Il **client** manda lo **username** (`peter`) e richiede una connessione.
+* Il **server** richiede la **password** per lo **username** `peter`.
+* Il **client** fornisce la propria **password** `x = 123456`.
+* Il **server** verifica che `x = y` ed autorizza l’accesso.
+
+Problemi di *sicurezza*:
+* Se il canale di comunicazione non è cifrato, la password è **esposta**: questo problema è facile da risolvere tramite l’uso di SSL / TLS.
+* La password è memorizzata **in chiaro sul server**, quindi esposta a chiunque riuscisse ad ottenerne il controllo.
+## Metodi di Autenticazione: MD5
+Protocollo per l’utente `peter` con password `123456`:
+* In fase di creazione utente, il **server** salva `y = MD5(123456 + peter)`.
+* Il **client** manda lo **username** (`peter`) e richiede una connessione.
+* Il **server** richiede un **MD5 della password** proponendo un [[Tecnologie e Applicazioni Web#Nonce| salt]] `abcd`.
+* Il **client** calcola `x = MD5(MD5(123456 + peter) + abcd)` e poi lo invia al **server**.
+* Il **server** verifica che `x = MD5(y + abcd)` ed autorizza l’accesso.
+
+Questo protocollo non richiede di memorizzare la password in chiaro sul server, ma non è più raccomandato a causa dell’uso di MD5 e del **salt corto**. Inoltre il furto di y permette l’impersonazione dell’utente. Per evitare questi problemi è meglio utilizzare il più complesso **protocollo SCRAM**.
+## Autorizzazione
+SQL mette a disposizione diversi tipi di permessi, fra cui: 
+* `SELECT` su una **tabella** (*operazione ristretta ad un set di attributi X*).
+* `INSERT` su una **tabella** (*operazione. ristretta ad un set di attributi X*).
+* `UPDATE` su una **tabella** (*operazione ristretta ad un set di attributi X*).
+* `DELETE` su una **tabella** (*`SELECT` richiesto per `DELETE` non banali*).
+* `TRIGGER`, necessario per definire un **trigger** su una **tabella**.
+* `EXECUTE`, necessario per eseguire una **funzione** o **procedura**.
+
+Si noti che `SELECT` e `SELECT(X)` sono due *permessi differenti*, dove il primo è *più generale* del secondo.
+## Esempio
+```SQL
+
+INSERT INTO Studio(name)
+	SELECT DISTINCT studioName
+	FROM Movies
+	WHERE studioName NOT IN (SELECT name 
+							 FROM Studio);
+```
+Questa query ha bisogno di tutti i seguenti permessi:
+* `INSERT(name)` su `Studio`.
+* `SELECT(studioName)` su `Movies`.
+* `SELECT(name)` su `Studio`.
+
+In alternativa si possono avere *permessi più generali* di questi.
+## Permessi e Trigger
+La gestione dei permessi è delicata per i **trigger**:
+* il permesso `TRIGGER` per una **tabella** abilita la definizione di trigger **arbitrari** su di essa.
+* Il creatore del trigger deve avere il permesso `TRIGGER` sulla **tabella** e tutti i permessi richiesti per **eseguire** l’azione del trigger.
+* Quando un trigger viene attivato, esso viene eseguito con i **permessi del suo creatore**, indipendentemente da chi ha indotto l’attivazione.
+
+*Nota*: l’uso di trigger può abilitare **scalate di privilegi**.
+## Permessi e Funzioni
+Quando una funzione viene dichiarata, è possibile specificarne i permessi di esecuzione tramite le opzioni:
+* `SECURITY INVOKER`: la funzione viene eseguita con i **permessi dell’utente chiamante** (default).
+* `SECURITY DEFINER`: la funzione viene eseguita con i **permessi dell’utente che l’ha definita**.
+
+*Nota*: sebbene l’uso di `SECURITY DEFINER` possa abilitare **scalate di privilegi**, un suo utilizzo sapiente può essere utile per fornire **accesso controllato** a funzionalità che richiedono permessi elevati.
+## Assegnare permessi
+
+Il **proprietario di uno schema relazionale** ha tutti i permessi possibili sulle tabelle e gli altri elementi di tale schema. Tali permessi *possono essere concessi ad altri utenti* usando la sintassi:
+```SQL
+GRANT ListaPermessi ON Elemento TO ListaUtenti
+```
+
+*Note*:
+* e possibile utilizzare `ALL PRIVILEGES` per indicare **tutti i permessi**.
+* È possibile utilizzare `PUBLIC` per autorizzare **tutti gli utenti**, compresi quelli **non ancora esistenti**.
+## Delegare Permessi
+I permessi possono essere assegnati fornendo la possibilità di delegarli ad altri utenti:
+
+```SQL
+GRANT ListaPermessi ON Elemento TO ListaUtenti
+WITH GRANT OPTION
+```
+
+È *sempre possibile* delegare una versione **meno generale** di un privilegio (delegabile) che si possiede.
+
+**Esempio**: 
+>Un utente che ha ricevuto il permesso `SELECT WITH GRANT OPTION` può delegare `SELECT(X)` con X arbitrario sullo stesso elemento.
+
+## Diagramma di Autorizzazione
+>Un **diagramma di autorizzazione** è un **grafo orientato** i cui nodi sono etichettati con una *tripla* $(u, p, m)$, dove $u$ è un utente, $p$ è un permesso e $m$ può avere una delle seguenti forme:
+>* ⊥: il permesso è stato assegnato, ma non può essere delegato.
+>* ∗: il permesso è stato assegnato e può essere delegato.
+>* ∗∗: il permesso è stato concesso in qualità di proprietario.
+
+Un arco da $(u_1, p, m_1)$ a $(u_2, p, m_2)$ modella che $u_1$ detiene il permesso $p$ con modalità $m_1$ e lo ha delegato ad $u_2$ con modalità $m_2$.
+
+## Esempio
+
+![[Pasted image 20240320111643.png]]
+
+Sia `A` il proprietario di `t`:
+* `A: GRANT p ON t TO B WITH GRANT OPTION`.
+* `A: GRANT p ON t TO C WITH GRANT OPTION`.
+* `B: GRANT p ON t to D`.
+* `C: GRANT p ON t to D`.
+* `C: GRANT p ON t to E`.
+## Revoca di Permessi
+I permessi assegnati possono essere **revocati** tramite la sintassi:
+
+```SQL
+REVOKE ListaPermessi ON Elemento FROM ListaUtenti
+```
+
+La revoca deve essere **terminata** da una di queste due opzioni:
+* `CASCADE`: il permesso viene *ricorsivamente revocato a tutti gli utenti* che lo hanno ricevuto **solamente** tramite il target della revoca.
+* `RESTRICT`: fa *fallire la revoca se essa comporterebbe la revoca di ulteriori permessi* secondo la politica `CASCADE`.
+
+*Nota*: un utente può revocare soltanto permessi **assegnati direttamente da se stesso**, a meno di revoche indirette tramite `CASCADE`.
+## Esempi
+
+![[Pasted image 20240320112134.png]]
+
+* `A: REVOKE p ON t FROM B` non revoca il permesso anche a `D`, dato che esiste ancora un cammino da `A` verso `D`.
+
+![[Pasted image 20240320112240.png]]
+
+* `A: REVOKE p ON t FROM C` invece revoca il permesso anche ad `E`, dato che ora non esiste più un cammino da `A` verso `E`.
+## Revoca di Deleghe
+È possibile **revocare** *solo la possibilità di delega*, ma *non il permesso*:
+
+```SQL
+REVOKE GRANT OPTION FOR ListaPermessi 
+					ON Elemento FROM ListaUtenti
+```
+
+![[Pasted image 20240320112545.png]]
+
+Se `A` revoca a `B` la possibilità di delegare `p` (con l’opzione `CASCADE`):
+
+![[Pasted image 20240320112630.png]]
+## Revoca e Generalità
+E’ possibile che un utente possieda sia un permesso $p$ che una sua variante meno generale $p^{-}$ sullo stesso oggetto.
+
+Normalmente revocare $p^-$ non ha alcun effetto su $p$. Se invece viene revocato $p$, la scelta dipende dal DBMS:
+* *Postgres* **revoca** automaticamente anche $p^-$.
+* Lo *standard SQL* invece suggerisce di **lasciare** assegnato $p^-$
+
+*Nota*: in generale l’autorizzazione nei DBMS è sostanzialmente standard, ma ci sono piccole differenze che possono introdurre **vulnerabilità inaspettate**.
+## Ruoli
+Assegnare manualmente i permessi ad ogni singolo utente è spesso un processo **costoso** ed **error-prone**, visto l’elevato numero di utenti.
+
+![[Pasted image 20240320113027.png]]
+
+Un **ruolo** è un *collettore di permessi*, che permette di introdurre un livello di indirezione durante la loro assegnazione.
+## Gestione dei Ruoli
+Un ruolo può essere creato tramite il comando:
+
+```SQL
+CREATE ROLE NomeRuolo;
+```
+
+Una volta fatto ciò è possibile usare alcuni comandi già visti:
+* `GRANT`: per **assegnare** permessi a ruoli e ruoli ad utenti.
+* `REVOKE`: per **rimuovere** permessi a ruoli e ruoli ad utenti.
+
+I ruoli assegnati ad un utente non sono **attivi** di default. 
+L’attivazione di un ruolo per ottenerne i permessi viene effettuata tramite il comando: 
+
+```SQL
+SET ROLE NomeRuolo;
+```
+## Benefici dei Ruoli
+I ruoli hanno numerosi **benefici** rispetto all’uso tradizionale dei permessi:
+* I ruoli raggruppano **insiemi di permessi** logicamente **collegati**.
+* È molto **meno costoso** assegnare ruoli che permessi, visto che ci sono molti meno ruoli che permessi.
+* È molto **più difficile** sbagliare l’assegnazione di un ruolo che di un insieme di permessi.
+* Le **operazioni di revoca** sono analogamente semplificate.
+* I ruoli **non** sono **attivi** di default, contrariamente ai permessi: questo è più fedele al *principio del minimo privilegio*.
+## Ruoli in Postgres
+In Postgres non c’è una vera e propria **differenza** fra utente e ruolo: infatti il comando `CREATE USER` *è un alias per* `CREATE ROLE WITH LOGIN`.
+Alcune specificità:
+* L’opzione `CREATEROLE` consente al ruolo di **creare** altri ruoli. Questo può condurre a **scalate di privilegi**.
+* Ruoli assegnati con `WITH ADMIN OPTION` possono essere delegati.
+* È possibile assegnare ruoli ad altri ruoli, introducendo una forma di **ereditarietà** dei permessi.
+* Il **diagramma di autorizzazione** è costruito attorno ai ruoli: se un permesso viene assegnato tramite un ruolo, qualsiasi altro *utente con quel ruolo può revocarlo*.
+## Ruoli in Postgres : Ereditarietà
+Le opzioni `INHERIT` (default) e `NOINHERIT` consentono di gestire il meccanismo di ereditarietà:
+
+```SQL
+CREATE ROLE joe LOGIN INHERIT;
+CREATE ROLE admin NOINHERIT;
+CREATE ROLE wheel NOINHERIT;
+GRANT admin TO joe;
+GRANT wheel TO admin; 
+```
+
+Permessi concessi:
+* *login come `joe`*: permessi di `joe` e di `admin` (ma non di wheel).
+* *Dopo `SET ROLE admin`*: solo i permessi di `admin`.
+* *Dopo `SET ROLE wheel`*: solo i permessi di `wheel` 
+
+*Nota*: sia nel primo che nel secondo caso si può fare `SET ROLE wheel`.
+## Raccomandazioni Generali
+Un’opportuna politica di autorizzazione è **necessaria** per la sicurezza di un database.
+Alcune raccomandazioni:
+* Definire un insieme di **ruoli** in fase di progettazione del database a partire dall’*analisi dei requisiti*.
+* Definire le politiche di **confidenzialità** ed **integrità** per il database, mappandole su opportuni assegnamenti di permessi a ruoli.
+* Assegnare i ruoli agli utenti rispettando il **principio del minimo privilegio** e facendo attenzione all’utilizzo dell’**ereditarietà**.
+
+*Nota*: una buona politica di autorizzazione non è sufficiente per la sicurezza.
+## SQL Injection
+
+Consideriamo una web application che consenta di cercare le informazioni relative ad un utente, presentando il suo nome (`$u`) e password (`$p`). 
+
+```SQL
+user = get_parameter($u)
+pass = get_parameter($p)
+statement = "SELECT * FROM users WHERE name = ’" + 
+			 user + "’ AND pwd = ’" + pass + "’;"
+```
+
+Il codice costruisce la query SQL da eseguire tramite concatenazione di stringhe, che però potrebbero essere state passate da un attaccante.
+
+Se passiamo nome utente `marco` e password `’ OR ’1’ = ’1`:
+
+```SQL
+SELECT * FROM users WHERE name = ’marco’
+						  AND pwd = ’’ OR ’1’ = ’1’;
+```
+
+Questa query ritorna l’intero contenuto della tabella `users`, andando a comprometterne la confidenzialità.
+
+Se passiamo nome utente `marco` e password `’; DROP TABLE users --`:
+
+```SQL
+SELECT * FROM users WHERE name = ’marco’
+			  AND pwd = ’’; DROP TABLE users -- ’; 
+```
+
+Questa query elimina l’intero contenuto della tabella users, andando a comprometterne l’integrità.
+## Prevenire SQL Injection
+Come per tutte le *forme di injection*, ci sono due approcci tradizionali per prevenire SQL injection:
+* **Sanitizzazione**: analisi o trasformazione degli input processati per garantire l’assenza di contenuti malevoli, per esempio costrutti SQL.
+* **Encoding**: trasformazione degli output generati per garantire che essi non vengano interpretati come codice eseguibile.
+
+*Nota*: nel caso di SQL l’utilizzo dell’**encoding** è più comune, perché è raro avere casi d’uso in cui del codice SQL deve essere caricato in un’applicazione.
+## Escaping
+L’**escaping** è una delle più semplici forme di **encoding**, che converte caratteri speciali nella loro versione “letterale”.
+
+```SQL
+userName = escape(get_parameter($u))
+pwd = escape(get_parameter($p))
+statement = "SELECT * FROM users WHERE name = ’" +
+			 userName + "’ AND password = ’" + pwd + "’;" 
+```
+
+Se passiamo nome utente `marco` e password `’ OR ’1’ = ’1`:
+
+```SQL
+SELECT * FROM users WHERE name = ’marco’ AND password = ’’’ OR ’’1’’ = ’’1’;
+```
+## Prepared Statement
+Un **prepared statement** è un’istruzione SQL contenente dei “buchi” detti parametri, che vengono riempiti in modo disciplinato (tipato).
+
+```SQL
+userName = get_parameter($u)
+pwd = get_parameter($p) statement = "SELECT *
+									 FROM users
+									 WHERE name = ?
+									 AND password = ?;" 
+statement.setString(1,userName); statement.setString(2,pwd);
+```
+
+I **prepared statement** sono il modo consigliato per evitare SQL injection, ma in alcuni casi non si possono usare.
+## Sanitizzazione
+Si consideri la seguente porzione di codice usata per stampare il contenuto di una tabella selezionabile da un menù a tendina:
+
+```SQL
+table = get_parameter($t)
+statement = "SELECT * FROM " + table;
+```
+
+Poiché la sintassi dei **prepared statement** *non supporta l’uso di parametri nel nome della tabella*, è importante **sanitizzare** l’input ricevuto. 
+
+```SQL
+table = get_parameter($t);
+if (table == "Student" || table == "Teacher") {
+	statement = "SELECT * FROM " + table;
+} 
+else { throw new Exception("Unexpected!"); }
+```

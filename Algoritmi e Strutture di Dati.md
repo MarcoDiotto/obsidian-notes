@@ -7,8 +7,6 @@ ___
 Vogliamo determinare un limite inferiore per questo metodo:
 * Un banale limite inferiore è $\Omega (n)$
 *  Il limite inferiore più stretto tuttavia è $\Omega (n \ log \ n)$
-* 
-
 ##### $\color{red}Dimostrazione$
 
 $\color{green}Ipotesi$: supponiamo tutti gli elementi di input distinti.
@@ -86,7 +84,7 @@ $\color{green}Corollario$: Heapsort e Mergesort sono algoritmi di ordinamento pe
      for i = 0 to k
 	     C[i] = 0
 	 for j = 1 to n
-		 C[A[j]] = C[A[j]] +1
+		 C[A[j]] = C[A[j]] + 1
 		 //C[i] = |{ x ∈ {1, n}, A[x] = i }| 
 	 for i = 1 to k
 		 C[i] = C[i] + C[i - 1]
@@ -957,3 +955,79 @@ Il tempo di esecuzione di `tdLCS` è $\theta(m \cdot n) + O(m \cdot n) = \theta(
   Dare una caratterizzazione ricorsiva del numero di sotto-sequenze con prodotto $\leq$ k.
   
   ![[Pasted image 20240313102106.png]]
+# Grafi
+___
+## Introduzione
+Un grafo orientato è una **relazione binaria** ($\to$ sottoinsieme del prodotto cartesiano). $$G = (v,e)$$ Con $V$ insieme dei **vertici**: $$V = \{1,2,...,n\}$$
+Ed $E$ insieme degli **archi**: $$E \subseteq V \times V$$
+**Esempio**: 
+
+$$E = \{(1,2),(1,4),(2,2),(2,3),(3,1)(3,4),(4,2),(4,2)\}$$
+![[Pasted image 20240318104023.png]]
+
+
+
+I grafi **non orientati** *non contengono cappi*:
+$$G = (V,E)$$$$\begin{cases}(i,j) \in E \iff (j,i) \in E\ \ \ \ \ \forall i,j \in V\\  \end{cases}$$
+Nei grafi non ordinati l'**ordine non conta**:
+$$V = \{1,2,3\} $$
+$$E \subseteq \binom{V}{2} = \{(1,2),(1,3),(2,3)\}$$ $$|\binom{V}{2}| = \binom{|V|}{2}$$
+**Esempio**: 
+![[Pasted image 20240318104952.png]]
+
+* Massimo numero di archi in un grafo **orientato $G = (V,E)$**: $$|V| = n\ \ \ \ E = V \times V = V^2\ \ \ \ |E| = V^2 = n^2 $$
+* Massimo numero di archi in un grafo **non orientato $G = (V,E)$**: $$$$
+* **Grafo sparso**: $|E| \sim $
+* **Grafo denso**:
+
+Densità del grafo $\delta(G)$:
+$$\delta(G) = \frac{|E|}{massimo\ numero\ di\ archi}$$
+Densità nel grafo orientato: $$\delta(G) = \frac{|E|}{|V|^2}$$
+Densità nel grafo non orientato: $$\delta(G) = \frac{|E|}{|\binom{V}{2}|} = \frac{m}{\frac{n(n - 1)}{2}} = \frac{2m}{n (n - 1)}$$ $$0 \leq \delta(G) \leq 1$$
+* $\delta(G) = 0 \to$ grafo vuoto
+* $\delta(G) = 1 \to$ grafo completo
+![[Pasted image 20240318110048.png]]
+* i e j sono **adiacenti**
+* L'arco che li collega è **incidente** su i e j
+## Rappresentazione di grafi su macchine
+* Lista di adiacenza
+* Matrice di adiacenza
+* Matrice di incidenza
+
+### Lista di Adiacenza
+![[Pasted image 20240318110422.png]]
+
+Questo algoritmo serve per sapere se due vertici sono adiacenti.
+Non è efficiente perché deve scorrere la lista per sapere se due vertici sono efficienti, tuttavia questa soluzione occupa poco spazio ( proporzionale al numero di archi).
+Complessità spaziale $O(m + n)$ con $m < n$ pertanto $O(n)$.
+
+Questo algoritmo risulta essere efficace con grafi sparsi, dato che le liste sono piccole. Al contrario è poco efficiente con grafi densi
+## Matrice di adiacenza 
+* $G = (V,E)$
+* $A_G\ \ \ \ A = (a_{ij})\ \ \ \ m \times n$
+* $a_{ij} = \begin{cases} 1 \ \ \ \ i,j \in E \\ 0 \ \ \ \ i,j \notin E \end{cases}$
+
+![[Pasted image 20240318111315.png]]
+Occupazione spaziale in $O(n^2)$ ma più efficiente, quindi preferire per grafi densi.
+
+In grafi non orientati la matrice è simmetrica:
+![[Pasted image 20240318111702.png]]
+
+### Matrice di incidenza
+* $G = (V,E)$
+* $n = |V| \to$ numero di vertici
+* $m = |E| \to$ numero di archi
+* matrice $m \times n$
+* In caso di grafi orientati, ogni cella della matrice può contenere $-1$ per il vertice dal cui esce, $1$ per quello in cui entra, $0$ altrimenti
+
+![[Pasted image 20240318112239.png]]
+Buona rappresentazione per un grafo sparso, nel caso di un grafo non orientato, tutti i $-1$ vengono sostituiti con $1$.
+
+Fin'ora abbiamo parlato solamente di grafi **non pesati**.
+
+Grafo pesato: 
+* $G(V,E,w)$ pesato sui vertici, perché ad ogni vertice è assegnato un numero, $w$ è una funzione che assegna a ciascun vertice un numero reale.
+  ![[Pasted image 20240318112806.png]]
+* $G(V,E,w)$ pesato sugli archi, perché ad ogni arco è assegnato un numero, $w$ è una funzione che assegna a ciascun arco un numero reale.
+  ![[Pasted image 20240318112937.png]]
+  

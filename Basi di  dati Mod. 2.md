@@ -1032,3 +1032,278 @@ CREATE FUNCTION fix_func_dep() RETURNS TRIGGER AS $$
 	RETURN NEW;
 $$ LANGUAGE plpgsql;
 ```
+# Funzioni e Procedure
+___
+## Introduzione
+Abbiamo visto come usare una funzione per definire il corpo di un trigger. In realtà il concetto di funzione è più generale ed ha altri utilizzi. 
+Perché definire una funzione in SQL: 
+* **Incapsulare funzionalità** di uso comune per favorirne il riutilizzo.
+* **Offrire interfacce** di accesso semplificate ad utenti inesperti di SQL.
+* **Centralizzare** lato server una **sequenza di operazioni** di cui non ci interessano i risultati intermedi (benefici di performance).
+
+*Nota*: noi ci concentreremo su [**PL/pgSQL**](https://www.postgresql.org/docs/current/plpgsql.html).
+## Dichiarazione di Funzioni
+Una funzione si può dichiarare con la sintassi:
+
+```SQL
+CREATE FUNCTION my_fun ( args ) RETURNS type 
+AS function_body 
+LANGUAGE plpgsql;
+```
+
+dove `function_body` è un **blocco** con la *seguente struttura*:
+
+```SQL
+[ DECLARE declarations ] 
+BEGIN 
+	statements 
+END;
+```
+
+*Nota*: Postgres richiede che il `function_body` sia una stringa. Lo possiamo definire in più righe facendolo precedere e terminare da `$$`.
+## Dichiarazione di variabili
+Tutte le variabili utilizzate in un **blocco** vanno dichiarate nella sezione opportuna, associandole al loro **tipo**:
+
+```SQL
+name [ CONSTANT ] type [ NOT NULL ] [ = expr ];
+```
+Il tipo di una variabile può essere un qualsiasi tipo SQL. Ci sono inoltre alcuni tipi e sintassi particolari che è importante menzionare:
+* `var%TYPE`: il tipo della variabile o **colonna** chiamata `var`.
+* `tab%ROWTYPE`: il tipo record delle **righe** della tabella `tab`.
+* `RECORD`: un qualsiasi tipo **record** $\to$ riga, ma senza sapere le relative colonne (da usare con attenzione).
+* `SETOF t`: un **insieme di elementi di tipo `t`** (solo per *valori di ritorno*).
+## Esempio
+La seguente funzione ha lo scopo di concatenare due stringhe:
+
+```SQL
+CREATE FUNCTION my_concat(a text, b text, 
+						  uppercase boolean = false) 
+RETURNS text AS $$ 
+BEGIN
+	IF uppercase THEN RETURN UPPER(a || ’ ’ || b); 
+	END IF;
+	RETURN LOWER(a || ’ ’ || b);
+END; $$ LANGUAGE plpgsql;
+```
+
+Tutte le seguenti invocazioni sono lecite:
+* `SELECT my concat(’Hello’, ’World’)`.
+* `SELECT my concat(’Hello’, ’World’, true)`.
+* `SELECT my concat(b := ’World’, a := ’Hello’)`.
+## Assegnamento
+Un assegnamento ad una variabile si effettua con la sintassi: 
+```SQL
+var = expr;
+```
+
+Il risultato di un comando SQL che ritorna una **singola riga**, per esempio certe `SELECT`, può essere salvato in una variabile con la sintassi: 
+
+```SQL
+SELECT expr INTO [STRICT] var FROM ... 
+```
+
+L’opzione `STRICT` richiede alla query di ritornare *esattamente una riga*, in caso contrario viene dato un errore a runtime. Se viene omessa, solo la prima riga del risultato viene assegnata (NULL in caso di risultato vuoto).
+## Ritornare un Valore
+Una funzione che ritorna **un singolo valore** può usare la sintassi:
+
+```SQL
+RETURN expr
+```
+
+Se è necessario ritornare un record, è possibile utilizzare i cosiddetti **parametri di output** per definirne implicitamente il tipo:
+
+```SQL
+CREATE FUNCTION sum_n_product(x int, y int, OUT sum int, 
+							  OUT prod int) 
+AS $$ 
+BEGIN 
+	sum = x + y; 
+	prod = x * y; 
+END; $$ LANGUAGE plpgsql;
+```
+## Ritornare un insieme di valori
+Una funzione che ritorna un **insieme di valori** (`SETOF`) deve costruirlo in maniera incrementale tramite le sintassi: 
+
+```SQL
+RETURN NEXT expr; -- aggiunge un record al risultato
+RETURN QUERY query; -- aggiunge un insieme al risultato 
+```
+
+L’insieme di valori da ritornare può poi essere restituito con `RETURN` *senza passare alcun argomento* (o lasciando terminare la funzione).
+## Esempio
+>Data la tabella `PC(model, speed, ram, hd, price)`, definire una funzione che ritorna un insieme di modelli associati ai rispettivi prezzi, cioè solo la prima e la quinta colonna della tabella.
+
+Abbiamo almeno due diverse possibili opzioni:
+* Abusare del **polimorfismo**, ritornando `SETOF RECORD`:
+  
+  ```SQL
+  CREATE FUNCTION f() RETURNS SETOF RECORD AS $$ 
+  BEGIN 
+  RETURN QUERY SELECT model, price FROM pc; 
+  END; $$ LANGUAGE plpgsql;
+  ```
+  
+  Utilizzo poi:
+  
+  ```SQL
+  SELECT m,p FROM f() AS (m character(20), p real);
+  ```
+
+* Usare la sintassi `RETURNS TABLE` al posto di `RETURNS` (conoscendo a priori i *tipi di ritorno*):
+  
+  ```SQL
+  CREATE FUNCTION f() RETURNS TABLE(m integer, p real) AS $$
+   BEGIN
+   RETURN QUERY SELECT model, price FROM pc;
+   END;
+   $$ LANGUAGE plpgsql;
+  ```
+  
+  Utilizzo poi:
+  
+  ```SQL
+  SELECT * FROM f();
+  ```
+## Nota di Implementazione
+Si noti che la sintassi:
+
+```SQL
+CREATE FUNCTION f()
+RETURNS TABLE(m character(20), p real) ...
+```
+
+e solo una versione *più fedele allo standard* della sintassi:
+
+```SQL
+CREATE FUNCTION f(OUT m character(20), OUT p real)
+RETURNS SETOF RECORD ...
+```
+
+Nel caso di funzioni con parametri di output che ritornano un insieme di valori si può usare `RETURN NEXT` senza argomenti per aggiungere gli attuali valori dei parametri di output come nuova riga del risultato.
+## Condizionali
+Sintassi del condizionale:
+
+```SQL
+IF boolean-expr THEN
+	statements
+[ ELSIF boolean-expr THEN 
+	statements
+	... ] 
+[ ELSE
+	statements ]
+END IF;
+```
+
+*Nota*: C’è inoltre un costrutto `CASE` in due forme (vedere manuale).
+
+## Cicli
+Tradizionale ciclo `WHILE`
+```SQL
+WHILE boolean-expr LOOP
+	statements
+END LOOP;
+```
+
+Il ciclo `FOR` ha invece una sintassi piuttosto complessa:
+
+```SQL
+FOR name IN [ REVERSE ] int-expr .. int-expr 
+			[ BY int-expr ] LOOP 
+	statements
+END LOOP;
+```
+
+*Nota*: La variabile di iterazione non deve essere dichiarata ed è **locale** al ciclo.
+
+Il ciclo FOR può essere utilizzato anche per iterare sui risultati prodotti da una certa query:
+
+```SQL
+FOR target IN query LOOP
+	statements
+END LOOP;
+```
+
+L’iterazione su un array si effettua invece con `FOREACH`:
+
+```SQL
+FOREACH target IN ARRAY expr LOOP
+	statements
+END LOOP
+```
+
+## Variabile found
+Ciascuna funzione contiene una variabile booleana `FOUND`:
+* `SELECT INTO` imposta `FOUND` a `true` *se viene assegnata una riga alla variabile corrispondente*, a `false` altrimenti.
+* `UPDATE`, `INSERT` e `DELETE` impostano `FOUND` a `true` *se almeno una riga è stata toccata dall’operazione*, a `false` altrimenti.
+* Un ciclo `FOR` imposta `FOUND` a `true` *se ha iterato almeno una volta*, a `false` altrimenti.
+* `RETURN QUERY` imposta `FOUND` a `true` *se la query ha ritornato almeno una riga*, a `false` altrimenti.
+## Esempio
+Un altro modo per risolvere l'esempio precedente:
+
+```SQL
+CREATE FUNCTION f3(OUT m character(20), OUT p real)
+RETURNS SETOF RECORD AS $$
+declare r RECORD;
+BEGIN
+	FOR r IN SELECT model, price FROM lab.pc LOOP
+	SELECT r.model,r.price INTO m, p;
+	RETURN NEXT;
+	END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+```
+## Messaggi ed Eccezioni
+
+Una funzione può riportare messaggi o errori con la sintassi:
+```SQL
+RAISE [ level ] ’format’ [, expr [, ... ]]
+				[USING option = expr];
+```
+
+dove:
+* `level` indica il livello di severità dell’errore (`DEBUG`, `LOG`, ...). Il livello di default `EXCEPTION` solleva anche un’**eccezione**.
+* `format` è una format string che specifica il messaggio da riportare la clausola `USING` permette di popolare informazioni aggiuntive sull’errore, per esempio il suo codice di errore `ERRCODE` 
+
+Si può usare `RAISE` senza parametri per rilanciare un’eccezione catturata.
+
+Per **catturare** un'eccezione si può catturare la sintassi:
+
+```SQL
+BEGIN
+	statements
+EXCEPTION
+	WHEN cond [ OR cond ... ] THEN handler
+	[ WHEN cond [ OR cond ... ] THEN handler ... ]
+END;
+```
+
+Le condizioni `cond` seguono una sintassi particolare, si consulti il manuale per i dettagli. Per esempio è possibile *fare azioni diverse in base al codice di errore*, usando la condizione speciale `others` come fallback.
+
+Quando un’eccezione viene catturata, il contenuto delle variabili locali persiste, ma *tutti i cambiamenti al database effettuati nel blocco che ha sollevato l’eccezione vengono annullati.*
+
+```SQL
+INSERT INTO mytab(firstname, lastname) VALUES(’Tom’, ’Jones’);
+BEGIN
+	UPDATE mytab SET firstname = ’Joe’
+	WHERE lastname = ’Jones’;
+	x := x + 1;
+	y := x / 0;
+	EXCEPTION
+		WHEN division_by_zero THEN
+		RAISE NOTICE ’caught division_by_zero’;
+		RETURN x;
+END;
+```
+
+Qui `x` viene incrementata di 1, ma nel database troveremo `Tom Jones`.
+## Procedure
+Una procedura è una funzione che non ritorna alcun risultato:
+```SQL
+CREATE PROCEDURE my_proc ( args )
+AS proc_body
+LANGUAGE plpgsql;
+```
+
+Una procedura può essere invocata tramite il comando `CALL`. Questo è il metodo più moderno per gestire funzioni senza risultato:
+* **Prima** di Postgres 11: comando `PERFORM`.
+* Una procedura differisce da una funzione `void` solo nella gestione delle **transazioni**.

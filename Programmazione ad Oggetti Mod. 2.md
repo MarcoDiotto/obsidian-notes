@@ -1032,3 +1032,68 @@ Sono funzioni che operano su **due** oggetti (fra queste vengono inclusi anche g
 In java possono essere implementate in 2 modi:
 * `this.method(Object o)` $\to$ metodo di `this`.
  * `method(Object o1, Object o2)` $\to$ metodo che opera su due argomenti `o1` e `o2`.
+# TinyJDK: Map
+
+```java
+package tinyjdk;
+
+public class Pair<A,B>{
+	public final A first;
+	public final B second;
+	
+	public Pair(A a, B b){
+		first = a;
+		second = b
+	}
+}
+```
+
+L'interfaccia della mappa estende **Iterable** e non **Collection**, poiché quest'ultima contiene metodi che "stonano" con il concetto di mappa.
+
+```java
+package tinyjdk
+
+public interface Map<K, V> extends Iterable<Pair<K,V>>{
+
+	void put(K k, V v);
+	
+	V get(K k) throws KeyNotFoundException;
+	
+	class KeyNotFoundException extends Exception {
+		
+//facciamo Object perché le eccezioni non supportano generics
+		public KeyNotFoundException(Object k){
+			super(String.format("Key %s not found in map",k));
+		}
+	}
+}
+```
+
+```java
+public class Pair<K,V> implements Map<K,V>{
+	
+	private List<Pair<K,V>> l = new ArrayList<>();
+	@Override
+	public void put(K k, V v){
+		assert(k != null); //posso avere chiavi duplicate
+		l.add(new Pair<k,v>);
+	}
+	
+	@Override
+	public V get(K k) throws KeyNotFoundException{
+	
+	/*
+		non possiamo usare il for each perche vuole l'iterable
+		della standard library.
+	*/
+		
+		Iterator<Pair<K,V>> it = l.iterator();
+		for(int i = l.size() -1; i >= 0; --i){
+			Pair<K,V> p = l.get(i);
+			if(p.first().equals(x))
+				return p.second;
+		}
+		throw new KeyNotFoundException()
+	}
+}
+```

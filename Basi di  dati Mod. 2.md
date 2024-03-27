@@ -1623,3 +1623,233 @@ if (table == "Student" || table == "Teacher") {
 } 
 else { throw new Exception("Unexpected!"); }
 ```
+# Transazioni
+## Introduzione
+Quando programmiamo applicazioni che si interfacciano con un database, è normale raggruppare insieme una **sequenza di operazioni** su di esso per implementare una determinata funzionalità. 
+
+Questa pratica necessaria può creare problemi quando: 
+* Ci sono molte operazioni **concorrenti** sulla base di dati, per esempio perché più persone stanno contemporaneamente prenotando un posto a sedere sullo stesso volo.
+* Certe operazioni **falliscono** e non possono essere completate, per esempio perché troppe persone sono attive nello stesso momento.
+
+Entrambi questi scenari possono danneggiare l’integrità della base di dati.
+## Concorrenza
+Un utente `u` vuole riservare un posto sul proprio volo:
+
+```SQL
+SELECT seatNo 
+FROM Flights 
+WHERE fltNo = 123 AND fltDate = DATE ’2020-03-07’ AND
+									seatStatus = ’available’
+```
+
+Una volta scoperto che il posto `22A` è libero, u procede alla prenotazione:
+
+```SQL
+UPDATE Flights
+SET seatStatus = ’occupied’
+WHERE fltNo = 123 AND fltDate = DATE ’2020-03-07’
+				  AND seatNo = ’22A’
+```
+
+Ma anche l’utente `v` vuole prenotare un posto sullo stesso volo e proprio nello stesso momento.
+
+![[Pasted image 20240327104150.png]]
+
+Col risultato che  ad entrambi viene assegnato lo stesso posto.
+## Fallimenti
+Visto che la compagnia aerea ha lasciato il posto `22A` a `u`, il biglietto di `v` va rimborsato. Si prelevano 800 euro dal conto della compagnia: 
+
+```SQL
+UPDATE Accounts
+SET balance = balance - 800
+WHERE acctNo = 123; 
+```
+
+e si accreditano poi sul conto di `v`: 
+
+```SQL
+UPDATE Accounts
+SET balance = balance + 800
+WHERE acctNo = 456;
+```
+## Transazioni
+Una *transazione* è una sequenza di operazioni sul database che soddisfa le seguenti proprietà:
+* **Serializzabilità**: l’esecuzione concorrente di più transazioni è equivalente ad una loro esecuzione seriale in un qualche ordine.
+* **Atomicità**: se la transazione termina prematuramente, tutti i suoi effetti parziali sono annullati.
+* **Persistenza**: le modifiche effettuate da una transazione terminata con successo sono permanenti.
+
+*Nota*: in certi libri di testo una presentazione leggermente diversa: ACID, un popolare acronimo per Atomicity, Consistency, Isolation e Durability.
+## Serializzabilità
+Questa esecuzione non è più ammissibile, perché viola la condizione di serializzabilità delle transazioni:
+
+![[Pasted image 20240327104859.png]]
+
+Non è possibile che due utenti trovino il posto `22A` libero se le due transazioni sono eseguite una dopo l’altra.
+
+Questa esecuzione è invece ammissibile rispetto alla condizione di serializzabilità, anche se ha favorito `v` rispetto ad `u`:
+
+![[Pasted image 20240327105005.png]]
+
+Non importa chi è **penalizzato** fra `u` e `v`, l’importante è che uno dei due sia costretto a trovarsi un altro posto a sedere.
+## Atomicità
+Supponiamo che *avvenga un crash* dopo aver prelevato 800 euro dal conto della compagnia:
+
+```SQL
+UPDATE Accounts
+SET balance = balance - 800
+WHERE acctNo = 123; 
+```
+
+La seguente operazione nella stessa transazione non verrà più eseguita:
+
+```SQL
+UPDATE Accounts
+SET balance = balance + 800
+WHERE acctNo = 456;
+```
+
+Alla fine del crash anche la prima operazione sarà pertanto **annullata**.
+## Programmare Transazioni
+Normalmente ogni operazione SQL è gestita come una **transazione indipendente**. 
+È possibile però usare i seguenti comandi:
+* `START TRANSACTION` indica l’**inizio** di una nuova transazione.
+* `COMMIT` indica la terminazione **corretta** di una transazione: tutto ciò che è stato fatto durante la transazione deve essere reso persistente.
+* `ROLLBACK` indica la terminazione **anomala** di una transazione: tutto ciò che è stato fatto durante la transazione deve essere annullato.
+
+*Nota*: tipicamente API come JDBC offrono metodi che permettono di gestire le transazioni, che si appoggiano a questi comandi SQL.
+## Transazioni e Vincoli
+
+Data l’**atomicità** delle transazioni, è possibile *differire* il controllo di alcuni vincoli di integrità alla fine di una transazione.
+Ciascun vincolo può appartenere ad una fra tre categorie:
+* `NOT DEFERRABLE`: viene sempre *controllato dopo ogni operazione*.
+* `DEFERRABLE INITIALLY IMMEDIATE`: viene *controllato dopo ogni operazione* della transazione, ma è possibile **rilassarlo** per farlo controllare solo prima del commit.
+* `DEFERRABLE INITIALLY DEFERRED`: viene *controllato solo prima del commit*, ma è possibile **rafforzarlo** per farlo controllare dopo ogni operazione della transazione.
+
+*Nota*: i vincoli differibili possono essere configurati tramite `SET CONSTRAINTS`.
+## Implementazione di Transazioni
+Una transazione è una *sequenza di operazioni serializzabile*.
+Costo in termini di performance:
+* **Soluzione banale**: ciascuna transazione prende un *lock globale* sul database, che viene rilasciato solo dopo commit o rollback.
+* **Ottimizzazioni**: insieme di *lock locali*, che predicano solo su porzioni del database, e gestione rilassata delle transazioni *read only*, che non possono compromettere l’integrità della base di dati.
+
+*Note*: 
+* I DBMS moderni usano soluzioni senza lock come MVCC (multiversion concurrency control).
+* I DBMS principali forniscono ulteriore controllo al programmatore definendo diversi **livelli di isolamento** fra transazioni.
+* **Rilassare** il livello di isolamento ideale (`SERIALIZABLE`) può portare ad un incremento delle **prestazioni**, ma è in generale **rischioso**.
+## Transazioni Read Only
+Una transazione può essere dichiarata **read only** tramite la sintassi:
+
+```SQL
+SET TRANSACTION READ ONLY;
+```
+L’effetto di tale dichiarazione è il seguente:
+* La transazione può **solo leggere** dati (`SELECT`), ma non scriverli.
+* Tutte le query nella transazione possono vedere solo le scritture committate **prima dell’inizio** della transazione.
+* Più transazioni read only che operano sugli stessi dati possono essere eseguite **concorrentemente** senza rischi per l’integrità dei dati.
+
+*Nota*: una transazione read only fornisce una lettura **consistente** dello stato del database prima dell’inizio della transazione.
+## Transazioni Read Uncommitted
+Il livello di isolamento `READ UNCOMMITTED` consente ad una transazione di leggere **dirty data**, cioè dati scritti da altre transazioni che non hanno ancora fatto commit:
+* Quando ciò si verifica, si parla di **dirty read**.
+* Il rischio di una dirty read è che la transazione che ha scritto i dirty data potrebbe **abortire**: in tal caso, i dirty data dovrebbero essere **rimossi** e *non dovrebbero influenzare le altre transazioni*. 
+
+*Nota*: SQL limita l’uso di `READ UNCOMMITTED` alle sole transazioni read only, a meno che lo sviluppatore non decida di rilassare questo vincolo.
+
+## Esempio di Dirty Reads
+Consideriamo la seguente definizione di una transazione per effettuare un bonifico fra due conti correnti:
+* Accredita immediatamente l’importo nel conto $2$.
+* Controlla se il conto 1 conteneva abbastanza denaro:
+	* In caso positivo, addebita l’importo nel conto $1$ (`commit`).
+	* In caso negativo, annulla l’accredito nel conto $2$ (`rollback`).
+
+Consideriamo due transazioni eseguite concorrentemente:
+* $T_1$ trasferisce $150$ dal conto $A_1$ al conto $A_2$.
+* $T_2$ trasferisce $250$ dal conto $A_2$ al conto $A_3$.
+
+![[Pasted image 20240327111319.png]]
+## Transazioni Read Committed
+Il livello di isolamento `READ COMMITTED` impedisce il fenomeno delle **dirty read**, fornendo un *maggiore isolamento*:
+* Quando una transazione vuole effettuare una **scrittura**, acquisisce un **lock** che viene rilasciato solo dopo la sua terminazione.
+* Si può verificare il fenomeno di **unrepeatable read**: due letture degli stessi dati in momenti diversi possono portare a **risultati diversi** a causa dell’*intervento* di un’altra transazione.
+* Si può verificare il fenomeno di **lost update**, cioè la **perdita** di una modifica da parte di una transazione causata da un *aggiornamento* operato da un’altra transazione.
+## Esempio di Unrepeatable Read
+Calcolo della media dei voti di tutti gli studenti in presenza di una cancellazione concorrente:
+
+![[Pasted image 20240327111659.png]]
+
+La media calcolata è **sbagliata**.
+## Esempio di Lost Update
+Vendita concorrente di articoli da un sito di e-commerce:
+
+![[Pasted image 20240327111817.png]]
+
+Il numero di articoli rimanenti è **sbagliato**.
+## Transazioni Repeatable Read
+Il livello di isolamento `REPEATABLE READ` **impedisce** il fenomeno delle **dirty read**, delle **unrepeatable read** e dei **lost update**:
+* Quando una transazione vuole *effettuare una lettura oppure una scrittura*, acquisisce un **lock** che viene rilasciato solo dopo la sua terminazione.
+* Per motivi di **efficienza**, i lock vengono implementati a livello di **righe**.
+* Si può verificare il fenomeno dei **fantasmi**: un’altra transazione può aggiungere dati ad una tabella *prima che la transazione in corso sia stata completata*, andando ad influenzarne il risultato.
+## Esempio di Prevenzione di Unrepeatable Read
+Calcolo della media dei voti di tutti gli studenti in presenza di una cancellazione concorrente:
+
+![[Pasted image 20240327112232.png]]
+
+La media calcolata è **corretta**.
+## Esempio di Prevenzione di Lost Update
+Vendita concorrente di articoli da un sito di e-commerce:
+
+![[Pasted image 20240327112425.png]]
+
+Il numero di articoli rimanenti è **corretto**.
+## Esempio di Fantasmi
+Calcolo della media dei voti di tutti gli studenti in presenza di una cancellazione concorrente:
+
+![[Pasted image 20240327112515.png]]
+
+La media calcolata è di nuovo **sbagliata**.
+## Riassunto dei Livelli di Isolamento
+Ci sono *quattro possibili livelli di isolamento*, che offrono:
+* Diversi livelli di **performance** .
+* Diverse **garanzie di integrità**.
+
+![[Pasted image 20240327112731.png]]
+
+## Interazioni fra Livelli di Isolamento
+Il livello di isolamento di una transazione riguarda *esclusivamente ciò che può vedere quella transazione*:
+* Se $T$ è `SERIALIZABLE`, la sua esecuzione deve essere **equivalente** al caso in cui tutte le altre transazioni sono state eseguite interamente **prima** o interamente **dopo** $T$.
+* Se un’altra transazione gira con un **diverso livello di isolamento**, essa potrebbe vedere **immediatamente** i dati scritti da $T$ (anche prima della sua terminazione) (*e.g.* se tale transazione è `READ UNCOMMITTED`, essa può vedere i **dirty data** scritti da $T$)
+## Esempio 1 sui Livelli di Isolamento
+A che livello di isolamento andrebbe eseguita la seguente transazione?
+
+ >Per ogni cliente della banca, contare le operazioni effettuate negli ultimi $500$ giorni, ed aggiungere il nome del cliente ad un elenco se le operazioni sono più di $300$. L’elenco servirà a scopi di marketing.
+ 
+Visto che la transazione viene usata solo a fini di marketing, è plausibile che qualche sporadico errore nei risultati non vada ad inficiare il quadro generale $\implies$ `READ UNCOMMITTED` per **maggiore efficienza**.
+## Esempio 2 sui Livelli di Isolamento
+A che livello di isolamento andrebbe eseguita la seguente transazione?
+
+>Effettuare un trasferimento fondi, sottraendo un ammontare da un conto per poi aggiungerlo ad un altro. Se la sottrazione ha portato ad un valore negativo, l’operazione va annullata.
+
+![[Pasted image 20240327113542.png]]
+
+Bisogna acquisire un blocco in fase di lettura già alla prima riga, altrimenti potremmo trasferire gli stessi soldi più volte $\implies$ `REPEATABLE READ`.
+## Esempio 3 sui Livelli di Isolamento
+A che livello di isolamento andrebbe eseguita la seguente transazione?
+
+>Gestire un prelievo allo sportello come segue: il cassiere legge il saldo corrente del cliente e gli chiede conferma; se il saldo disponibile supera la cifra richiesta dal cliente, viene poi effettuato il pagamento.
+
+![[Pasted image 20240327113726.png]]
+
+La durata delle transazioni dovrebbe essere corta per motivi di efficienza, quindi facciamo due transazioni: una a livello `READ COMMITTED` con solo la **lettura preliminare** ed una a livello `REPEATABLE READ` per il pagamento.
+## Transazioni in Postgres
+PostgreSQL considera ciascuna istruzione SQL come una transazione: se non viene eseguito `BEGIN`, ciascuna istruzione ha un `BEGIN` implicito e (se ha successo) un corrispondente `COMMIT`.
+Il livello di isolamento di default in Postgres è `READ COMMITTED`, ma i livelli di isolamento garantiscono proprietà **più forti** rispetto allo standard.
+
+![[Pasted image 20240327113945.png]]
+
+*Nota*: sebbene la tabella non evidenzi differenze, `SERIALIZABLE` offre **garanzie migliori** rispetto a `REPEATABLE READ`.
+
+`SERIALIZABLE` garantisce l’**assenza di anomalie di serializzazione**, che invece sono **possibili** a livello `REPEATABLE READ`.
+
+![[Pasted image 20240327114227.png]]
+
+`SERIALIZABLE` **garantisce** che la tabella contenga lo stesso colore in tutte le righe alla fine dell’esecuzione di $T_1$ e $T_2$, mentre `REPEATABLE READ` potrebbe portare ad *invertire i colori delle varie righe*.

@@ -1623,7 +1623,328 @@ if (table == "Student" || table == "Teacher") {
 } 
 else { throw new Exception("Unexpected!"); }
 ```
+# Indici e Viste Materializzate
+___
+## Problema
+Si consideri la seguente query: 
+
+```SQL
+SELECT *
+FROM Movies
+WHERE studio = ’Disney’ AND year = 2012; 
+```
+
+Se il nostro database contiene $10.000$ film ma la Disney ha prodotto solo $5$ film nel 2012, siamo costretti ad ispezionare $10.000$ **tuple** per ritornare alla fine solo $5$ **risultati**.
+
+**Intuizione**
+>Un **indice** è una struttura dati ausiliaria che ci permette di accedere in maniera più efficiente alle tuple di una relazione che soddisfano una determinata proprietà.
+
+## Indici
+
+**Logicamente**
+>Dal punto di vista logico, un indice su un attributo $A$ di una relazione $R$ è una lista di coppie $(a_i , P_i)$, dove $a_i$ è un *valore* di $A$ presente in *almeno una tupla* di $R$ e $P_i$ è un *insieme di puntatori* alle tuple di $R$ per cui $A$ vale $a_i$ . Tale lista è **ordinata** rispetto al valore di $A$.
+
+**Fisicamente**
+>Dal punto di vista fisico, un indice è spesso memorizzato in una *struttura ad albero* simile ad un Binary Search Tree, che consente di trovare in modo efficiente i puntatori alle tuple che soddisfano una condizione su $A$.
+
+*Nota*: quando un indice viene creato, esso viene utilizzato automaticamente dal **query planner** del DBMS quando ritenuto vantaggioso.
+## Indici per Attributo
+Tramite un indice su `year` solo **metà** delle tuple devono essere esaminate per trovare i film prodotti nel 2012.
+
+![[Pasted image 20240327161649.png]]
+
+*Nota*: le tuple non sono ordinate rispetto ad `year` nella memoria fisica, ma abbiamo un modo efficiente per trovare le sole tuple rilevanti per la query.
+## Indici Multi-attributi
+È possibile generalizzare la definizione di **indice** al caso di una **tupla** di attributi $X$, assumendo il classico ordinamento lessicografico fra tuple.
+
+![[Pasted image 20240327162030.png]]
+
+*Nota*: l'**ordine** degli attributi è rilevante nella costruzione di un indice multi-attributo e va scelto con cura.
+
+![[Pasted image 20240327162248.png]]
+## Esempio 1
+Assumiamo che ci siano $10.000$ film e che la Disney ne abbia prodotti $200$, di cui solo $5$ nel 2012.
+```SQL
+SELECT *
+FROM Movies
+WHERE studio = 'Disney' AND year = 2012;
+```
+
+Scelte possibili:
+* Nessun indice: $10 000$ tuple
+* Indice su `studio`: $200$ tuple
+* Indice multi-attributo su `(studio, year)`: $5$ tuple.
+
+*Nota*: l'uso di indici non aiuta solo le ricerche su una singola tabella ma è molto utile anche in caso di **join**.
+## Esempio 2
+Assumiamo che ci siano $10 000$ film e $500$ produttori.
+
+```SQL
+SELECT e.name
+FROM Movies m, MovieExec e
+WHERE m.title = 'Star Wars' AND m.producer = e.code
+```
+
+Scelte possibili:
+* Nessun indice: $10 500$ tuple
+* Indice su `m.title`: $200$ tuple
+* Indice su `m.title` e su  `e.code`: $5$ tuple.
+## Tuple o Pagine?
+Il numero di tuple è una misura **imprecisa** del costo di un’operazione, perché ignora in larga parte l’organizzazione fisica della memoria.
+Una metrica migliore è basata sul numero di **pagine** caricate in RAM:
+* Ciascuna pagina tipicamente contiene molte **tuple**.
+* Anche una singola tupla richiede che l’**intera pagina** corrispondente sia caricata in RAM.
+* L’accesso a tutte le tuple in una pagina è solo leggermente più costoso dell’accesso ad una singola tupla.
+
+Il numero di pagine accedute è spesso funzione del numero di tuple accedute.
+
+Se una tabella è fortemente “clusterizzata” su un certo attributo nella memoria fisica, è possibile accedere a molte tuple caricando solo poche pagine: il numero di tuple è una stima **pessimistica** del costo effettivo.
+
+```SQL
+SELECT *
+FROM Movies
+WHERE year = 2001
+```
+
+Supponiamo che la tabella `Movies` occupi $700$ pagine, che ogni pagina contenga $100$ tuple e che vi siano $300$ film prodotti nel 2001.
+
+Quante pagine devono essere caricate in RAM con un indice su `year`?
+* Se i film sono salvati su disco per anno, possono bastare $3$ pagine.
+* Nel caso peggiore potrebbero servire addirittura $300$ pagine.
+## Indici: Pro e Contro
+**Pro**
+>Un indice su un attributo può accelerare di molto l’esecuzione delle query in cui un valore (o un intervallo di valori) è specificato per quell’attributo, oltre che le join che coinvolgono quell’attributo.
+
+**Contro**
+>Ciascun indice costruito su una tabella rende le operazioni di inserimento, cancellazione ed aggiornamento su quella tabella più costose, dato che anche l’indice deve essere aggiornato.
+## Suggerimenti
+Quando definire un indice?
+* Su una **chiave** (o una "quasi" chiave).
+* Sulle **chiavi esterne** (per semplificare le join).
+* Quando le operazioni di **modifica** sono **rare**.
+* Quando le tuple sono "**clusterizzate**" su un certo attributo sulla memoria fisica (comando `CLUSTER` di Postgres).
+
+Quando non definire un indice?
+* Su **tabelle piccole**, che quindi occupano un numero ridotto di pagine.
+* Su **attributi poco selettivi** (*e.g.* sesso o stato civile).
+* Su **attributi modificati di frequente**.
+## Definizione di Indici
+Una sintassi tipica per definire un nuovo indice è la seguente: 
+
+```SQL
+CREATE INDEX NomeIndice ON NomeTabella (Attributi);
+```
+
+Una sintassi tipica per l’eliminazione di un indice è la seguente:
+
+```SQL
+DROP INDEX NomeIndice;
+```
+
+Una volta che un indice è definito, il DBMS lo usa automaticamente:
+* Usare `ANALYZE` per collezionare statistiche sulla distribuzione dei dati, che il **query planner** sfrutterà per decidere quali indici usare.
+* Usare `EXPLAIN` per verificare che gli indici siano usati nel momento aspettato: potremmo avere sbagliato a definirli o la distribuzione dei dati potrebbe essere cambiata senza che il **query planner** lo sappia.
+## Esempio di EXPLAIN
+
+![[Pasted image 20240327170118.png]]
+
+## Modello di Costo
+Consideriamo la relazione `StarsIn(movie, year, starName)` ed i seguenti patterns di operazioni tipiche:
+
+![[Pasted image 20240327170712.png]]
+
+### Costo di $Q_1$
+```SQL
+SELECT movie, year
+FROM StarsIn
+WHERE starName = s
+```
+
+Assumendo che `StarsIn` occupi $10$ pagine e che in media ogni attore abbia recitato in $3$ film, abbiamo i seguenti costi:
+* Senza indice: $10$.
+* Indice su `starName`: $1 + 3$.
+* Indice su `(movie, year)`: $10$.
+* Entrambi gli indici: $1 + 3$.
+### Costo di $Q_2$
+```SQL
+SELECT starName
+FROM StarsIn
+WHERE movie = t AND year = y
+```
+
+Assumendo che `StarsIn` occupi $10$ pagine e che in media ogni attore abbia recitato in $3$ film, abbiamo i seguenti costi:
+* Senza indice: $10$.
+* Indice su `starName`: $10$.
+* Indice su `(movie, year)`: $1 + 3$.
+* Entrambi gli indici: $1 + 3$.
+### Costo di /
+```SQL
+INSERT
+INTO StarsIn
+VALUES(m,y,s)
+```
+
+Assumendo che `StarsIn` occupi $10$ pagine e che in media ogni attore abbia recitato in $3$ film, abbiamo i seguenti costi:
+* Senza indice: $2$.
+* Indice su `starName`: $2 + 2$.
+* Indice su `(movie, year)`: $2 + 2$.
+* Entrambi gli indici: $2 + 2 + 2$.
+### Cosa Fare?
+Supponiamo di eseguire $Q_1$ con probabilità $p_1$, $Q_2$ con probabilità $p_2$ e / con probabilità $1 - p_1 - p_2$.
+
+![[Pasted image 20240327171533.png]]
+
+Se $p_1 = 0.4$ e $p_2 = 0.1$ otteniamo che la soluzione migliore è usare solo il primo indice (su `starName`).
+## Selezione Automatica di Indici
+Un DBMS può suggerire automaticamente gli indici migliori sulla base di un modello di costo simile a quello considerato:
+* Usa i log delle query per stimare il costo delle operazioni più frequenti.
+* Genera un insieme di **indici candidati** $I$ e stima i tempi di esecuzione rispetto ai vari $J \subseteq I$.
+* Ritorna l’insieme di indici $J_{min}$ che ottimizza i tempi di esecuzione.
+
+Il secondo passo potrebbe essere implementato in maniera **greedy** per motivi di efficienza.
+### Algoritmo Greedy
+* Usa i log delle query per stimare il costo delle operazioni più frequenti.
+* Genera un insieme di indici candidati $I$ ed inizializza $J = \emptyset$.
+* Finché è possibile migliorare i tempi di esecuzione:
+	* identifica $i_{min} \in I$, l’indice che ottimizza meglio i tempi di esecuzione assumendo di avere già creato gli indici in $J$.
+	* Imposta $J = J \cup \{i_{min}\}$.
+	* Imposta $I = I$ \\ $\{i_{min}\}$
+## Viste e Performance
+```SQL
+CREATE VIEW MovieProd AS
+		SELECT m.title, m.year, e.name
+		FROM Movies m, MovieExec e
+		WHERE m.producer = e.code
+```
+
+Questa vista è utile quando vogliamo trovare il nome del produttore di un film, ma deve essere **valutata** ogni volta che ci facciamo una query sopra. Questo è potenzialmente inefficiente.
+## Viste Materializzate
+SQL permette di materializzare una vista in memoria, in modo che essa non venga valutata ad ogni query che la coinvolge:
+
+```SQL
+CREATE MATERIALIZED VIEW MovieProd AS
+		SELECT m.title, m.year, e.name
+		FROM Movies m, MovieExec e
+		WHERE m.producer = e.code
+```
+
+L’uso di viste materializzate può *migliorare le prestazioni* delle query, ma comporta un **costo aggiuntivo** derivante dalla necessità di riflettere sulla vista le modifiche alle tabelle su cui la vista è costruita.
+## Viste Materializzate: Mantenimento
+
+```SQL
+CREATE MATERIALIZED VIEW MovieProd AS
+		SELECT m.title, m.year, e.name
+		FROM Movies m, MovieExec e
+		WHERE m.producer = e.code
+```
+
+Non c'è bisogno di aggiornare `MovieProd` nei seguenti casi:
+* Modifiche a **tabelle** diverse da `Movies` e `MovieExec`.
+* Modifiche ad **attributi** di `Movies` e `MovieExec` diversi da quelli menzionati nella definizione di `MovieProd`
+
+*Approccio conservativo*: in tutti gli altri casi rigeneriamo la vista, ma ci sono diverse ottimizzazioni. Postgres delega la responsabilità all’utente tramite il comando `REFRESH MATERIALIZED VIEW`.
+## Viste Materializzate: Ottimizzazioni
+```SQL
+CREATE MATERIALIZED VIEW MovieProd AS
+		SELECT m.title, m.year, e.name
+		FROM Movies m, MovieExec e
+		WHERE m.producer = e.code
+```
+
+Assumiamo di voler aggiungere un nuovo film: `Kill Bill`, prodotto nel `2003` dal produttore con codice `23456` `(Quentin Tarantino)`.
+In questo caso *non serve rigenerare `MovieProd`*:
+
+```SQL
+INSERT INTO MovieProd
+VALUES (’Kill Bill’, 2003, ’Quentin Tarantino’);
+```
+
+Assumiamo ora di voler cancellare un film: `Il Re Leone`, prodotto nel `1994`.
+In questo caso *non serve rigenerare `MovieProd`*:
+
+```SQL
+DELETE FROM MovieProd
+WHERE title = ’Il Re Leone’ AND year = 1994;
+```
+
+Assumiamo infine di voler cancellare il produttore con codice `45678`.
+Anche in questo caso *non serve rigenerare `MovieProd`*:
+
+```SQL
+DELETE FROM MovieProd
+WHERE (title,year) IN (SELECT title, year
+					   FROM Movies
+					   WHERE producer = 45678
+);
+```
+## Viste Materializzate e Performance
+In sostanza, le viste materializzate:
+* Possono *velocizzare le query*, ma rendono le operazioni di modifica più **costose** (come gli **indici**) o potenzialmente **invalidanti** (Postgres).
+* In certi DBMS vengono *mantenute in modo incrementale* per quanto possibile, ma richiedono di essere **rigenerate** dopo certe operazioni.
+* Possono essere **inlined** automaticamente dal DBMS in una query per *migliorarne l’efficienza*, sfruttando il fatto che parte dell’informazione è già stata computata e salvata in memoria.
+## Inlining di Viste Materializzate
+
+Vista materializzata $V$:
+
+```SQL
+SELECT AV
+FROM RV
+WHERE CV
+```
+
+Query $Q$:
+
+```SQL
+SELECT AQ
+FROM FR
+WHERE CQ
+```
+
+Condizioni per l'*inlining* di $V$ in $Q$:
+* $RV \subseteq RQ$.
+* $CQ = CV$ AND $CQ'$  per qualche $CQ'$
+* Ogni attributi di $CQ'$ che proviene da $RV$ fa parte di $AV$.
+* Ogni attributi di $AQ$ che proviene da $RV$ fa parte di $AV$.
+
+Risultato dell'*inlining*:
+
+```SQL
+SELECT AQ
+FROM V, RQ \ RV
+WHERE CQ'
+```
+## Esempio di Inlining di Viste Materializzate
+Vista Materializzata $V$
+
+```SQL
+CREATE MATERIALIZED VIEW MovieProd AS
+		SELECT m.title, m.year, e.name
+		FROM Movies m, MovieExec e
+		WHERE m.producer = e.code
+```
+
+Query $Q$:
+
+```SQL
+SELECT s.starName
+FROM StarsIn s, Movies m, MovieExec e
+WHERE s.title = m.title 
+		AND s.year = m.year
+		AND m.producer = e.code
+		AND e.name = ’Tarantino’
+```
+
+Risultato dell'inlining:
+
+```SQL
+SELECT s.starName
+FROM StarsIn s, MovieProd mp
+WHERE s.title = mp.title
+		AND s.year = mp.year
+		AND mp.name = ’Tarantino’
+```
 # Transazioni
+___
 ## Introduzione
 Quando programmiamo applicazioni che si interfacciano con un database, è normale raggruppare insieme una **sequenza di operazioni** su di esso per implementare una determinata funzionalità. 
 

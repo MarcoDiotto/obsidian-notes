@@ -741,3 +741,199 @@ Gli stimatori di massima verosimiglianza di $\mu$ e $\sigma^2$ sono:
 Le matrici di informazione osservata e attesa coincidono in $\hat{\theta} = (\hat{\mu}, \hat{\sigma}^2)$.
 * L'**errore standard stimato di $\hat{\mu}$** è: $$\hat{SE}(\hat{\mu}) = \frac{\hat{\sigma}}{\sqrt{n}}$$
 * L'**errore standard stimato di $\sigma^2$** è: $$\hat{SE}(\hat{\sigma}^2) = \hat{\sigma}^2 \sqrt{\frac{2}{n}}$$
+# Unità Intervallare
+___
+## Stimatori ed Errori Campionari
+Quando otteniamo una stima $\hat{\theta}$ sappiamo che quasi sicuramente sarà *diversa dal vero valore* del  parametro $\theta$ a causa dell’errore campionario.
+
+In altri termini, abbiamo stimato $\theta$ a meno di qualche **errore**.
+
+Sorgono alcune domande:
+* Quanto possiamo ‘credere’ in una stima?
+* Quanto può essere distante la stima dal vero valore del parametro?
+* Se otteniamo una certa stima $\hat{\theta}$ quali sono i valori plausibili per $\theta$?
+
+Per rispondere a queste domande useremo gli **intervalli di confidenza**.
+## Intervalli di Confidenza
+Un intervallo $[A,B]$ è detto **intervallo di confidenza** per $\theta$ di livello $(1 - \alpha) 100\%$ se contiene il parametro con probabilità $(1 - \alpha)$: $$\mathbb{P}(A \leq \theta \leq B) = 1 - \alpha$$
+La **probabilità di copertura** dell’intervallo $(1 − \alpha)$ viene detta anche **livello di confidenza**.
+Attenzione all’interpretazione: $\theta$ è un numero, mentre gli estremi dell’intervallo $A$ e $B$ dipendono dai dati e quindi sono **variabili casuali**.
+Solo dopo aver osservato i dati $A$ e $B$ sono valori numerici.
+
+Si potrebbe più precisamente scrivere l’intervallo come: $$[A(X_1, ... , X_n), B(X_1, ..., X_n)]$$
+Al variare del campione *anche l'intervallo varia*.
+
+Ci aspettiamo che $(1 - \alpha)100\%$ degli intervalli contengano $\theta$.
+## Interpretazione
+
+![[Pasted image 20240328085759.png]]
+
+*Nota*: per avere livelli di confidenza maggiori è necessario "allargare" gli intervalli, tuttavia potremmo andare incontro ad intervalli talmente grandi da risultare inutili. È preferibile avere intervalli piccoli, con livelli di confidenza minori (a meno che il livello di confidenza non sia troppo basso).
+
+È sbagliato affermare:
+
+>‘Ho calcolato un intervallo di confidenza di livello $90\%$. L’intervallo è $[2, 5]$, quindi il parametro $\theta$ appartiene a questo intervallo con probabilità $90\%$
+
+Il parametro è un **numero costante**: *o appartiene o non appartiene* all’intervallo che abbiamo calcolato con un particolare campione.
+
+Il livello di confidenza dell’intervallo indica che *$\theta$ appartiene al $90\%$ degli intervalli* che possiamo calcolare con campioni diversi.
+
+Ovviamente per ‘campioni diversi’ intendiamo campioni costruiti con la **stessa regola di campionamento** e con la **stessa dimensione**.
+## Costruzione di un Intervallo di Confidenza
+Il metodo più semplice per costruire un **intervallo di confidenza** $[A,B]$ con livello di confidenza $(1 - \alpha)$ richiede uno stimatore $\hat{\theta}$:
+* **Non distorto** ($E (\hat{\theta}) = \theta$)
+* Con **distribuzione normale** ($N\ \{\theta, Var(\hat{\theta})\}$)
+
+In questo caso costruiremo l'intervallo di confidenza a partire dallo stimatore **standardizzato** ($Z$): $$Z= \frac{\hat{\theta} - \theta}{SE(\hat{\theta})}$$ che è distribuito come una variabile casuale **normale standard** $N(0,1)$.
+La **quantità $Z$** verrà in seguito chiamata **statistica $Z$**.
+
+Una volta costruita la statistica $Z$ *dobbiamo trovare i quantili della distribuzione normale standard* che identificano un’area di ampiezza pari a $(1 - \alpha)$.
+
+![[Pasted image 20240328091209.png]]
+
+Il numero $z_{\frac{\alpha}{2}}$ è tale che $\mathbb{P}(Z > z_{\frac{\alpha}{2}}) = \frac{\alpha}{2}$, cioè il  quantile di posizione $(1 - \frac{\alpha}{2})$ della distribuzione normale standard.
+
+Abbiamo che: $$\mathbb{P}\ \{-z_{\frac{\alpha}{2}} \leq \frac{\hat{\theta} - \theta}{SE(\hat{\theta})}\} \leq z_{\frac{\alpha}{2}} = 1 - \alpha$$
+ovvero: $$\mathbb{P}\ \{\hat{\theta} - z_{\frac{\alpha}{2}}\cdot SE(\hat{\theta}) \leq \theta \leq \hat{\theta} + z_{\frac{\alpha}{2}}\cdot SE(\hat{\theta}) = 1 - \alpha$$
+Quindi gli *estremi dell'intervallo di confidenza* sono: $$A = \hat{\theta} - z_{\frac{\alpha}{2}}\cdot SE(\hat{\theta})$$ $$B = \hat{\theta} + z_{\frac{\alpha}{2}}\cdot SE(\hat{\theta})$$
+o in forma compatta: $$\hat{\theta} \pm z_{\frac{\alpha}{2}}\cdot SE(\hat{\theta})$$
+Si tratta di un *intervallo centrato* in $\hat{\theta}$ con **margine di errore** pari a $z_{\frac{\alpha}{2}}\cdot SE(\hat{\theta})$.
+## Riassunto
+Passaggi per calcolare un intervallo di confidenza di livello $(1 - \alpha)$ utilizzando la statistica $Z$:
+1. Trovare uno stimatore $\hat{\theta}$ non distorto di $\theta$.
+2. Controllare che lo stimatore si distribuisca come una variabile normale.
+3. Calcolare l’errore standard dello stimatore $SE(\hat{\theta})$.
+4. Calcolare il quantile $z_{\frac{\alpha}{2}}$.
+5. Calcolare gli estremi dell’intervallo $\hat{\theta} \pm z_{\frac{\alpha}{2}}\cdot SE(\hat{\theta})$.
+## Livelli di Confidenza Approssimati
+Nelle precedenti lezioni abbiamo spesso ottenuto stimatori *asintoticamente non distorti e normali*:$$\hat{\theta} \overset{p}\to N\ \{\theta, Var(\hat{\theta})\}$$ al crescere della dimensione campionaria.
+
+Se applichiamo l’approccio descritto nelle pagine precedenti ad *uno stimatore asintoticamente normale e asintoticamente non distorto*, allora l’intervallo $\hat{\theta} \pm z_{\frac{\alpha}{2}}\cdot SE(\hat{\theta})$ avrà livello **approssimativamente** pari a $(1 - \alpha)$.
+## Intervallo di confidenza per la media di una popolazione
+Campione casuale semplice da popolazione con media $\mu$ e varianza $\sigma^2$ che per il momento assumiamo **nota**.
+
+Consideriamo l’ovvio stimatore non distorto $\hat{\mu} = \overline{X}$.
+
+Quando possiamo usare la statistica $Z$?
+* Se $X_1, . . . , X_n$ sono **normali**, allora $\hat{\mu} = \overline{X}$ è **normale**.
+* Se $X_1, . . . , X_n$ **non** sono **normali** ma $n$ è **grande**, allora $\hat{\mu} = \overline{X}$ è **approssimativamente normale**.
+
+*Errore standard*: $$SE(\hat{\mu}) = \frac{\sigma}{\sqrt{n}}$$ *Intervallo di confidenza*: $$\overline{X} \pm z_{\frac{\alpha}{2}}\cdot \frac{\sigma}{\sqrt{n}}$$
+## Quantili
+Il **quantile** $z_{\frac{\alpha}{2}}$ necessario per il calcolo degli intervalli di confidenza si può ottenere con:
+* la *tavola della distribuzione normale*.
+* Un qualsiasi *software per l’analisi dei dati*.
+
+In $R$ il quantile $z_{\frac{\alpha}{2}}$ si ottiene con la funzione `qnorm`.
+
+Per esempio per $\alpha = 0.05$ dobbiamo digitare:
+
+```R
+qnorm(1 - 0.05 / 2)
+```
+
+**Esempio dal Baron**:
+
+![[Pasted image 20240328093644.png]]
+
+## Quando non possiamo usare la statistica $Z$
+Abbiamo già detto che possiamo calcolare l’*intervallo di confidenza* per la media $\mu$ con **varianza $\sigma^2$ nota** usando la statistica $Z$ se:
+* $X_1, . . . , X_n$ sono **normali**.
+* $X_1, . . . , X_n$ **non** sono **normali** ma $n<4 è ‘**grande**’.
+
+Non possiamo invece usare la statistica $Z$ quando $X_1, . . . , X_n$ **non** sono **normali** e $n$ è ‘**piccolo**’.
+
+Campioni piccoli appaiono in problemi anche molto rilevanti.
+
+Soluzioni:
+* Metodi che dipendono dal problema specifico.
+* Approssimazioni che funzionano anche per valori di $n<4 piccoli (‘*metodi asintotici di ordine superiore*’).
+
+*Nota*: in questo corso non tratteremo questi problemi.
+## Intervallo di confidenza per la differenza di due medie
+Campioni casuali semplici da due popolazioni:
+* $X_1, . . . , X_n$ con media $\mu_X$ e varianza nota $\sigma^2_X$.
+* $Y_1, . . . , Y_m$ con media $\mu_Y$ e varianza nota $\sigma^2_Y$.
+
+Vogliamo calcolare un intervallo di confidenza per: $$\theta = \mu_X - \mu_Y$$ Assunzioni:
+* I due campioni sono **indipendenti**.
+* Le osservazioni sono **normalmente distribuite** oppure le **numerosità** dei due campioni $n$ e $m$ sono ‘**grandi**’.
+
+Uno *stimatore non distorto* di $\theta$ è: $$\hat{\theta} = \overline{X} - \overline{Y}$$
+L'*errore standard* dello stimatore è: $$SE(\hat{\theta}) = \sqrt{Var(\hat{\theta})} $$ $$= \sqrt{Var(\overline{X} + Var(\overline{Y})}$$ $$= \sqrt{\frac{\sigma^2_X}{n}} + \frac{\sigma^2_Y}{m}$$
+L'*intervallo di confidenza* è: $$\hat{\theta} \pm z_{\frac{\alpha}{2}}\cdot SE(\hat{\theta})$$ ovvero: $$(\overline{X} - \overline{Y}) + z_{\frac{\alpha}{2}} \cdot \sqrt{\frac{\sigma^2_X}{n}} + \frac{\sigma^2_Y}{m}$$ 
+**Esempio dal Baron**:
+
+![[Pasted image 20240328095042.png]]
+## Dimensione Campionaria
+Gli intervalli di confidenza che abbiamo incontrato hanno la forma simmetrica: $$stimatore \pm margine\ d’errore$$
+Potremmo ora chiederci quanto deve essere grande il campione per garantire una data precisione al nostro stimatore.
+
+Ovvero quanto deve valere $n$ affinché il margine di errore sia **inferiore ad un dato valore $\Delta$**.
+Dobbiamo risolvere la diseguaglianza: $$margine\ d’errore \leq \Delta$$ rispetto alla **numerosità campionaria** $n$.
+
+Nell'*intervallo di confidenza per la media* il margine d'errore è: $$z_{\frac{\alpha}{2}} \cdot \frac{\sigma}{\sqrt n}$$
+Quindi dobbiamo risolvere la disuguaglianza: $$z_{\frac{\alpha}{2}} \cdot \frac{\sigma}{\sqrt n} \leq \Delta$$ ottenendo:$$n \geq (\frac{z_{\frac{\alpha}{2}} \cdot\sigma}{\Delta})^2$$
+Siccome $n$ è un **valore intero**, allora la minima dimensione campionaria che assicura la precisione desiderata sarà il *più piccolo intero che soddisfa la diseguaglianza*.
+
+**Esempio dal Baron**:
+
+![[Pasted image 20240328095751.png]]
+## Quando la deviazione standard è ignota
+Nelle precedenti pagine abbiamo visto come calcolare un *intervallo di confidenza* per la media $\mu$ assumendo che $\sigma^2$ sia **noto**.
+
+Questa assunzione può essere ragionevole in alcuni casi, per esempio:
+* Quando abbiamo un’ampia informazione da studi precedenti.
+* I dati sono misurazioni ottenute da strumenti con precisione nota.
+
+Molto più spesso, però, $\sigma^2$ non è noto e quindi andrà stimato con i dati.
+
+In questi casi si dice che:
+* $\mu$ è il **parametro di interesse**.
+* $\sigma^2$ è il **parametro di disturbo**.
+
+Come precedentemente distingueremo fra tre possibili situazioni:
+* Campioni di *grandi dimensioni* da *qualsiasi distribuzione*.
+* Campioni di *qualsiasi dimensione* dalla *distribuzione normale*.
+* Campioni di *piccola dimensione* da una *distribuzione non normale*.
+
+*Nota*: come nel caso di $\sigma^2$ noto, vedremo come risolvere i primi due problemi, mentre non tratteremo il terzo che richiede soluzioni specifiche o tecniche statistiche più avanzate.
+## Campioni di grandi dimensioni
+Se il campione ha grandi dimensioni allora ci aspettiamo che lo stimatore dell’errore standard $\hat{SE}(\hat{\theta})$ sia ragionevolmente vicino al ‘vero’ errore standard.
+Possiamo, allora, calcolare un intervallo di confidenza di livello approssimato $1 - \alpha$ con la statistica $Z$: $$\hat{\theta} \pm z_{\frac{\alpha}{2}} \cdot \hat{SE}(\hat{\theta})$$
+Nel caso della *media di una popolazione* avremo: $$\hat{\mu} \pm z_{\frac{\alpha}{2}} \cdot \frac{\hat{\sigma}}{\sqrt n}$$ ovvero:
+$$\overline X \pm z_{\frac{\alpha}{2}} \cdot \frac{S}{\sqrt n}$$
+Nel caso della *differenza di due medie*: $$\hat{\mu}_x - \hat{\mu}_y \pm z_{\frac{\alpha}{2}} \cdot \sqrt{\frac{\hat{\sigma}^2_x}{n} + \frac{\hat{\sigma}^2_y}{m}}$$ ovvero: $$\overline X - \overline Y \pm z_{\frac{\alpha}{2}} \cdot \sqrt{\frac{S^2_x}{n} + \frac{S^2_y}{m}}$$
+**Esempio dal Baron**:
+
+![[Pasted image 20240328101040.png]]
+## Intervalli di confidenza per le proporzioni
+Una situazione in cui non conosciamo la deviazione standard è quando dobbiamo stimare una **proporzione campionaria**.
+
+Supponiamo che siamo interessati alla **sottopopolazione** che possiede un certo **attributo $A$**.
+
+Definiamo la *proporzione delle popolazione* con l’attributo $A$ come $$p = \mathbb P(possedere\ l’attributo\ A)$$ La corrispondente *proporzione campionaria* è $$\hat{p} = \frac {n_A}{n}$$ con $n_A =$ numero di unita con l’attributo $A$.
+
+Il problema può essere riformulato con le variabili indicatrici: $$X_i = \begin{cases} 1, \ \ \ \ se\ l'unità\ i\ possiede\ l'attributo\ A \\ 0, \ \ \ \ se\ l'unità\ i\ non\ possiede\ l'attributo\ A \end{cases}$$
+$X_i$ è una **variabile Bernulliana** con parametro $p$: $$E(X_i) = p\ \ e\ \ Var(X_i) = p(1 - p)$$
+Lo stimatore $\hat{p}$ è la **media campionaria**: $$\hat{p} = \overline{X} = \frac{1}{n} \sum_{i = 1}^n X_i$$ con: $$E(\hat{p}) = p\ \ e\ \ Var(\hat{p}) = \frac{p(1 - p)}{n}$$
+Lo stimatore $\hat{p}$ è quindi:
+* **Non distorto**.
+* **Asintoticamente normale**.
+
+La *distribuzione di $\hat{p}$* è **approssivamente** pari a: $$N\ (p, \frac{p(1 - p)}{n}),\ per\ n\ sufficientemente\ grande$$
+L'*errore standard di $\hat{p}$* stimato è: $$\sqrt{\frac{\hat{p}(1 - \hat{p})}{n}} = \sqrt{\frac{\overline X (1 - \overline X)}{n}}$$
+L’*intervallo di confidenza* per $p$ con livello di confidenza approssimativamente pari a $1 - \alpha$ è: $$\hat{p} \pm z_{\frac{\alpha}{2}}\sqrt{\frac{\hat{p}(1 - \hat{p})}{n}}$$ ovvero: $$\overline{X} \pm z_{\frac{\alpha}{2}}\sqrt{\frac{\overline{X}(1 - \overline{X})}{n}}$$
+## Intervalli di confidenza per la differenza di due proporzioni
+Supponiamo di avere due popolazioni **indipendenti** di dimensioni $n_1$ e $n_2$.
+
+Vogliamo valutare in quale delle due popolazioni un certo attributo sia più frequente.
+
+Possiamo costruire un *intervallo di confidenza* per la differenza della proporzione di unita con l’attributo $$\theta = p_1 - p_2$$ La *stimatore* di $\theta$ è la differenza delle proporzioni campionarie $$\hat{\theta} = \hat p_1 - \hat p_2$$
+L'*errore standard* di $\hat \theta$ è $$SE(\hat \theta) = \sqrt{\frac{p_1 (1 - p_1)}{n_1} + \frac{p_2(1 - p_2)}{n_2}}$$
+L'*errore standard stimato è quindi*: $$\hat{SE}(\hat \theta) = \sqrt{\frac{\hat p_1 (1 - \hat p_1)}{n_1} + \frac{\hat p_2(1 - \hat p_2)}{n_2}}$$
+L'*intervallo di confidenza* con livello di confidenza approssimativamente pari a $(1 - \alpha)$ è : $$\hat p_1 - \hat p_2 \pm z_{\frac{\alpha}{2}} \cdot \sqrt{\frac{\hat p_1 (1 - \hat p_1)}{n_1} + \frac{\hat p_2(1 - \hat p_2)}{n_2}}$$
+**Esempio dal Baron**:
+
+![[Pasted image 20240328103810.png]]
+![[Pasted image 20240328103832.png]]

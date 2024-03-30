@@ -1097,3 +1097,128 @@ public class Pair<K,V> implements Map<K,V>{
 	}
 }
 ```
+# Programmazione Pseudo-funzionale
+Java permette di "emulare" lo stile *funzionale*.
+La **programmazione pseudo-funzionale** permette di scrivere codice *più robusto* (meno soggetto a bug).
+
+```java
+package func;
+
+import java.util.Collection;
+
+public class Lambda{
+	
+	//mi tocca averne due perché void non è un tipo
+	
+	interface MyFunction<T> {
+		void apply(f x);
+	}
+	
+	interface Function<A,B>{
+		B apply (A x);
+	}
+	
+	/*
+	trasforma una collection in un'altra grazie ad una
+	funzione di trasformazione
+	*/
+	public static <A,B> Collection<B> map(Collection<A> c, 
+										  Function<A,B> f){
+		Collection<B> r = new ArrayList<>();
+		for(A x : c){
+			B b = f.apply(x);
+			r.add(b);
+		}
+		return r;
+	}
+	
+	public static <T> void forEac(Collection<T> c,
+								  MyFunction<T, void> f){
+								  
+		for(T x: c) {
+			f.apply(x);
+		}
+	}
+}
+
+public static void main(String[] args){
+	List<Integer> l = List.of(1,2,3,4);
+	
+	//chiamata con anonymous class
+	forEach(l, new MyFunction<Integer>(){
+		
+		@Override
+		public void apply(Integer x){
+			System.out.println(x);
+		}
+	});
+	
+	//chiamata con lambda
+	forEach(l, x -> System.out.println(x));
+	
+	//chiamata con anonymous class
+	forEach(l, new MyFunction<Integer>(){
+		
+		@Override
+		public void apply(Integer x){
+			x = x + 1;
+		}
+	});
+	
+	//chiamata con lambda
+	foEach(l, x -> x = x + 1);
+	
+	//chiamata con anonymous class
+	forEach(l, new MyFunction<Integer>(){
+		
+		@Override
+		public void apply(Integer x){
+			if(x > 5)
+				x = x + 1;
+		}
+	});
+	
+	//chiamata con lambda
+	foEach(l, x -> {if (x > 5) x = x + 1});
+}
+
+public static void main2(String[] args){
+	List<Integer> l = new Arraylist<>();
+	
+	//Chiamata con anonymous class
+	Collection<Integer> r = map(l,
+							new Function<Integer,Integer>(){
+		@Override
+		public Integer apply(Integer x){
+			return x + 1;
+		}
+	});
+	
+	//Chiamata con lambda con return
+	Collection<Boolean> r0 = map(l, x -> x > 0)
+	
+	//Chiamata con lambda con return
+	Collection<Integer> r2 = map(l, x x -> x + 1);
+	
+	//Chiamata con lambda con return come statement
+	//Il return è uno statement
+	Collection<Integer> r3 = map(l , x -> {return x + 1});
+}
+
+```
+
+Una **funzione di ordine superiore** è una funzione che ne prende altre come parametro.
+`Function<input, output>` è un tipo definito dal JDK per tipizzare le funzioni.
+
+Un'**entità del primo ordine** sono elementi che possono essere, costruiti, passati e manipolati.
+
+In java per passare funzioni come parametri vengono usate le **lambda**, ovvero piccole porzioni di codice passate *on the fly*. Sono anche emulabili grazie alle *anonymous class*.
+La sintassi è una delle seguenti:
+* `parametro -> corpo`.
+* `(tipo_parametro parametro) -> corpo`
+
+In java, le seguenti funzioni sono dette "*4 forme di lambda*":
+* **Function**: *prende* e *ritorna*.
+* **Consumer**: *prende* e *non ritorna*.
+* **Supplier**: *non prende* e *ritorna*.
+* **Runnable**: *non prende* e non *ritorna*.

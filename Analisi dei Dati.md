@@ -96,7 +96,7 @@ Dopo aver ordinato le osservazioni:
 ### Quantili, Percentili e Quartili
 * **Quatile di ordine p**: numero $x$ tale che: $$Pr(X < x) \leq p\ \ \ Pr(X > x) \leq 1-p$$ , cioè può assumere qualsiasi valore fra 0 e 1
 * **Percentile**: il percentile di ordine $\gamma$ corrisponde al quantile di ordine $0.01\gamma$
-* **Quartile**: divide la funzione di ripartizione in quarti (Esempio: 1° quartile $=$ 25° percentile)
+* **Quartile**: divide la funzione di ripartizione in quarti (Esempio: 1° quartile $=$ 25° percentile)3
 ### Varianza e Deviazione Standard Campionaria
 * La **Varianza Campionaria** è definita come: $$S^2 = \frac{1}{\color{blue}n-1} \cdot \sum_{i=1}^n (X_i - \overline{X})^2$$ e misura la dispersione attorno alla media campionaria
 * La **Deviazione Standard Campionaria** è la radice quadrata della varianza campionaria: $$S = \sqrt{S^2}$$
@@ -478,7 +478,7 @@ Il *modello statistico* è:
 ![[Pasted image 20240305112724.png]]
 ![[Pasted image 20240305112747.png]]
 ## Il Metodo dei Momenti
-Il **metodo dei monìmenti** è il più semplice metodo per stimare il parametro di un modello statistico.
+Il **metodo dei momenti** è il più semplice metodo per stimare il parametro di un modello statistico.
 
 Questo metodo costruisce uno stimatore di $\theta$ confrontando:
 * **Momenti di popolazione** $\to$ momenti teorici del modello statistico assunto.
@@ -503,7 +503,7 @@ Quindi:
 * $M_k'$ è uno **stimatore** di $\mu_k'$
 * $m_k'$ è una **stima** di $\mu_k'$
 ## Ancora sul Metodo dei Momenti
-Per stimare il parametro $\theta$ si risolve il sistema di $k$ equazioni ottenuto uguagliando i $k$ momenti di popolazione ai rispettivi $k$ elementi campionari:
+Per stimare il parametro $\theta$ si risolve il sistema di $k$ equazioni ottenuto uguagliando i $k$ momenti di popolazione ai rispettivi $k$ momenti campionari:
 
 ![[Pasted image 20240305114309.png]]
 *Nota*: si sceglie fra momenti semplici e centrali puramente in base alla convenienza.
@@ -937,3 +937,4 @@ L'*intervallo di confidenza* con livello di confidenza approssimativamente pari 
 
 ![[Pasted image 20240328103810.png]]
 ![[Pasted image 20240328103832.png]]
+

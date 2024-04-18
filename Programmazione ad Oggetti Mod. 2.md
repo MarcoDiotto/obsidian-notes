@@ -1122,7 +1122,7 @@ public class Lambda{
 	trasforma una collection in un'altra grazie ad una
 	funzione di trasformazione
 	*/
-	public static <A,B> Collection<B> map(Collection<A> c, 
+	public static <A,B> Collection<B> map(Iterable<A> c, 
 										  Function<A,B> f){
 		Collection<B> r = new ArrayList<>();
 		for(A x : c){
@@ -1132,7 +1132,7 @@ public class Lambda{
 		return r;
 	}
 	
-	public static <T> void forEac(Collection<T> c,
+	public static <T> void forEach(Iterable<T> c,
 								  MyFunction<T, void> f){
 								  
 		for(T x: c) {
@@ -1222,3 +1222,406 @@ In java, le seguenti funzioni sono dette "*4 forme di lambda*":
 * **Consumer**: *prende* e *non ritorna*.
 * **Supplier**: *non prende* e *ritorna*.
 * **Runnable**: *non prende* e non *ritorna*.
+
+Computazione e Side-Effect:
+* **Computazione** $\to$ avviene quando una funzione prende un *input* e ritorna un *output* (e.g. caricare di un file).
+* **Side-Effect**: $\to$ avviene quando una funzione prende un *input* e modifica lo *stato* senza ritornare un *output*(e.g. salvare un file).
+# Funzione Filter
+
+```java
+package func;
+
+import java.util.Collection;
+
+inteface Predicate<T> extends Function<T, Boolean> {}
+
+//versione pura
+public static<T> Collection<T> filter(Iterable<T> c,
+									  Predicate<T> f){
+	Collection<T> r = new Arraylist<>();
+//Il for each viene 'dezuccherato' nel pattern dell'iteratore
+	for(T x : c){
+		if(f.apply(x)); //con test() usiamo Predicate del JDK
+			r.add(x);
+	}
+	return r;
+}
+
+public static void main3(String[] args){
+	List<Integer> l = List.of(1,2,3,4,5)
+	Collection<Integer> c1 = filter(l, x -> x > 2);
+}
+
+//versione impura
+public static void filter_impure(Iterable<T> c, Function<T,
+								 Boolean> F){
+	Iterator<T> it = c.iterator();
+	while(it.hasNext()){
+		if(!f.apply(it.next()))
+			it.remove();
+	}
+	
+	
+	
+	/*
+	O(n^2)
+	
+	for(T x : c){
+		if(!f.apply(x)){
+			c.remove(x);
+		}
+	}
+	*/
+}
+```
+
+La funzione `filter` serve appunto a **filtrare** una collection, applicando ad ogni elemento una funzione, può essere:
+* **Pura**: senza *side-effect*, ritorno una nuova collection.
+* **Impura**: con *side-effect*, non ritorno nulla.
+
+Tutti i metodi sono **static** perché non sfruttano lo stato della classe.
+# Thread
+
+I **thread** condividono *metodi* e *campi statici* (nel senso di conosciuti dal compilatore) con il **processo**.
+Condividono, in maniera più precisa:
+* **Code Segment**.
+* **Data Segment**.
+
+```java
+package concurrent;
+
+public class Threads{
+	
+	public static String suffix = "baudo";
+	
+	public static void loop(String msg){
+		while(true)
+			System.out.println(msg + " " + suffix);
+	}
+	public static class Mythread extends Threads{
+		@Override
+		public void run(){
+			loop("ciao");
+		}
+	}
+	public static void main(String[] args){
+		Thread t = new MyThread();
+		t.start(); // non chiamo run
+		loop("pippo");
+		
+		//modo alternativo
+		
+		//con anonymous class
+		Thread t2 = new Thread(new Runnable(){
+			@Override
+			public void run(){
+			 loop("ciccio")	
+			}
+		});
+		
+		//con lambda
+		Thread t3 = new thread(() -> loop("ciccio"));
+	}
+	
+}
+```
+
+Si potrebbe anche chiamare direttamente `run` al posto di `start`. Utilizzando `start` però si chiede al kernel di creare un vero thread, che verrà gestito dallo stesso. La **syscall** chiamata da `start` non è bloccante. La classe **thread** è un **runnable**. Ha a sua volta un costruttore che prende in input un **runnable**.
+# Consumer - Producer
+```java
+package concurrent
+
+public class ConsumerProducer{
+
+	//statico perché l'enclosing non ha costruttore
+	//se fosse non statico non verrebbe costruito
+	public static List<Integer> buff = new ArrayList<>();
+	
+	public static class Producer extends Thread{
+		
+		public Producer(){
+			super("Producer");
+		}
+		@Override
+		public void run(){
+			Random rnd = new Random();
+			while(true){
+					int n = rnd.nextInt();
+					synchronized (buff){ //lock
+						buff.add(n);
+				//dico al consumer che è arrivato un dato
+						buff.notify();
+						System.out.printf("%s: added %d\n", 
+										   getName(), n)
+					} //unlock
+				}
+			}
+		}
+	}
+	
+	public static class Consumer extends Thread{
+		
+		public Consumer(){
+			super("Consumer");
+		}
+		@Override
+		public void run(){
+			while(true){
+				synchronized(buff){ //lock
+					if(!buff.isEmpty()){
+					//aspetto l'arrivo di un dato dal producer
+						try{
+							buff.wait();
+						} catch (InterruptedException e){
+							throw new RuntimeException(e);
+						}
+					}
+					buff.remove(0);
+					System.out.printf("%s: removed %d\n", 
+										   getName(), n)
+				} //unlock
+			}
+		}
+	}
+	
+	public static void main(String[] args){
+		Thread p = new Producer();
+		Thread c = new Consumer();
+		p.start();
+		c.start();
+		
+		//toglie dalla coda e sveglia quando l'altro finisce
+		p.join();
+	}
+	public static void main2(String[] args){
+		Thread p = new Producer();
+		Thread c = new Consumer();
+		p.start();
+		c.start();
+		
+		try{
+			p.join();
+			c.join();
+		} catch ( InterruptedException e){}
+	}
+}
+```
+
+Fare la join di **thread** che hanno già finito non cambia l'esecuzione.
+Un **monitor** è simile ad un semaforo e serve per mettere in attesa dei processi, che poi saranno svegliati da altri monitor. Per esempio ogni volta che il consumer è pronto lo notifica al producer con un *ping*.
+Tutti i *reference type* di java sono monitor e anche semafori. In questo utilizziamo il monitor di `buff`.
+Visto che più thread possono aspettare sullo stesso oggetto, la `notifyAll` sveglia tutti i thread in attesa. Se si aspetta qualcuno che non sveglia mai si entra in un **deadlock**. Per gestire i deadlock, il jdk offre un *eccezione* da gestire come preferiamo. Senza proteggere la sezione critica della `add` con un **mutex**, avremo un eccezione. Stampa e notifica nel producer possono stare fuori dalla sezione critica, possono tuttavia avere problemi con lo scheduler. È **necessario** usare come *monitor nella critical section*, lo stesso oggetto che funge da mutex per la stessa sezione critica. In ogni caso non è problematico usare come semaforo un oggetto differente da quello che vogliamo arbitrare. Poiché il quanto di tempo è molto grande rispetto alla print, sarebbe possibile portare la print fuori dalla sezione critica (e dichiarare n fuori dallo scope), tuttavia c'è una piccolissima probabilità che l'output venga corrotto dalla sovrapposizione di due print. 
+
+```java
+void f(){
+	synchronized (mutex){
+		f();
+	}
+}
+```
+
+Questa codice funziona perché se un thread ha già il lock può rimettere il rosso aumentando un **counter interno trasparente**. Bisogna solamente fare tante *unlock* quante sono le *lock*.
+# Overloading
+
+Permette di definire metodi nelle sotto-classi con stesso nome, ma tipi di ritorno e firma diversi rispetto a quelli delle super-classi
+```java
+public class Animal
+	{
+	
+		protected int weight;
+		
+		public Animal(int w)
+		{
+			this.weight = w;
+		}
+		public void eat(Animal a)
+		{
+			this.weight = a.weight;
+		}
+		
+		//Qui sto eseguendo un overload
+		public void eat(int i){
+			this.weight += i;
+		}
+	}
+	
+	public class Dog extends Animal
+	{
+		private boolean pedgree;
+		
+		public(int w, boolean ped)
+		{
+			super(w);
+			this.pedgree = ped;
+		}
+		
+		public void bark()
+		{
+			System.out.println("bau!");
+		}
+		
+		@Override
+		public void eat(Animal a)
+		{
+			this.weight += a.weight * 3;
+		}
+		
+		//Anche qui sto facendo overload 
+		public void eat(Dog d) {...}
+	}
+```
+
+Qui ho tre versioni di `eat`:
+* `eat(Animal a)`
+* `eat(Dog d)`
+* `eat(int i)`
+
+Se un `dog` chiama il metodo su un altro `dog`, viene utilizzato il metodo più vicino, quindi `eat(Dog d)`
+
+L'**override** può solo *ridefinire*, mai *definire*, può cioè cambiare solo il blocco di codice dentro le graffe.
+
+Facciamo ora un sorgente unico più chiaro
+
+```java
+package wildcards
+
+public class Overloading{
+	public static class A{
+		public void m(A a){}
+	}
+	public static class B extends A{
+		//faccio un overload, anche se B è subtype di A
+		public void m(B b){}
+		//anche il seguente è un overload
+		public int m(B b){return 1;}
+		public double m(B b){return 0.;}
+	}
+	public static class C extends B{
+		@Override
+		public double m(B b){return 0.;}
+	}
+	
+	int main(String[] args){
+		B b new B();
+	//se non faccio binding il compiler non sa chi chiamare
+		b.m(b);
+	//neanche in questo caso il compiler sa chi chiamare
+		double n = b.m(b);
+	}
+}
+```
+
+ Nel caso di C sto facendo un **override**, poiché *il tipo di ritorno non fa parte della firma*, pertanto la firma è rimasta la stessa. L'esempio del main serve per sottolineare il fatto che java utilizza un sistema di **overloading context independent**, ovvero non riesce a capire quale overload chiamare solamente sulla base del contesto di esecuzione. L'overload di java controlla solamente i tipi e il numero dei parametri.
+
+Facciamo una variante dello stesso codice:
+
+```java
+package wildcards
+
+public class Overloading{
+	public static class A{
+		public A m(A a){return new A();}
+		
+		public Number n(){return 1.3;}
+	}
+	public static class B extends A{
+		@Override
+		public B m(B b){return new B();}
+		
+		@Override
+		public Integer n() {return 2;}
+	}
+	
+	int main(String[] args){
+		A a = new A();
+		Number u = a.n();
+		
+		A a2 = new B();
+		//Dynamic Dispatching, chiamo quello di B
+		Number u2 = a2.n();
+}
+```
+
+In questo caso in `B` sto facendo un'**override** della funzione `m` in `A`, poiché la firma è uguale, mentre il tipo di ritorno è **covariante**. Il tipo di ritorno infatti *varia assieme a `this`*.
+
+Se io tuttavia scrivessi `Integer u2 = a2.n()`, il compilatore non capirebbe che io ritornerò un *Integer* e quindi darebbe errore. La **covarianza** funziona a patto di avere tipi di ritorno "più stretti" rispetto all'originale quando si fa override. La **controvarianza** (che utilizza tipi di ritorno "più larghi" rispetto all'originale) è illegale, poiché i tipi di ritorno non combacerebbero a runtime. 
+
+Segue esempio di controvarianza:
+
+```java
+package wildcards
+
+public class Overloading{
+	public static class A{
+		public A m(A a){return new A();}
+		
+		public Integer n(){return 1;}
+	}
+	public static class B extends A{
+		@Override
+		public B m(B b){return new B();}
+		
+		@Override
+		public Number n() {return 2.45;}
+	}
+	
+	int main(String[] args){
+		A a = new A();
+		Number u = a.n();
+		
+		A a2 = new B();
+		//Dynamic Dispatching, chiamo quello di B
+		//Il compilatore dà errore per la controvarianza
+		//Si spacca tutto a runtime, perché torno un Double
+		Integer u2 = a2.n();
+}
+```
+
+La regola quando si fa **override** dovrebbe essere: *si specializza il tipo di ritorno e si de-specializzano i parametri*.
+
+Java però non permette di de-specializzare i parametri. 
+Il motivo per cui java non permette la **controvarianza dell'input** va ricercato nella *type-erasure*, ovvero l'eliminazione dei **generics** a compile time e la loro sostituzione con l'**upper bound**(l'oggetto più vicina che estendono). Il problema sta nel fatto che il compilatore non può risolvere correttamente la controvarianza dell'upper bound dei generics eliminati e sostituiti.
+
+Continuiamo col nostro esempio:
+```java
+package wildcards
+
+public class Overloading{
+	public static class A{
+	
+		public void p(List<Integer> l){}
+		
+		public void p(List<String> l){}
+	}
+	public static class B extends A{
+
+	}
+	
+	int main(String[] args){
+}
+```
+
+In questo caso le due funzioni `p` non funzionano, poiché dopo l'**erasure** le due firme sarebbero uguali (`public void p(List l)`) $\to$ **overload ambiguo**.
+# Wildcards
+```java
+public class Misc{
+	public static <A,B> List<B> map(Iterable<A> c, 
+					Function<? super A,? extends B> f){
+		List<B> r = new ArrayList<>();
+		for(A x : c) {
+			B b = f.apply(x);
+			r.add(b);
+		}
+		return r;
+	}
+	public static void main(String[] args){
+		List<String> l1 = List.of{"pippo","franco","ciccio"}
+		List<Number> l2 = 
+					map(l1, (CharSequence s) -> s.length()); 
+	}
+}
+```
+
+I **wildcards** ci permettono di applicare la controvarianza anche agli input.
+
+*Subsume solo il "guscio esterno", mai i generics (Type Argument)*.

@@ -86,7 +86,7 @@
             "state": {
               "type": "tag",
               "state": {
-                "sortOrder": "frequency",
+                "sortOrder": "alphabetical",
                 "useHierarchy": true
               }
             }
@@ -147,8 +147,9 @@
       "templates:Insert template": false
     }
   },
-  "active": "a5ab38368aefaebe",
+  "active": "c9460e8507417c0f",
   "lastOpenFiles": [
+    "Programmazione ad Oggetti Mod. 2.md",
     "Analisi dei Dati.md",
     "Utilità/Pasted image 20240328103832.png",
     "Utilità/Pasted image 20240328103810.png",
@@ -163,7 +164,6 @@
     "Utilità/Pasted image 20240327171533.png",
     "Utilità/Pasted image 20240327170712.png",
     "Tecnologie e Applicazioni Web.md",
-    "Programmazione ad Oggetti Mod. 2.md",
     "Algoritmi e Strutture di Dati.md",
     "2024-03-16.md",
     "Sistemi Operativi Mod. 2.md",

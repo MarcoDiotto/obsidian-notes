@@ -1,4 +1,6 @@
-# Introduzione
+# Java
+___
+## Introduzione
 
 I *paradigmi* di programmazione sono quello **operativo** e quello **funzionale**.
 All'interno di tali *paradigmi* ci sono vari *stili di programmazione*.
@@ -60,7 +62,7 @@ Main b = a;
 La variabile b è un *alias*, ovvero un altro pointer allo stesso oggetto. Le **classi** sono i *tipi*, gli **oggetti** sono i *valori* (o *istanze*).
 Un linguaggio è *ad oggetti* quando offre il **subtyping** (ovvero una forma di **polimorfismo**).
 
-# Polimorfismo
+## Polimorfismo
 
 ```java
 public class Main{
@@ -125,7 +127,7 @@ L'*override* serve a modificare metodi preesistenti nelle sottoclassi e di conse
 **Dynamic Dispatching** : dopo la chiamata del metodo viene utilizzato il tipo dinamico                                                              dell'oggetto, conosciuto a runtime.
 **Subsumption** : possibilità di assegnare ad una cosa meno specifica, una più specifica.
 
-# Classi e Interfacce
+## Classi e Interfacce
 
 *Estendere*  (`extends`) ed *implementare* (`implements`) un'interfaccia sono concetti equivalenti.
 Le *interfacce* non hanno costruttori.
@@ -219,7 +221,7 @@ public class ProveJDK1
 }
 ```
 
-# Creazione di iteratori
+## Creazione di iteratori
 In java ogni interfaccia deve avere un *file a parte* (o essere *nested*), pertanto ogni blocco di codice corrisponderà ad un diverso file.
 
 ```mermaid
@@ -231,7 +233,7 @@ flowchart BT
 	B[/Collection/] --> A[/Iterable/]
 	C[/List/] --> B
 ```
-# TinyJDK
+## TinyJDK
 ```java
 package tinyjdk;
 
@@ -688,22 +690,22 @@ public class ArrayListIterator<T> implements Iterator<T> {
 * In `Iterable<T>`, `T` $\to$ **type argument**
 
 *Nota*: senza i **generics** si rischia di subsumere troppo con `Objects`.
-# Type Parameter e Type Argument
+## Type Parameter e Type Argument
 ```java
 void f(int n){...} // --> n = type parameter
 f(7); // --> 7 = type argument
 ```
 **Type Parameter** determina il nome dei tipi, mentre **Type Argument** lo usa.
-# Eccezioni Checked e Unchecked
+## Eccezioni Checked e Unchecked
 * Le eccezioni **unchecked** non hanno bisogno della keyword `throws`ne del costrutto `try{...}catch{...}`,  tuttavia potrebbero non essere raccolte.
 * Al contrario le eccezioni **checked** ne hanno bisogno e devono essere propagate gerarchicamente.
 * Se l'anomalia *non è frequente* meglio scegliere un'**eccezione unchecked**.
 * Se l'anomalia *è frequente* ed è ritenuta un *secondo possibile esito del codice* megio scegliere un **eccezione checked**.
-# Virtual Table e Dynamic Dispatching
+## Virtual Table e Dynamic Dispatching
 Alla creazione di un campo in Java  (prima della chiamata al costruttore), questo viene inizializzato a  `NULL`, se è un **reference type**, a 0 se è un **int**.
 Di conseguenza quando viene chiamato il costruttore, c'è già della memoria allocata (8 Byte per i pointer, 4 per gli int), il compilatore sa quanto allocare sulla base della sommatoria dei campi della classe.
 Viene inoltre creata una tabella, detta **Virtual Table**, che contiene pointer ai metodi della classe, i quali puntano alla prima istruzione dei corrispondenti metodi. Ciò avviene perché quando una classe istanziata viene passata a qualcos'altro si crea **subsumpion**, e di conseguenza alla chiamata di un metodo della classe si può recuperare quest'ultimo dalla virtual table della stessa. Grazie all'uso delle virtual table Java implementa il **Dynamic Dispatching**. Quando viene creato un oggetto, viene prima allocato lo spazio necessario per i campi ed in seguito la virtual table, che contiene anche i metodi sottoposti ad **Override**. Il dynamic dispatching non viene applicato ai metodi **statici**.
-# TinyJDK: Anonymous Class
+## TinyJDK: Anonymous Class
 
 ```java
 (...)new Iterator<T>() {
@@ -748,11 +750,11 @@ public Iterator<T> iterator(){
 }
 ```
 
-# Metodi == e equals
+## Metodi == e equals
 * `==`: se i due elementi sono **reference type** controlla i puntatori, se **value type** fa un vero confronto, è **polimorfo** e **omogeneo** (funziona con due oggetti dello stesso tipo),
 * `equals`: è un metodo della classe `Object` reso standard, è **polimorfo per subtype** ed è **eterogeneo**. In genere si usa `equals` per fare una deep copy. $\to$ *è un semplice metodo*.
 
-# TinyJDK: Set
+## TinyJDK: Set
 I **Set** sono strutture dati:
 * *Lineari*.
 * *Senza random access*.
@@ -934,11 +936,11 @@ public class HashSet<T> extends AbstractResizableArray<T> implements Set<T>{
     }
 }
 ```
-# Confronti in informatica
+## Confronti in informatica
 * **Strutturale** $\to$ confronto deep (in java con `equals`). 
 * **Shallow** $\to$ confronto shallow  (in java con `==`).
 * **Hash** $\to$ confronta usando gli hash. 
-# TinyJDK: Sorted Set
+## TinyJDK: Sorted Set
 **Sorted set** è una categoria intera di set (non un'implementazione specifica), pertanto viene implementato con un'*interfaccia*.
 
 Il problema è *ordinare cose che non sappiamo cosa sono* $\to$ si demanda a chi implementa l'interfaccia di implementarsi il metodo come preferisce. La stessa cosa avviene con `equals` della classe `Object`.
@@ -1017,22 +1019,22 @@ public class StructuralSortedSet<T extends Comparable<T>>
 }
 ```
 
-# Keyword extends
+## Keyword extends
 La keyword **extends** assume 3 significati:
 * Su un'**interfaccia** per ereditare un'**interfaccia padre** (*In java un'interfaccia può avere più padri*).
 * Su una **classe** per ereditare una **classe padre** (*In java una classe può avere un solo padre*).
 * Su un **generic** per dire che ha le caratteristiche di un'**interfaccia**.
-# Utility Class
+## Utility Class
 *Contenitore di metodi*, **non istanziabile** (e pertanto non pensata per programmare ad oggetti). *Fornisce una serie di metodi statici*.
-# Comparable e Comparator
+## Comparable e Comparator
 * **Comparable** prende un parametro in input e lo confronta con this.
 * **Comparator** prende due parametri in input e li confronta.
-# Funzioni Binarie
+## Funzioni Binarie
 Sono funzioni che operano su **due** oggetti (fra queste vengono inclusi anche gli *operatori*).
 In java possono essere implementate in 2 modi:
 * `this.method(Object o)` $\to$ metodo di `this`.
  * `method(Object o1, Object o2)` $\to$ metodo che opera su due argomenti `o1` e `o2`.
-# TinyJDK: Map
+## TinyJDK: Map
 
 ```java
 package tinyjdk;
@@ -1097,7 +1099,7 @@ public class Pair<K,V> implements Map<K,V>{
 	}
 }
 ```
-# Programmazione Pseudo-funzionale
+## Programmazione Pseudo-funzionale
 Java permette di "emulare" lo stile *funzionale*.
 La **programmazione pseudo-funzionale** permette di scrivere codice *più robusto* (meno soggetto a bug).
 
@@ -1226,7 +1228,7 @@ In java, le seguenti funzioni sono dette "*4 forme di lambda*":
 Computazione e Side-Effect:
 * **Computazione** $\to$ avviene quando una funzione prende un *input* e ritorna un *output* (e.g. caricare di un file).
 * **Side-Effect**: $\to$ avviene quando una funzione prende un *input* e modifica lo *stato* senza ritornare un *output*(e.g. salvare un file).
-# Funzione Filter
+## Funzione Filter
 
 ```java
 package func;
@@ -1280,7 +1282,7 @@ La funzione `filter` serve appunto a **filtrare** una collection, applicando ad 
 * **Impura**: con *side-effect*, non ritorno nulla.
 
 Tutti i metodi sono **static** perché non sfruttano lo stato della classe.
-# Thread
+## Thread
 
 I **thread** condividono *metodi* e *campi statici* (nel senso di conosciuti dal compilatore) con il **processo**.
 Condividono, in maniera più precisa:
@@ -1327,7 +1329,7 @@ public class Threads{
 ```
 
 Si potrebbe anche chiamare direttamente `run` al posto di `start`. Utilizzando `start` però si chiede al kernel di creare un vero thread, che verrà gestito dallo stesso. La **syscall** chiamata da `start` non è bloccante. La classe **thread** è un **runnable**. Ha a sua volta un costruttore che prende in input un **runnable**.
-# Consumer - Producer
+## Consumer - Producer
 ```java
 package concurrent
 
@@ -1421,7 +1423,7 @@ void f(){
 ```
 
 Questa codice funziona perché se un thread ha già il lock può rimettere il rosso aumentando un **counter interno trasparente**. Bisogna solamente fare tante *unlock* quante sono le *lock*.
-# Overloading
+## Overloading
 
 Permette di definire metodi nelle sotto-classi con stesso nome, ma tipi di ritorno e firma diversi rispetto a quelli delle super-classi
 ```java
@@ -1602,7 +1604,7 @@ public class Overloading{
 ```
 
 In questo caso le due funzioni `p` non funzionano, poiché dopo l'**erasure** le due firme sarebbero uguali (`public void p(List l)`) $\to$ **overload ambiguo**.
-# Wildcards
+## Wildcards
 ```java
 public class Misc{
 	public static <A,B> List<B> map(Iterable<A> c, 
@@ -1622,6 +1624,215 @@ public class Misc{
 }
 ```
 
-I **wildcards** ci permettono di applicare la controvarianza anche agli input.
+I **wildcards** ci permettono di applicare la contro-varianza anche agli input.
 
 *Subsume solo il "guscio esterno", mai i generics (Type Argument)*.
+
+```java
+package misc;
+
+public class Sorting{
+	public static <T> void sort(List<T> list,
+								Comparator<?super T> c) {...}
+	
+	public static class Animal{
+		public int weight;
+		
+		public Animal(int w){ this.weight = w;}
+	}
+	
+	public static class Dog extends Animal{
+		public boolean pedigree;
+		public Dog(int w, Boolean p){
+			super(w);
+			this.pedigree = p;
+		}
+	}
+	
+	public static void main(String[] args){
+		List<Animal> l = new ArrayList<>();
+		l.add(new Animal(50));
+		l.add(new Animal(30));
+		l.add(new Animal(20));
+		
+		sort(l, new Comparator<Animal>(){
+			@Override
+			public int compare(Animal o1, Animal o2){
+				return o1.weight - o2.weight; 
+			}
+		});
+	}
+}
+```
+
+I **type argument** non subsumono automaticamente, per questo abbiamo anche `<? extends T>`. Java infatti non riesce a capire che che una classe è sottotipo di un'altra quando viene utilizzata dentro i **generics**.
+# C++
+___
+## Introduzione
+È un linguaggio **strong-typed** con un type-checking molto "forte", tuttavia il suo sistema di template è problematico.
+
+È un linguaggio **multi-paradigma**, poiché supporta *diversi stili* e anche *diversi paradigmi* di programmazione.
+I paradigmi/stili forniti da C++ sono:
+* Ad oggetti
+* Imperativo-funzionale
+* Generic Programming
+
+```cpp
+#include <iostream>
+
+class animal{
+//private: -> metto protected per OOP
+protected:
+	int weight;
+	double speed;
+public:
+	
+	//lista di inizializzazione
+	//chiama i costruttori dei campi
+	//in particolare i copy constructor
+	
+	animal(int w, double sp) : weight(w), speed(sp) {}
+	
+	//questo è un copy constructor
+	animal() : weight(0), speed(0.0) {}
+	
+	//posso fare il default constructor così:
+	animal() : weight(), speed() {}
+	//o così
+	animal() {}
+	
+	animal(const animal& a) : weight(a.weight), 
+							  speed(a.speed) {}
+	
+	//lo lascio, ma in cpp non si fanno i getter
+	int get_weight() const{
+		return this -> weight;
+	}
+	
+	//devo lasciare il const iniziale, altrimenti non
+	//garantisco il const su this
+	//equivale ad un getter -> solo right value
+	const int& weight() const {return weight;}
+	//questo è un overload, perché non c'è il const su this
+	//anche in cpp l'overload è context-independent
+	//come un setter -> anche left value
+	int& weight() {return weight;}
+	
+	virtual void eat(const animal& a){
+		weight += a.weight;
+	}
+};
+```
+
+* `animal(int w) : weight(w) {}` $\to$ costruttore per inizializzare i campi
+* `animal(const animal& a) : weight(a.weight)` $\to$ costruttore per **copia**
+  * `a` viene passato *const* per non essere modificato.
+  * `a` viene passato per *reference* per non generare ricorsioni. 
+
+A differenza di Java, in C++ `this` è un **pointer**, il suo tipo pertanto è `*class` (nel nostro caso è `* animal`).
+
+In C++ bisogna specificare che su di un metodo si può eseguire l' **override** grazie alla keyword `virtual`. Questa keyword si chiama così perché specifica che quel particolare metodo va inserito in *virtual table*.
+* **Dynamic-Dispatching** per i metodi che stanno in virtual table.
+* **Static-Dispatching** per i metodi che non stanno in virtual table.
+
+In C++ si può ereditare con diverse keyword sulla base della **subsumption**:
+* `public` $\to$ così chiunque può usare la classe polimorficamente.
+* `private` $\to$ così nessuno può usarla polimorficamente.
+* `protected` $\to$ così solo i figli possono usarla polimorficamente.
+
+La vera differenza fra C++ e Java è che nel primo **i campi vengono costruiti e non assegnati**.
+In C++ non si dichiara mai, ma si **costruisce sempre**, anche con i tipi primitivi.
+Gli *stack frame* di C++ sono *dinamici*.
+
+```c++
+int main(){
+	//utilizzo la new. La variabile viene salvata nell'heap
+	// In C++ la new ritorna un pointer
+	animal* al = new animal(7, 2.34);
+	
+	//chiama il costruttore di default di int
+	//x viene costruito nello stack
+	int x;
+	
+	//fa la stessa cosa di int x, ma con un tipo
+	//definito da noi
+	// ha tipo animal
+	animal a2(7, 2.34);
+	
+	//compiler context-free, chiama il costruttore per copia
+	//a2 è di tipo animal, non animal*
+	animal a3(a2)
+	
+	//questo a cpp va bene perché passo this anche
+	//se vuole un campo const
+	a2.eat(a2)
+	
+	dog fido(60, 45.34, false);
+	//in cpp questa è una costruzione:
+	//legacy -> deriva da versioni vecchie
+	//usa un copy constructor
+	animal a5 = fido;
+	//è equivalente a questo:
+	animal a5(fido);
+	
+	//non dispatcha eat di dog ma di animal
+	//perché costruisco un animal
+	a5.eat(a2)
+	
+	//in cpp il binding è solo per i reference
+	animal& a5 = fido; 
+	
+	//Fa dynamic dispatching
+	a5.eat(a2)
+	dog* fufi = new dog(3,100., true);
+	animal* a6 = fufi
+	//Fa dynamic dispatching
+	a6->eat(a2)
+}
+```
+
+```cpp
+τ* x = new τ(args) //costruisce sull'heap
+τ x(args)          //costruisce sullo stack
+```
+
+Non scrivere l'**initializer list** equivale a scriverla così:
+```cpp
+animal(int w, double sp) : weight(), speed(){
+	weight = w;
+	speed = sp;
+}
+```
+
+In java non ha senso modificare l'operatore di assegnamento perché lavoriamo solamente con pointer sull'heap, in C++ invece utilizziamo anche lo stack.
+
+```cpp
+class Dog : public animal{
+private:
+	bool has_pedigree;
+public:
+	//il padre è un campo del figlio
+	dog(int w, double sp, bool ped) : animal(w,sp), 
+									  has_pedigree(ped) {}
+	
+	void eat(const animal&) override {
+		//stiamo chiamando due weight diversi.
+		//perché this non è const mentre a sì.
+		thuis.weight() += a.weight() / 2;
+	}
+}
+```
+
+Solo `this` può vedere i suoi  campi protected ereditati dal padre, i suoi "fratelli" no.
+Se la `get_weight()` non assicura che `this` sia `const` avremmo un errore nell'implementazione della `eat` (che vuole in input un `const animal`).
+
+In C++, quando si fa **override**, si può:
+* **covariare** e **controvariare** l'*output*.
+* solo **controvariare** l'*input*.
+
+Se voglio continuare la "serie" di override, devo sempre mettere `virtual`.
+**Quando una cosa è costante, resta costante**.
+
+In C++:
+* I reference **subsumono**.
+* I valori **non subsumono**.

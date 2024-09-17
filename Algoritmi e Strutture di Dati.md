@@ -1030,4 +1030,4 @@ Grafo pesato:
   ![[Pasted image 20240318112806.png]]
 * $G(V,E,w)$ pesato sugli archi, perché ad ogni arco è assegnato un numero, $w$ è una funzione che assegna a ciascun arco un numero reale.
   ![[Pasted image 20240318112937.png]]
-  
+

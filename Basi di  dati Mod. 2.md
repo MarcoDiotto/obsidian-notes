@@ -118,7 +118,7 @@ Se io li aggiungo tutti allora $ABD$ è una superchiave.
 ## Verifica di Chiave
 Dato $R(T,F)$ possiamo verificare se $X \subseteq T$ è una *chiave* tramite il seguente algoritmo di costo *polinomiale*.
 * Verifica se $X$ è una superchiave. Se non lo è non è una chiave
-* Verifica che $\forall A \in X$ si abbia $X \\ \{A\}^+_F \neq T$
+* Verifica che $\forall A \in X$ si abbia $X$ \\  $\{A\}^+_F \neq T$
 
 **Esempio**:
 Si consideri la relazione $R(T,G)$ con $T = ABCDEF$ e $G = \{AB \rightarrow C,\ E \rightarrow A,\ A \rightarrow E,\ B \rightarrow F\}. \ ABD$ è chiave perchè esso è una superchiave (come dimostrato precedentemente) e inoltre abbiamo che
@@ -176,7 +176,7 @@ La **forma canonica** è un metodo per scrivere un insieme di dipendenze funzion
 * $X \to Y$ non è *ridondante*
 ## Copertura Canonica
 $G$ è **copertura canonica** di $F \iff F  \equiv G$ e $G$ è in forma canonica.
-**Teorema**: per ogni insieme di dipendemze funzionali $F$ esiste una copertura canonica
+**Teorema**: per ogni insieme di dipendenze funzionali $F$ esiste una copertura canonica
 ### Algoritmo per determinare la copertura canonica
 Segue 3 passi:
 * Decompone tutte le dipendenze funzionali che hanno più attributi sulla destra $X \to Y \implies \{ X \to A | A \in Y\}$.

@@ -1668,7 +1668,7 @@ public class Sorting{
 I **type argument** non subsumono automaticamente, per questo abbiamo anche `<? extends T>`. Java infatti non riesce a capire che che una classe è sottotipo di un'altra quando viene utilizzata dentro i **generics**.
 # C++
 ___
-## Introduzione
+
 È un linguaggio **strong-typed** con un type-checking molto "forte", tuttavia il suo sistema di template è problematico.
 
 È un linguaggio **multi-paradigma**, poiché supporta *diversi stili* e anche *diversi paradigmi* di programmazione.
@@ -1818,7 +1818,7 @@ public:
 	void eat(const animal&) override {
 		//stiamo chiamando due weight diversi.
 		//perché this non è const mentre a sì.
-		thuis.weight() += a.weight() / 2;
+		this.weight() += a.weight() / 2;
 	}
 }
 ```
@@ -1836,3 +1836,267 @@ Se voglio continuare la "serie" di override, devo sempre mettere `virtual`.
 In C++:
 * I reference **subsumono**.
 * I valori **non subsumono**.
+
+ L'operatore `[]` di `vector` fa l'**inlining**, ovvero sostituisce il blocco di codice della funzione alla relativa chiamata, evitando una `jump` al compilatore.
+
+Facciamo una matrice **flattened** per motivi di efficienza.
+
+Utilizzando `vector` al posto degli array nativi guadagniamo in gestione della memoria, che viene automatizzata.
+C++ usa uno **stile di programmazione** detto *value-oriented programming*, il quale deve specificare sempre:
+* default constructor
+* copy constructor
+* operatore di assegnamento
+
+Questo stile rende il tipo creato molto simile ai valori nativi del linguaggio.
+In C++ i **costruttori unari** (con un solo parametro) sono *operatori di conversione*. 
+
+Per esempio, se noi avessimo una funzione che prende in input una `matrix` e le passassimo un `int`, questa compilerebbe e chiamerebbe il costruttore `matrix(size_t dim)` della classe `matrix`.  Se si mette davanti al costruttore la keyword `explicit` si impedisce di chiamare implicitamente il costruttore e di conseguenza si impedisce la conversione.
+
+Nel nostro esempio il distruttore non serve, poiché viene automaticamente chiamato quello di `vector`.
+
+*Nota*: 
+* L'operatore `[]` si chiama **subscript**.
+* L'operatore `()` si chiama **application operator**.
+
+```cpp
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+template <class T>
+class matrix
+{
+private:
+	size_t cols;
+	vector<T> v;
+public:
+	matrix() : v() {}
+	
+	matrix(const matrix<T>& m) : v(m.v) {}
+	
+	//nella seconda parte del costruttore usa il campo cols
+	//per farlo però cols deve essere inizializzato
+	//visto che le initializer list devono essere in ordine
+	//cols è stato messo prima di v all'inizio della classe
+	matrix(size_t rows, size_t _cols) : cols(_cols)
+									   v(rows * cols) {}
+	
+	//sostanzialmente mi permette di passare da un size_t
+	//ad una matrix -> funzione di conversione
+	matrix(size_t dim) : matrix(dim, dim) {}
+	
+	const T& operator()(size_t i, size_t j)
+	{
+		return v[i * cols + j]
+	}
+	
+	T& operator()(size_t i, size_t j)
+	{
+		return v[i * cols + j]
+	}
+	
+	//Assegnamento != Binding
+	//L'assegnamento serve per la modifica
+	//sta sottintendendo il parametro thie
+	//nel nostro caso this è il left value
+	//const matrix<T>&m è il right value
+	//left e right value sono templatizzati sullo stesso tipo 
+	matrix<T>& operator =(const matrix<T>& m){
+		cols = m.cols //assegnamento fra size_t
+		v = m.v //assegnamento fra vector
+		
+		//this deferenziato, perché sarebbe un pointer
+		return *this:
+	}
+}
+
+void main()
+{
+	matrix<int> m(20,30);
+	
+	// vengono chiamati 3 operatori
+	m(8, 10) = m(3,4);
+	
+	matrix<int> m2(40,50);
+	
+	// le due righe sotto sono identiche
+	// in cpp gli operatori sono metodi di classe
+	m = m2;
+	m.operator=(m2);
+}
+```
+
+Meglio che l'*operatore di assegnamento* no sia `void`,  altrimenti non potremmo innestarlo in catene di assegnamenti.
+
+Utilizzando i template, il compilatore rimanda la compilazione del codice templatizzato fino alla prima esecuzione.
+
+Si scrive `class T` perché C++ permette di parametrizzare non solo **tipi** ma anche **valori**.
+Si possono templatizzare:
+* Classi
+* Metodi
+* Funzioni globali
+* Typedef
+* ...
+
+Fra le cose che non si possono templatizzare troviamo:
+* Namespaces
+* Campi delle classi
+
+```cpp
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+template <class T>
+class matrix
+{
+private:
+	size_t cols;
+	vector<T> v;
+public:
+	matrix() : v() {}
+	
+	matrix(const matrix<T>& m) : cols(m.cols), v(m.v) {}
+	
+	// conversion constructor
+	//converte la matrice di S in matrice di T
+	//poi chiama il copy constructor
+	//il compilatore non lo riconosce 
+	template <class S>
+	matrix(const matrix<S>& m) : cols(m.cols),
+							v(m.get_cols() * m.get_rows) {
+		
+		for(int i = 0; i < v.size(); ++i){
+			//supponiamo di avere un operatore di conversione 
+			//fra s e T 
+			//non così -> v[i] = m.v[i];
+			
+			//ma così
+			//viene sostanzialmente chiamato il costruttore 
+			//di T dato S
+			//i cast sono un'altra cosa -> interpretare il 
+			//data type in modo diverso
+			//Viene usato solo fra puntatori.
+			
+			//Così stiamo assumendo che T abbia un 
+			//costruttore che prende un S
+			v[i] = T(m.v[i]);
+		}
+	}
+	
+	//nella seconda parte del costruttore usa il campo cols
+	//per farlo però cols deve essere inizializzato
+	//visto che le initializer list devono essere in ordine
+	//cols è stato messo prima di v all'inizio della classe
+	matrix(size_t rows, size_t _cols) : cols(_cols)
+									   v(rows * cols) {}
+	
+	//sostanzialmente mi permette di passare da un size_t
+	//ad una matrix -> funzione di conversione
+	explicit matrix(size_t dim) : matrix(dim, dim) {}
+	
+	//operatore di conversione fra matrix<T> e vector<T>
+	operator const vector<T>&() const
+	{
+		return v;
+	}
+	
+	const T& operator()(size_t i, size_t j)
+	{
+		return v[i * cols + j]
+	}
+	
+	T& operator()(size_t i, size_t j)
+	{
+		return v[i * cols + j]
+	}
+	
+	//Assegnamento != Binding
+	//L'assegnamento serve per la modifica
+	//sta sottintendendo il parametro thie
+	//nel nostro caso this è il left value
+	//const matrix<T>&m è il right value
+	//left e right value sono templatizzati sullo stesso tipo 
+	matrix<T>& operator =(const matrix<T>& m){
+		cols = m.cols //assegnamento fra size_t
+		v = m.v //assegnamento fra vector
+		
+		//this deferenziato, perché sarebbe un pointer
+		return *this:
+	}
+	
+}
+//non può stare dentro la matrice, perché this starebbe a 
+//sinistra di os ma l'operator << non vuole, poiché a sinistra
+// ci vuole l'ostream. È cout << matrix, non matrix << cout
+template <class T>
+ostream& operator<<(ostream& os, const matrix<T>& m)
+{
+	for(typename vector<T>::iterator it = m.v.begin();
+		it != v.end; ++it ){
+		
+		(os << *it) << " ";
+		
+		//oppure
+		
+		typename vector<T>::value_type x = *it;
+		
+		//value_type è T
+		
+		os << x << " "
+	}
+	return os;
+}
+
+template <class Container>
+ostream& operator<<(ostream& os, const Container& m)
+{
+	for(typename Container::iterator it = m.v.begin();
+		it != v.end; ++it ){
+		
+		(os << *it) << " ";
+		
+		//oppure
+		
+		//value_type prende il tipo di *it
+		
+		typename Container::value_type x = *it;
+		
+		//value_type è T nel nostro caso
+		
+		os << x << " "
+	}
+	return os;
+}
+
+void main(){
+	matrix<int> m(10, 20);
+	
+	//il template system viene costretto a generare il 
+	//conversion constructor.
+	matrix<double> m1(m);
+	
+}
+```
+
+In java la sintassi del cast è differente:
+* Se sono **built-in** *converte*.
+* Se sono **oggetti** avviene un *downcast* $\to$ si passa da tipi più generali ad altri più specifici.
+
+I veri cast in C++ possono essere fatti **solo** con i *puntatori*:
+
+```cpp
+int n = 5;
+double x = *((double* ) &n);
+```
+
+Cast vuol dire di per sé **forzare**.
+
+Quando usiamo un template in C++, ci aspettiamo che quel particolare tipo `T` rispetti i vincoli necessari per eseguire il codice. All'inizio C++ controlla solo che la sintassi sia corretta, poi, nel momento in cui il codice viene usato, i tipi vengono  effettivamente controllati. 
+Il **template system** di C++ è *generativo* $\to$ sostituisce ai template il tipo richiesto e poi ricompila.
+
+In pratica ogni volta che viene usato un nuovo tipo al posto del template, C++ deve ricompilare il codice per vedere se funziona e generare un nuovo metodo con quei tipi.
+
+`typename` è una keyword necessaria per specificare che ciò che segue è un tipo.

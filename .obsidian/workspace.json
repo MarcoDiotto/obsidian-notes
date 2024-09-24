@@ -4,15 +4,19 @@
     "type": "split",
     "children": [
       {
-        "id": "673f57b67adaa502",
+        "id": "b44e212eb5191817",
         "type": "tabs",
         "children": [
           {
-            "id": "502fe421e4042ce9",
+            "id": "a2ef7f92afcc51ed",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {}
+              "type": "markdown",
+              "state": {
+                "file": "Calcolabilità e Linguaggi Formali.md",
+                "mode": "source",
+                "source": false
+              }
             }
           }
         ]
@@ -91,7 +95,9 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {}
+              "state": {
+                "file": "Calcolabilità e Linguaggi Formali.md"
+              }
             }
           },
           {
@@ -100,6 +106,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "Calcolabilità e Linguaggi Formali.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -116,6 +123,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "Calcolabilità e Linguaggi Formali.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -138,19 +146,21 @@
       "templates:Insert template": false
     }
   },
-  "active": "502fe421e4042ce9",
+  "active": "a2ef7f92afcc51ed",
   "lastOpenFiles": [
+    "Utilità/Pasted image 20240924151400.png",
+    "Utilità/Pasted image 20240924150651.png",
+    "Utilità/AD2324-unita1-base.pdf",
     "Calcolabilità e Linguaggi Formali.md",
+    "Utilità/Pasted image 20240924145555.png",
+    "Utilità/Pasted image 20240924143350.png",
+    "Utilità/Pasted image 20240924141709.png",
+    "Utilità/Pasted image 20240924141059.png",
+    "Utilità/Pasted image 20240924140820.png",
     "Utilità/Pasted image 20240918145506.png",
     "Utilità/Pasted image 20240918145450.png",
     "Pasted image 20240918144918.png",
     "Pasted image 20240918144758.png",
-    "Utilità/Pasted image 20240918142946.png",
-    "Utilità/Pasted image 20240918141708.png",
-    "Utilità/Pasted image 20240918141439.png",
-    "Utilità/Pasted image 20240918140812.png",
-    "Utilità/Pasted image 20240918140500.png",
-    "Utilità/Pasted image 20240917150817.png",
     "Tecnologie e Applicazioni Web.md",
     "Relazione progetto e-commerce DB.md",
     "Algoritmi e Strutture di Dati.md",
@@ -164,7 +174,6 @@
     "Algoritmi.md",
     "().md",
     "[[Algoritmi.md",
-    "Utilità/AD2324-unita1-base.pdf",
     "Utilità/AD2324-lab2.html",
     "Utilità/AD2324-lab2 1.html",
     "Utilità",

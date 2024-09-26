@@ -118,7 +118,7 @@ A questo punto possiamo aggiungere uno stato c, che fungerà da **stato pozzo** 
 ![[Pasted image 20240924141059.png]]
 Con alfabeto $\Sigma = \{a,b,c\}$
 # Automi a Stati Finiti Non-Deterministici (NFA)
-![[Pasted image 20240924141709.png]]Differenze rispetto ai **DFA**:
+![[Pasted image 20240925140734.png]]Differenze rispetto ai **DFA**:
 * Lo stato $q_1$ ha due archi etichettati con $1$.
 * Lo stato $q_2$ non ha archi etichettati con $1$.
 * Include delle $\epsilon-transazioni$, che non prendono caratteri in input.
@@ -151,3 +151,68 @@ Sia $N = (Q, \Sigma, \delta, q_0, F)$ un NFA e sia $w$ una stringa costruita su 
 * $r_0 = q_0$
 * $r_n \in F$
 * $\forall i \in [0, n-1] : r_{i + 1} \in \delta(r_i, y_{i + 1})$
+## Ancora su NFA
+![[Pasted image 20240925140734.png]]
+* $Q = \{q_1,q_2,q_3,q_4\}$
+* $\Sigma = \{0,1\}$
+* $q_0 = q_1$
+* $F = \{q_4\}$
+* $\delta(q_1, 0) = \{q_1\}$ $\delta(q_1,1) = \{q_1,q_2\}$ $\delta(q_1, \epsilon) = \emptyset$ $\delta(q_2, 0) = \{q_3\}$ ...
+Per specificare quando vogliamo prendere la direzione etichettata con $\epsilon$ dobbiamo scriverlo esplicitamente nella stringa ($11 \to 1 \epsilon 1$)
+## Teorema
+Per ogni **NFA** $N$ esiste un **DFA** $D$ tale che $L(D) = L(N)$.
+## Dimostrazione
+![[Pasted image 20240925141428.png]]
+**Idea**: non sapendo quale ramo farà terminare la computazione, ad ogni esecuzione mi salvo lo stato corrente.
+![[Pasted image 20240925141638.png]]
+In questo modo abbiamo *linearizzato l'albero*.
+
+Sia dunque $N = (Q, \Sigma, \delta, q_0, F)$ e costruisco un DFA $D=\{Q',\Sigma,\delta',q_0',F'\}$.
+**IPOTESI**: Assumiamo per il momento che $N$ non contenga $\epsilon-transazioni$.
+
+A questo punto avremo:
+* $Q'= \mathbb{P}(Q)$.
+* $q_0' = \{q_0\}$ $\to$ è un insieme perché stiamo prendendo un elemento di $Q$.
+* $F' = \{R \in Q' | \exists r \in R : r \in F\}$
+* $\delta'(R,a) = \bigcup_{r \in R} \delta(r,a)$.
+
+Nel caso in cui $N$ contenesse $\epsilon-transizioni$ possiamo pensare di introdurre la funzione $E(R)$:
+* $E(R) = \{q | q \text{ può essere raggiunto da qualsiasi } r \in R \text{ con 0 o più }\epsilon-transizioni\}$
+A questo punto avremo:
+* $Q'= \mathbb{P}(Q)$.
+* $q_0' = E(\{q_0\})$.
+* $F' = \{R \in Q' | \exists r \in R : r \in F\}$
+* $\delta'(R,a) = \bigcup_{r \in R} E(\delta(r,a))$.
+## Esempio di conversione da NFA a DFA
+![[Pasted image 20240925145002.png]]
+*Note*:
+![[Pasted image 20240925145002.png]]
+## Proprietà di conversione fra NFA e DFA
+* Ogni **NFA** è convertibile in un **DFA** *equivalente*.
+* Ogni **DFA** è convertibile in un **NFA** *equivalente*.
+## Corollario
+Un linguaggio $A$ è regolare $\iff$ esiste un **NFA** che lo riconosce.
+## Dimostrazione:
+* $\implies$ sia $A$ regolare, per definizione esiste un DFA $D$, tale che $L(D) = A$. Converto $D$ in un NFA equivalente.
+* $\impliedby$ Assumo che esista un NFA $N$, tale che $L(N) = A$. Converto $N$ in un DFA equivalente e dimostro la regolarità. 
+## Dimostrazione di regolarità di $A_° B$
+Se $A$ e $B$ sono **regolari**, allora $A_° B$ è **regolare**.
+![[Pasted image 20240925150908.png]]
+
+Siano $A$ e $B$ regolari, allora esistono $N_1$ e $N_2$ tali che $L(N_1) = A$ e $L(N_2) = B$. Costruisco un nuovo NFA $N$ tale che $L(N) = A_° B$
+![[Pasted image 20240925151624.png]]
+Ciò che abbiamo è:
+* $N_1 = (Q_1, \Sigma, \delta_1, q_1, F_1)$.
+* $N_2 = (Q_2, \Sigma, \delta_2, q_2, F_2)$.
+* $N = (Q, \Sigma, \delta, q_0, F)$.
+In particolare $N$ sarà così costruito:
+* $Q = q_1 \cup q_2$.
+* $q_0 = q_1$.
+* $F = F_2$.
+* $\delta(q,a) = \delta_1(q,a) \to \text{se } q \in Q_1 \\ F_1,\ \delta_2(q,a) \to \text{se } q \in Q_2,\ \delta_1(q,a) \to \text{se } q \in F_1 \land a \neq \epsilon,\ \{q_2\} \cup \delta_1(q,a) \text{se } q \in F_1 \land a = \epsilon$
+## Dimostrazione regolarità di $A^*$
+Se $A$ è *regolare*, allora $A^*$ è *regolare*.
+$A^* = \{w_1, ..., w_k | \forall i : w_i \in A \land k \geq 0\}$.
+
+Sia $A$ regolare, allora esiste un NFA $N$ tale che $L(N) = A$. Costruisco un NFA $M$ tale che $LD(M) = A^*$.
+![[Pasted image 20240925153153.png]]

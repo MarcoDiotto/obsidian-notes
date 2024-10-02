@@ -136,7 +136,7 @@ Trasformiamolo in un DFA:
 * **IDEA**: memorizziamo gli ultimi 3 bit letti:
 ![[Pasted image 20240924150651.png]]
 
-Ce linguaggio riconosce il seguente NFA:
+Che linguaggio riconosce il seguente NFA:
 ![[Pasted image 20240924151400.png]]
 $L(D) =$ Strighe composte da soli $0$ di lunghezza pari a multipli di $3$.
 ## Definizione di NFA
@@ -216,3 +216,185 @@ $A^* = \{w_1, ..., w_k | \forall i : w_i \in A \land k \geq 0\}$.
 
 Sia $A$ regolare, allora esiste un NFA $N$ tale che $L(N) = A$. Costruisco un NFA $M$ tale che $LD(M) = A^*$.
 ![[Pasted image 20240925153153.png]]
+# Espressioni Regolari
+ Le **espressioni regolari** (o **regexp**) sono un formalismo utilizzato per descrivere i linguaggi regolari.
+## Esempio 1
+$$(0 \cup 1)_° 0^*$$
+Si tratta di una scrittura simile a quella delle operazioni aritmetiche, per esempio: $$(3 + 5) \times 7$$
+Nel nostro caso l'espressione regolare ci dice:
+* $(0 \cup 1) \to$ scegli fra $0$ e $1$.
+* $_° \to$ concatenaci.
+* $0^* \to$ quanti $0$ vogliamo (anche nessun0). 
+
+Per esempio stringhe che rispettano il linguaggio identificato da tale **regexp** sono:
+* $0, \quad 1, \quad 00, \quad 100...$
+Al contrario, stringhe non accettate sono:
+* $01, \quad 101...$
+## Esempio 2
+$$(0 \cup 1)*$$
+In questo caso la **regexp** ci indica:
+* Una generica stringa binaria, anche vuota
+## Regexp rispetto agli alfabeti 
+Talvolta, nelle **regexp**, un **alfabeto** viene anche indicata con $\Sigma^*$, per esempio: $$\Sigma^* = (a \cup b)^*$$
+Sia $\Sigma$ un alfabeto. L'insieme delle **regexp** definite su $\Sigma$ è definito come segue:
+* Se $a \in \Sigma$, allora $a$ è una regexp.
+* $\epsilon$ è una regexp.
+* $\emptyset$ è una regexp.
+* Se $R_1$ e $R_2$ sono regexp, allora $R_1 \cup R_2$ è una regexp.
+* Se $R_1$ e $R_2$ sono regexp, allora $R{_1°} R_2$ è una regexp.
+* Se $R$ è una regexp, allora $R^*$ è una regexp.
+## Convenzioni
+* L'operatore $_°$ generalmente viene **eliso** $\to$ $R_{1°} R_2 = R_1R_2$.
+* **Precedenza degli operatori** $\to$ prima $^*$, poi $_°$ e infine $\cup$.
+## Linguaggio Definito da una Regexp
+Sia $R$ una **regexp**, definiamo il suo linguaggio $L(R)$ come segue:
+* Se $R=a$ per qualche $a$, allora $L(R) = \{a\}$.
+* Se $R=\epsilon$, allora $L(R) = \{\epsilon\}$.
+* Se $R = \emptyset$, allora $L(R) = \emptyset$.
+* Se $R = R_1 \cup R_2$, allora $L(R) = L(R_1) \cup L(R_2)$ $\to$ Si noti che il simbolo $\cup$ assume significati diversi, nel primo caso fa parte della sintassi delle **regexp**, nel secondo è l'**unione insiemistica**.
+* Se $R = R_{1°} R_2$, allora $L(R) = L(R_1)_° L(R_2)$
+* Se $R = R_1^*$, allora $L(R) = (L(R_1))^*$
+## Esempi
+Applichiamo la funzione $L()$ alla seguente **regexp**: $$(0\cup1)_°0^*$$
+$$L((0\cup1)_°0^*) = L(0 \cup 1)_° L(0^*) = L(0) \cup L(1)_° L(0^*) = \{0\} \cup \{1\} _° L(0^*) = \{0,1\} _° L(0^*) = \{0,1\} _° (L(0))^* = \{0,1\} _° (\{0\})^*$$
+
+$L(0^*10^*) =$ Linguaggio delle stringhe binarie con esattamente un $1$.
+$L(\Sigma^* 1 \Sigma^*) =$ Linguaggio delle stringhe binarie con almeno un $1$.
+$L((\Sigma\Sigma)^*) = L(\{0 \cup 1\}_°\{0 \cup 1\}) = \{00,\ 01,\ 10,\ 11\}^*$ = Stringhe binarie di lunghezza pari.
+$L(0 \cup \epsilon)(1 \cup \epsilon) = \{0,\ 1,\ 01, \epsilon\}$.
+$L(1^*\emptyset) = (1^*)_° L(\emptyset) = \emptyset \to$ Questo per definizione di **concatenamento**.
+$L(\emptyset^*) = L(\emptyset)^* = \emptyset^* = \{\epsilon\} \to$ per definizione di **star**.
+## Teorema
+$A$ è **regolare** $\iff$ esiste una **regexp** $R$ tale che $L(R) = A$.
+## Lemma
+Sia $R$ una **regexp**, allora $L(R)$ è **regolare**.
+## Dimostrazione
+Avviene per **induzione** sulla **struttura** di $R$.
+
+*Nota*: induzione strutturale $\to$ tutte le regexp più piccole di quella che sto valutando sono regolari.
+
+* Sia $R=a$ per qualche $a$, allora $L(R) = \{a\}$.
+  **Dimostro** che $L(R)$ è regolare
+  ![[Pasted image 20241001150506.png]]
+* Sia $R = \epsilon$, allora $l(R) = \{\epsilon\}$.
+  **Dimostro** che $L(R)$ è regolare
+  ![[Pasted image 20241001150526.png]]
+* Sia $R = \emptyset$, allora $L(R) = \emptyset$.
+  **Dimostro** che $L(R)$ è regolare
+  ![[Pasted image 20241001150551.png]]
+* Sia $R = R_1 \cup R_2$, allora $L(R) = L(R_1) \cup L(R_2)$. Per ipotesi $L(R_1)$ e $L(R_2)$ sono regolari. Concludo che $L(R) = L(R_1) \cup L(R_2)$ è regolare perché i linguaggi regolari sono **chiusi** rispetto a $\cup$.
+* Segue per $_°$ e per $^*$.
+## Esempio
+Convertiamo $(a,b \cup a)^*$ in un **NFA**.
+...
+
+## Lemma
+Se $a$ è **regolare**, allora esiste una **regexp** $R$, tale che $L(R) = a$.
+
+Sia $a$ **regolare**, allora esiste un **DFA** $D$ tale che $L(D) = a$.
+L'idea è quella di tradurre il **DFA** in una **regexp** equivalente.
+![[Pasted image 20241001150946.png]]
+* **GNFA**: Generalized NFA, è un NFA, i cui archi sono etichettati non con dei caratteri ma con delle regexp.
+*Idea*: Non "mangiano" un carattere alla volta, ma blocchi di caratteri.
+![[Pasted image 20241001151449.png]]
+## Dettagli
+Lavoriamo con **GNFA** che rispettano i seguenti *vincoli*:
+* Hanno un solo **stato inziale** ed un solo **stato accettante** (diverso dall'inziale).
+* Lo **stato iniziale** ha archi in uscita verso tutti gli altri stati e nessun arco in entrata.
+* Lo **stato accettante** ha archi in entrata da tutti gli altri stati e nessun arco in uscita.
+* Il resto del grafo è completamente connesso.
+## Costruzione del GNFA a partire da un DFA
+![[Pasted image 20241001152440.png]]
+
+Abbiamo ottenuto così un **GNFA** con $k+2$ stati
+## Rimuovere stati dal GNFA
+![[Pasted image 20241001153107.png]]
+
+Ad ogni iterazione rimuovo uno stato $q_{strip}$ fino ad ottenere un automa con 2 stati, uno inziale ed uno accettante, con un collegamento fatto da tutte le **regexp**.
+## Da DFA a regexp
+![[Pasted image 20241002141032.png]]
+# Linguaggi non Regolari
+* È **facile** dimostrare che un linguaggio $A$ è **regolare** $\to$ (NFA, DFA, regexp).
+* È invece **difficile** dimostrare che un linguaggio $A$ non è **regolare**.
+## Esempio
+$$\{0^n1^n\ |\ n \geq 0\}$$
+$$\{\epsilon,\ 01,\ 0011,\ 000111\, ...\}$$
+## Di nuovo su linguaggi non regolari
+**Osservazione**: Il linguaggio delle stringhe binarie che hanno lo stesso numero di $01$ e $10$ è regolare (**ESERCIZIO**)
+
+La non regolarità si può dimostrare utilizzando un risultato noto come **Pumping Lemma**.
+## Pumping Lemma
+Sia $A$ un **linguaggio regolare**, allora esiste un intero $p \geq 1$ tale che per ogni stringa $s \in A$, tale che $|s| \geq p$, si hanno le seguenti condizioni:
+* $s = xyz$ per qualche $x,y,z$ tali che:
+  * $\forall i \geq 0: xy^iz \in A$ ($i$ copie concatenate di $y$, anche $0$).
+  * $|y| > 0$
+  * $|xy| \leq p$
+## Dimostrazione
+Sia $A$ regolare, allora esiste un DFA $D$, tale che $L(D)=A$. Poniamo $p$ pari al numero di stati del DFA $D$. Considero una stringa $s = w_1,w_2,..w_n$ con $n \geq p$. e tale che $s \in A$ (cioè il DFA la riconosce).
+Visto che $s \in A$ esiste una **sequenza di stati** $q_0,q_1,...,q_n$ tali che:
+* $q_0$ è lo *stato inziale*.
+* $q_n$ è lo *stato accettante*.
+* Ogni stato passa in un altro secondo la *funzione di transizione* $\delta$.
+
+Poniamo:
+* $p$ uguale al numero di stati del DFA
+* $s = w_1,...w_n$ con $n \geq p$.
+* $q_0,q_1,...,q_n$ con $n \geq p$ (ovvero $n + 1$ stati $\geq p+1$).
+
+**Quindi**: In questa sequenza di stati ce n'è almeno uno che si ripete. Chiamiamo $q_i$ tale stato.
+
+Vediamo quindi l'**"attraversamento" del DFA**:
+![[Pasted image 20241002143639.png]]
+
+Le **frecce** incluse nel cammino sono etichettate con i caratteri di $s$. Otteniamo il seguente schema:
+![[Pasted image 20241002143951.png]]
+
+La dimostrazione dei primi due punti è banale.
+
+Dimostriamo che $|xy| \leq p$:
+* Se abbiamo una sequenza di $p+1$ stati, ci deve essere uno stato che si ripete. Se tocco $p+1$ stati ho letto $p$ caratteri (quello in più viene dallo *stato iniziale*).
+  I primi caratteri della stringa sono $xy$. Quindi $|xy| \leq p$.
+## Utilizzo del Pumping Lemma
+Sia $A$ il linguaggio di cui vogliamo mostrare la **non-regolarità**:
+* Assumo *per assurdo* che $A$ sia **regolare**.
+* Visto che $A$ è regolare, deve valere il **Pumping Lemma**.
+* Contraddico il **Pumping Lemma** (controesempio).
+* Concludo per assurdo che $A$ non è regolare.
+Il **passo difficile** è il terzo.
+## Contraddire il Pumping Lemma
+* **Pumping Lemma**: Per tutte le stringhe $s \in A$ con $|s| \geq p$ esistono $xyz$ tali che $s = xyz$ e:
+	* $\forall i \geq 0 \quad xy^iz \in A$
+	* $|y| > 0$
+	* $|xy| \leq p$
+* **Contrario del Pumping Lemma**: Esiste una stringa $s \in A$ con $s \geq p$, tale che **per ogni** $xyz$ tali che $s = xyz$ si abbia:
+	* $\exists i \geq 0 \quad xy^iz \notin A$. **or**
+	* $|y| = 0$ **or**
+	* $|xy| > p$
+
+**Rifrasando il tutto**: Esiste $s \in A$ con $|s| \geq p$ tale che per ogni $xyz$ tali che $s = xyz$ con $|y| > 0$ e $|xy| \leq p$ si abbia che: $$\exists i \geq 0 \quad xy^iz \notin A$$
+## Esempio 1
+Dimostriamo che $A = \{0^n1^n\}$ non è regolare.
+
+Assumiamo per assurdo che $A$ sia regolare, allora deve valere il pumping lemma. Prendiamo come controesempio $s = 1^p0^p$.
+* Osservo intanto che la stringa $s \in A$ e che rispetta la **pumping length** (ovvero che $|s| \geq p$).
+* Scriviamo $s$ nella forma $s = xyz$ con $|y| > 0$ e $|xy| \leq p$.
+* Dimostriamo che esiste $i \geq 0$ tale che $xy^iz \notin A$.
+
+**Dimostrazione senza usare l'ipotesi $|xy| \leq p$**:
+	Ragioniamo sui caratteri che occorrono in $y$:
+		* $y$ contiene solo $0$. Allora $xy^2z$ ha forma $0^{p+k}1^p$ con $k > 0$ (perché per ipotesi $y$ non è vuota). Tale stringa non sta in $A$ perché ha più $0$ che $1$
+		* $y$ contiene solo $1$. Analogamente ma specularmente a sopra otteniamo una stringa di forma $0^p1^{p+k}$. La conclusione è la stessa.
+		* $y$ contiene sia $0$ che >$1$. Ma allora $xy^2z$ avrà degli $1$ prima degli $0$. Tale stringa non sta nel linguaggio.
+![[Pasted image 20241002151809.png]]
+
+**Dimostrazione usando l'ipotesi $|xy| \leq p$**:
+	In tal caso so che $y$ comprende solo $0$, di conseguenza:
+		* $xy^2z$ non sta in $A$ perché ha forma $0^{p+k}1^p$ con $k > 0$.
+## Esempio 2
+Dimostriamo che $F = \{ww\ |\ w \in \{0,1\}^*\}$ è non regolare.
+
+Assumiamo per assurdo che $F$ sia regolare. Prendiamo come controesempio per il **pumping lemma** la stringa $s = 0^p10^p1$:
+* Osservo intanto che la stringa $s \in A$ e che rispetta la **pumping length**.
+* Sia $s = xyz$ con $y > 0$ e $|xy| \leq p$.
+* Applicando la condizione $|xy| \leq p$ sappiamo che $y$ sta nei primi $p\ 0$.
+* Quindi $xy^2z$ ha forma $0^{p+k}10^p1 \notin A$ per $k > 0$.

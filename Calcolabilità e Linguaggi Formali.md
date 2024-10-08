@@ -398,3 +398,54 @@ Assumiamo per assurdo che $F$ sia regolare. Prendiamo come controesempio per il 
 * Sia $s = xyz$ con $y > 0$ e $|xy| \leq p$.
 * Applicando la condizione $|xy| \leq p$ sappiamo che $y$ sta nei primi $p\ 0$.
 * Quindi $xy^2z$ ha forma $0^{p+k}10^p1 \notin A$ per $k > 0$.
+## Esercizio 1
+Sia $D$ l'insieme delle stringhe che contengono un numero pari di $a$, un numero dispari di $b$ e non contengono la sotto-stringa $ab$
+* Costruire una regexp per $D$
+* Costruire un **DFA** per $D$
+**DFA**:
+![[Pasted image 20241008143237.png]]
+*Nota*: lo stato pozzo viene generalmente omesso per leggibilità
+*Nota*: Questo DFA potrebbe avere uno stato in meno e cominciare da quello in alto a destra.
+
+**Regexp corrispondente**: $b(bb)^*(aa)^*$
+## Esercizio 2
+Sia $D$ l'insieme delle stringhe che contengono lo stesso numero di occorrenze delle sotto-stringhe $01$ e $10$. Dimostrare che $D$ è regolare.
+**DFA**:
+![[Pasted image 20241008143518.png]]
+**Regexp corrispondente**: $R = \epsilon \cup 0 \cup 1 \cup 0(0 \cup 1)^*0 \cup 1(1\cup 0)^*1$ 
+## Esempio 3
+Dimostrare che se $A$ è regolare, allora $\overline{A}$ è regolare.
+* $\overline{A} = \{w | w \notin A\}$
+**Dimostrazione**: 
+	Dato che $A$ è regolare, allora esiste un **DFA** $D$, tale che $L(D)=A$. Sia $D=(Q,\Sigma,\delta,q_0,F)$, definisco un nuovo **DFA** $D'=(Q,\Sigma,\delta,q_0,Q-F)$ 
+	Allora è facile dimostrare che per ogni $w \in \Sigma^*(\to \text{tutte le stringhe costruite sullo stesso alfabeto}),w \in L(D) \iff w \notin L(D')$ 
+	* Se $w \in L(D)$, allora esistono stati $q_0,q_1,...,q_n$ tali che $q_n \in F$ e ciascuno stato va nel prossimo secondo $\delta$. Visto che $q_n \notin Q-F$, abbiamo che $w \notin L(D')$.
+	* Se $w \notin L(D)$, allora esistono stati $q_0,q_1,---,q_n$ tali che $q_n \notin F$ e ciascuno stato va nel prossimo secondo $\delta$. Visto che $q_n \in Q-F$, abbiamo che $w \in L(D')$.
+## Esempio 4
+Dimostrare che $A= \{a^{2^n}\ |\ n \geq 0\}$ non è regolare.
+**Dimostrazione**:
+	Assumiamo per assurdo che $A$ sia regolare e sia $p$ la sua **pumping length**.
+	Consideriamo la stringa $s = a^{2^p}$.
+	Abbiamo in particolare che $s \in A$ e $|s| \geq p$.
+	Sia $s = xyz$ con $|y| > o$ e $|xy| \leq p$, osserviamo che:
+	* $|xyz| < |xy^2z|$ perché la $|y| > 0$.
+	* $2^p = |xyz| < |xy^2z| \leq 2^p+p$ perché $|xy| \leq p$.
+	* $2^p = |xyz| < |xy^2z| \leq 2^p+p < 2^p + 2^p$ perché $p < 2^p\  \forall p\geq1$
+	* $2^p + 2^p = 2^{p+1}$.
+	Abbiamo dimostrato che $2^p < |xy^2z| < 2^{p+1}$, quindi $xy^2z$ non sta nel linguaggio $A$ ($xy^2z \notin A$).
+## Esempio 5
+Dimostrare che $G = \{ab^nc^n | n \geq 0\}$ non è regolare.
+**Dimostrazione**:
+	Assumiamo per assurdo che $G$ sia regolare e sia $p$ la sua **pumping length**.
+	Consideriamo la stringa $s = ab^pc^p$. Osserviamo che $s \in G$ e $|s| \geq 0$
+	Assumiamo $s = xyz$ con $|y| > 0$ e $|xy| \leq p$. Ragiono per casi:
+	* $a$ occorre in $y$. osservo che $xy^2z \notin G$ perché contiene più di una $a$. (uguale e contrario con il **pumping down**).
+	* $a$ non occorre in $y$. Dato che $|xy| \leq p$, allora $y$ contiene solo $b$.
+	  Allora $xy^2z = ab^{p+k}c^p$ con $k > 0$.
+	  Quindi $xy^2z \notin G$.
+
+Utilizzare il fatto che $G$ non è regolare, per dimostrare la non regolarità di $F = \{a^ib^jc^k\ |\ i,j,k \geq 0 \land (i = 1 \implies j = k)\}$.
+**Dimostrazione**:
+	Assumiamo per assurdo che $F$ sia regolare.
+	Osserviamo che $G = F \cap ab^*c^*$ 
+	Allora poiché $F$ e $ab^*c^*$ sono regolari per assunzione, di conseguenza per chiusura degli operatori regolari anche $G$ risulta essere regolare. Ma questo è assurdo.

@@ -449,3 +449,81 @@ Utilizzare il fatto che $G$ non è regolare, per dimostrare la non regolarità d
 	Assumiamo per assurdo che $F$ sia regolare.
 	Osserviamo che $G = F \cap ab^*c^*$ 
 	Allora poiché $F$ e $ab^*c^*$ sono regolari per assunzione, di conseguenza per chiusura degli operatori regolari anche $G$ risulta essere regolare. Ma questo è assurdo.
+# Linguaggi Context-Free
+## Grammatiche Context-Free (CFG)
+$$A \to 0A1\ |\ B$$
+$$B \to \#$$
+Una grammatica context-free viene descritta con **produzioni** o **regole**, che sono sostanzialmente riscritture.
+Per esempio :
+* la prima produzione significa $A$ può riscriversi come  $0A1$ oppure come $B$
+* la seconda produzione significa $B$ può essere riscritta come $\#$
+Notiamo che i caratteri possono essere divisi in:
+* **Non Terminali** (o **variabili**): simboli che possono essere riscritti in un altro modo (indicati con *lettere maiuscole*)($A,B$).
+* **Terminali**: simboli che non possono essere riscritti (indicati con *lettere minuscole*, *numeri* o *simboli*)($0,1,\#$).
+* **Start symbol**: il primo carattere che vedo nella prima produzione ($A$).
+
+Le **stringhe generate** sono stringhe generate di terminali ottenute dallo **start symbol** (*non terminale*) tramite riscritture permesse dalle *produzioni*.
+
+Per esempio io potrei dire: $$A \implies 0A1$$ che deve essere riscritta poiché $A$ non è terminale. Posso ottenere ad esempio:
+$$\implies 00A11$$
+Ho ancora lo stesso problema. Cambio la produzione: $$00B11$$A questo punto devo solo riscrivere $B$ secondo il suo terminale: $$00\#11$$
+Il linguaggio della nostra stringa è: $$L(G) = \{0^n\#1^n\ |\ n \geq 0\}$$
+Tale linguaggio è **non regolare**, ma può essere descritto da una grammatica **context-free**. I linguaggi **context-free** sono più ampi di quelli **regolari**, pertanto *ogni linguaggio regolare potrà essere descritto da una grammatica context free*.
+
+Il processo eseguito per scrivere un *non terminale* come sequenza di *terminali* è detto **derivazione**.
+## Parse Tree
+Un **parse tree** è un albero con lo **start symbol** alla radice, che cresce in base alle **produzioni**:
+![[Pasted image 20241009142205.png]]
+## Definizione di Linguaggio Context-Free
+Un linguaggio $A$ si dice **context-free** $\iff$ esiste una **CFG** $G$ tale che $L(G) = A$.
+## Definizioni chiave nella teoria delle CFG
+### Definizione di CFG
+* Una **CFG** $G$ è una quadrupla $(V,\Sigma,R,S)$ dove:
+	* $V$ è un insieme finito di **non terminali** (o **variabili**).
+	* $\Sigma$ è un insieme finito di **terminali**, tali che $V \cap \Sigma = \emptyset$.
+	* $R$ è un insieme finito di **produzioni** (o **regole**) della forma $A \to w$, dove $A \in V$ e $w \in (V \cup \Sigma)^*$.
+	* $S \in V$ è lo **start symbol**.
+Per esempio nella grammatica di prima:
+$$A \to 0A1\ |\ B$$$$B \to \#$$
+Abbiamo:
+* $V = \{A,B\}$.
+* $\Sigma = \{0,1,\#\}$.
+* $R = \{A \to 0A1,\ A \to B,\ B \to \#\}$.
+* $S = A$.
+Tali grammatiche sono dette **context-free** perché un *non-terminale* si scrive sempre allo stesso modo indipendentemente dal contesto (ovvero i simboli vicino al non-terminale).
+
+* Siano ora $u,v,w \in (V \cup \Sigma)^*$ e sia $A \to w \in R$, diciamo che $uAv \implies uwv$ e lo chiamiamo "**produce**" (la freccia) 
+* Diciamo che $u$ **deriva** $v$ (indicato con $u \implies^*v$) $\iff$ $u = v$ oppure $u \implies w_1 \implies w_2 \implies w_2 \implies ... \implies v$ per qualche $w_1,w_2,...$ 
+## Esempio 1
+Abbiamo che $A \implies^*00\#11$ perché $a \implies 0A1 \implies 00A11 \implies 00B11 \implies 00\#11$
+
+Sia $G$ una **CFG**, definiamo il suo linguaggio come:
+* $L(G)=\{w\in\Sigma^*\ |\ S \implies^* w\}$
+## Esempio 2
+Si assuma $\Sigma = \{0,1\}$, si forniscano **CFG** per i seguenti linguaggi:
+* Stringhe che comprendono almeno tre $1$: $S \to A1A1A1A1\quad A \to 0A\ |\ 1A\ |\ \epsilon$.
+* Stringhe che iniziano e finiscono con lo stesso simbolo: $S \to 0A0\ |\ 1A1\ |\ 0\ |\ 1\quad A \to 0A\ |\ 1A\ |\ \epsilon$.
+* Stringhe di lunghezza dispari: $S \to CP\quad C \to 0\ |\ 1\quad P \to 00P\ |\ 01P\ |\ 10P\ |\ 11P\ |\ \epsilon$.
+* Stringhe palindrome: $S \to 0S0\ |\ 1S1\ |\ 0\ |\ 1\ |\ \epsilon$.
+* Nessuna stringa $S \to S$ oppure $\emptyset$.
+## Dimostrazione di correttezza di una grammatica
+$$A \to 0A1\ |\ B$$$$B \to \#$$
+Abbiamo detto che $L(G) = \{0^n\#1^n\ |\ n \geq 0\}$.
+Dimostriamo che $w \in L(G) \iff w \in 0^n\#1^n$ per qualche $n \geq 0$.
+* $\implies$ Sia $w \in L(G)$, allora $A \implies^*w$. Facciamo *induzione sulla lunghezza della dimensione*. Distinguiamo due casi:
+	* $A \implies0A1\implies^*w$. Allora $w = 0v1$ con $A \implies^*v$.
+	* $A \implies B \implies^*w$. In questo caso $w = \#$, quindi $w$ ha la forma giusta.
+	Per ipotesi induttiva: $v = 0^n\#1^n$ con $n \geq 0$, Ma allora $w = 0^{n+1}\#1^{n+1}$.
+* $\impliedby$ Sia $w = 0^n\#1^n$ con $n \geq 0$, dimostro che $w \in L(G)$. Facciamo *induzione su $n$*:
+	* Se $n = 0: w = \#$ e $A \implies B \implies \#$.
+	* Se $n > 0: w = 0^{m+1}\#1^{m+1}$ con $m \geq 0$. Per ipotesi induttiva $A \implies^*0^m\#1^m$. Ma allora $A \implies 0A1\implies^*00^m\#11^m$.
+## Esempio
+$$S \to aSb\ |\ SS\ |\ \epsilon$$
+Che stringa genera? Genera una stringa che rappresenta l'apertura  la chiusura delle parentesi.
+## Ambiguità
+Una **CFG** $G$ è ambigua $\iff$ esiste $w \in L(G)$ tale che $w$ ha almeno due **parse tree** diversi.
+$$E \to E+E\ |\ E\times E\ |\ a$$
+Tale CFG è ambigua perché $a + a \times a$ è parte del suo linguaggio e può essere derivata con due *parse tree* diversi:
+![[Pasted image 20241009153118.png]]
+
+Perché parse tree diversi non significa derivazioni diverse?

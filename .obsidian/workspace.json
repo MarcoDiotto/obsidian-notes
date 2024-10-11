@@ -8,12 +8,12 @@
         "type": "tabs",
         "children": [
           {
-            "id": "d67223741bfa4f25",
+            "id": "3468476db114317c",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Calcolabilità e Linguaggi Formali.md",
+                "file": "Report Sicurezza/Report Challenge 1.md",
                 "mode": "source",
                 "source": false
               }
@@ -96,7 +96,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Calcolabilità e Linguaggi Formali.md"
+                "file": "Report Sicurezza/Report Challenge 1.md"
               }
             }
           },
@@ -106,7 +106,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Calcolabilità e Linguaggi Formali.md",
+                "file": "Report Sicurezza/Report Challenge 1.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -123,7 +123,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Calcolabilità e Linguaggi Formali.md",
+                "file": "Report Sicurezza/Report Challenge 1.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -146,27 +146,30 @@
       "templates:Insert template": false
     }
   },
-  "active": "5d8ee0621af1eeeb",
+  "active": "3468476db114317c",
   "lastOpenFiles": [
-    "Utilità/Pasted image 20241009153118.png",
-    "Utilità/Pasted image 20241009142205.png",
-    "Pasted image 20241009142404.png",
-    "Pasted image 20241009142408.png",
+    "Analisi dei Dati.md",
+    "Report Sicurezza/Report Challenge 1.md",
+    "Report Sicurezza/Immagini prima challenge/Pasted image 20241011153103.png",
+    "Report Sicurezza/Immagini prima challenge/Pasted image 20241011152025.png",
+    "Report Sicurezza/Immagini prima challenge/Pasted image 20241011151807.png",
+    "Report Sicurezza/Immagini prima challenge/Pasted image 20241011151742.png",
+    "Report Sicurezza/Immagini prima challenge/Pasted image 20241011151602.png",
+    "Report Sicurezza/Immagini prima challenge/Pasted image 20241011145838.png",
+    "Report Sicurezza/Immagini prima challenge/Pasted image 20241011144744.png",
+    "Report Sicurezza/Immagini prima challenge/Pasted image 20241011143543.png",
+    "Report Sicurezza/Immagini prima challenge/Pasted image 20241011143449.png",
+    "Report Sicurezza/Immagini prima challenge",
+    "Report Sicurezza/Pasted image 20241011153103.png",
+    "Pasted image 20241011145727.png.md",
+    "Report Sicurezza",
     "Calcolabilità e Linguaggi Formali.md",
-    "Utilità/Pasted image 20241008143524.png",
-    "Utilità/Pasted image 20241008143518.png",
-    "Utilità/Pasted image 20241008143237.png",
-    "Pasted image 20241008142141.png",
-    "Utilità/Pasted image 20241002151809.png",
-    "Utilità/Pasted image 20241002143951.png",
-    "Utilità/Pasted image 20241002143639.png",
     "Utilità/AD2324-unita1-base.pdf",
     "Tecnologie e Applicazioni Web.md",
     "Relazione progetto e-commerce DB.md",
     "Algoritmi e Strutture di Dati.md",
     "Programmazione ad Oggetti Mod. 2.md",
     "Basi di  dati Mod. 2.md",
-    "Analisi dei Dati.md",
     "2024-03-16.md",
     "Sistemi Operativi Mod. 2.md",
     "el.md",
@@ -183,7 +186,6 @@
     "Programmazione ad oggetti mod 2",
     "Tecnologie e Applicazioni Web",
     "Algoritmi e strutture dati mod 2",
-    "ALGORITMI E STRUTTURE DATI.md",
-    "BD mod 2"
+    "ALGORITMI E STRUTTURE DATI.md"
   ]
 }

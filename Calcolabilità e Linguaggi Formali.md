@@ -521,9 +521,119 @@ Dimostriamo che $w \in L(G) \iff w \in 0^n\#1^n$ per qualche $n \geq 0$.
 $$S \to aSb\ |\ SS\ |\ \epsilon$$
 Che stringa genera? Genera una stringa che rappresenta l'apertura  la chiusura delle parentesi.
 ## Ambiguità
-Una **CFG** $G$ è ambigua $\iff$ esiste $w \in L(G)$ tale che $w$ ha almeno due **parse tree** diversi.
+Una **CFG** $G$ è ambigua $\iff$ esiste $w \in L(G)$ tale che $w$ ha almeno due **parse tree** diversi (ma non **derivazioni** diverse).
 $$E \to E+E\ |\ E\times E\ |\ a$$
 Tale CFG è ambigua perché $a + a \times a$ è parte del suo linguaggio e può essere derivata con due *parse tree* diversi:
 ![[Pasted image 20241009153118.png]]
 
-Perché parse tree diversi non significa derivazioni diverse?
+Perché parse-tree diversi non significa derivazioni diverse?
+	Immaginiamo di avere una grammatica del tipo: $$S \to AB$$$$A \to a$$$$B \to b$$ Non è ambigua, poiché genera solamente il **parse-tree**:
+	![[Pasted image 20241015140631.png]]
+	Tuttavia genera due possibili derivazioni: $$S \implies AB \implies aB \implies ab$$$$S \implies AB \implies Ab \implies ab$$
+Per ovviare a tale problema usiamo sempre le **derivazioni a sinistra**, cioè utilizziamo la derivazione che riscrive sempre in non-terminale più a sinistra. Facciamo così solamente per convenzione, avremmo potuto prendere anche le derivazioni a destra.
+## Forma normale di Chomsky
+Una **CFG** è in forma normale di Chomsky $\iff$ ognuna delle sue **produzioni** è in uno dei seguenti formati:
+* $A \to BC$ dove $B,C$ non sono lo **start symbol**.
+* $A \to a$
+* $S \to \epsilon$ dove $S$ è lo **start symbol**.
+Essa è particolarmente importante, poiché qualsiasi **CFG** può essere convertita in forma normale di Chomsky.
+## Esempio
+$$S \to AB\ |\ \epsilon$$$$A \to 0$$$$B \to CD$$$$C \to 1$$
+$$D \to 1$$
+Questa è una **CFG** in forma normale di Chomsky.
+## Teorema
+Per ogni **CFG** $G$ esiste una **CFG** $H$ in forma normale di Chomsky, tale che $L(H) = L(G)$.
+## Dimostrazione
+Definiamo un algoritmo che converte $G$ in una **CFG** equivalente, che soddisfi la forma normale di Chomsky.
+Di seguito riportiamo l'algoritmo:
+* Generiamo un nuovo **start symbol** $S'$ ed aggiungiamo la **produzione** $S' \to S$. Tale trasformazione preserva il linguaggio ed assicura per costruzione che lo start symbol non occorra a destra di una produzione.
+* Eliminiamo le produzioni della forma $A \to \epsilon$, dove $A$ non è lo **start symbol**. Per tutte le regole della forma $R \to uAv$ introduco una nuova regola $R \to uv$. Ciò deve essere fatto per tutte le occorrenze di $A$. Per esempio, data una regola del tipo $R \to uAvAw$, sarà necessario introdurre nuove regole: $R \to uvAw,\ R\to uAvw,\ R \to uavw$. 
+* Eliminiamo le produzioni "unitarie" della forma $A \to B$. Per tutte le regole della forma $B \to u$, introduco una nuova regola $A \to u$.
+* Rimpiazziamo ogni regola della forma $A \to u_1,u_2,..,u_k$ con $k \geq 3$ e la sostituiamo con nuove regole del tipo $A \to u_1,A_1,\ A_1 \to u_2A_2,..,\ A_{k-2} \to u_{k-1}u_k$. Nel nostro caso $u$ può essere sia un **terminale**, sia un **non-terminale**. Pertanto andiamo a rimpiazzare ogni terminale $u_i$ con un nuovo **non-terminale** $U_i$ e aggiungiamo la regola $U_i \to u_i$.
+
+*Note*:
+* L'**ordine** in cui effettuiamo tali step è importante e ci garantisce la non-invalidazione di step precedenti.
+* Negli step $2,3$ è necessario tenere traccia di cosa è già stato eliminato, altrimenti potrebbero essere re-inseriti e dare vita a loop.
+## Esempio
+$$S \to ASA\ |\ aB$$$$A \to B\ |\ S$$$$B \to b\ |\ \epsilon$$
+Utilizziamo l'algoritmo per portare la grammatica in forma normale di Chomsky:
+$$S_0 \to S$$$$S \to ASA\ |\ aB\ |\ a$$$$A \to B\ |\ S\ |\ \epsilon$$$$B \to b$$Rimuovendo anche la $\epsilon$ a destra di $A$ otteniamo:
+$$S_0 \to S$$$$S \to ASA\ |\ aB\ |\ a\ |\ AS\ |\ SA\ |\ S$$$$A \to B\ |\ S$$$$B \to b$$Dobbiamo ora rimuovere le produzioni unitarie ($S \to S$ e $S_0 \to S$):
+$$S_0 \to ASA\ |\ aB\ |\ a\ |\ AS\ |\ SA$$$$S \to ASA\ |\ aB\ |\ a\ |\ AS\ |\ SA$$$$A \to B\ |\ S$$$$B \to b$$
+Ora togliamo $A \to B$ e $A \to S$:
+$$S_0 \to ASA\ |\ aB\ |\ a\ |\ AS\ |\ SA$$$$S \to ASA\ |\ aB\ |\ a\ |\ AS\ |\ SA$$$$A \to b\ |\ ASA\ |\ aB\ |\ a\ |\ AS\ |\ SA$$$$B \to b$$
+Dobbiamo ora modificare tutte le produzioni che contengono $ASA$:
+$$S_0 \to AA_1\ |\ aB\ |\ a\ |\ AS\ |\ SA$$$$S \to AA_1\ |\ aB\ |\ a\ |\ AS\ |\ SA$$$$A \to b\ |\ AA_1\ |\ aB\ |\ a\ |\ AS\ |\ SA$$$$B \to b$$
+$$A_1 \to SA$$
+Ora modifichiamo le produzioni che contengono $aB$:
+$$S_0 \to AA_1\ |\ UB\ |\ a\ |\ AS\ |\ SA$$$$S \to AA_1\ |\ UB\ |\ a\ |\ AS\ |\ SA$$$$A \to b\ |\ AA_1\ |\ UB\ |\ a\ |\ AS\ |\ SA$$$$B \to b$$
+$$A_1 \to SA$$
+$$U \to a$$
+# Automi a Pila (Pushdown Automata, PDA)
+Un **automa a pila** è sostanzialmente un **NFA** a cui viene aggiunto uno **stack**:
+* Legge l'input sequenzialmente come un **NFA**.
+* Ha uno stato interno che può cambiare.
+* Ha a disposizione uno **stack infinito** su cui *leggere* e *scrivere*.
+
+Un **NFA**(anche un **DFA**) ha una quantità di memoria proporzionale ai suoi dati, in questo caso abbiamo memoria infinita.
+
+Lo **stack** è una struttura dati **LIFO** con operazioni di *push* e *pop*.
+## Esempio
+Creiamo un **PDA** per $\{0^n1^n\ |\ n \geq 0\}$:
+* Leggi i simboli di input.
+* Ogni volta che leggi uno $0$ fai *push* di $0$ sullo **stack**.
+* Quando arriva un $1$ passa in un nuovo stato e fai *pop* di uno $0$ dallo **stack**.
+* Finché arrivano $1$ continua a fare pop.
+* Se hai finito l'*input* e lo **stack** è vuoto **accetta**.
+* Se hai finito l'*input* e lo **stack** non è vuoto: **rifiuta**.
+* Se arriva uno $0$ dopo un $1$: **rifiuta**.
+* Se ho ancora **input** di tipo $1$ ma lo **stack** è vuoto: **rifiuta**.
+
+*Nota*: perché **PDA** = **NFA** + **stack** e non **DFA** + **stack**? Si può dimostrare che **PDA** non deterministici e **PDA** deterministici non  sono equivalenti. 
+Dimostreremo che **PDA** non deterministici e **CFG** sono equivalenti.
+$$DFA = NFA$$$$CFG = PDA \neq DPDA\ (PDA\ \text{ deterministici})$$
+## Definizione di PDA
+Un **PDA** è una sestupla $\{Q,\Sigma,\Gamma,\delta,q_0,F\}$ dove:
+* $Q$ è un insieme finito di **stati**.
+* $\Sigma$ è un insieme finito di **input**, detto **alfabeto**.
+* $\Gamma$ è un insieme finito di simboli che **posso scrivere sullo stack**, detto **alfabeto dello stack**.
+* $\delta: Q \times \Sigma_\epsilon \times \Gamma_\epsilon \to \mathbb{P}(Q \times \Gamma_\epsilon)$ , dove $\Sigma_\epsilon = \Sigma \cup \{\epsilon\}$ e $\Gamma_\epsilon = \Gamma \cup \{\epsilon\}$ è la **funzione di transizione**.
+* $q_0 \in Q$ è lo **stato iniziale**. 
+* $F \subseteq Q$ è l'**insieme degli stati accettanti**.
+## Come computa un PDA
+Sia $M = (Q,\Sigma,\Gamma,\delta,q_0,F)$ un **PDA**. Diciamo che $M$ **accetta** la stringa $w$ $\iff$:
+* $w = w_1w_2,...,w_n$, dove $\forall i \in [1,m]: w_i \in \Sigma_\epsilon$.
+* Esistono una sequenza di stati $r_0,r_1,...,r_m \in Q$ e una sequenza di stack $s_0,s_1,...,s_m \in \Gamma^*$ tale che valgano le seguenti condizioni:
+	* $r_0 = q_0$ e $s_0 = \epsilon$.
+	* Per $i = 0,...,m-1$ abbiamo $(r_{i+1},b) \in \delta(r_i,w_{i+1},a)$ dove $s_i = at$ e $s_{i+1} = bt$ per qualche $a,b \in \Gamma_\epsilon$ e $t \in \Gamma^*$.
+	* $r_m \in F$  ($\to$ non è richiesto che lo stack si svuoti per accettare).
+
+*Note sul punto $2.2$*:
+	Identifichiamo 4 possibilità:
+	* $a \neq \epsilon,\ b \neq \epsilon \to$ si tratta di una *pop* seguita da una *push*.
+	* $a = \epsilon,\ b \neq \epsilon \to$ si tratta di una semplice *push*.
+	* $a \neq \epsilon,\ b = \epsilon \to$ si tratta di una *pop*.
+	* $a = \epsilon,\ b = \epsilon \to$ non modifica lo *stack*.
+
+Il linguaggio riconosciuto da un **PDA** resta composto dalle stringhe che vengono accettate dallo stesso.
+## Notazione Grafica per PDA
+![[Pasted image 20241016143138.png]]
+L'automa passa da $q_i$ a $q_j$ leggendo un input $w$ quando $a$ è in cima allo **stack**. $b$ è la cima dello **stack** (Un altro esempio può essere $\epsilon \to b$, ovvero un **push** di $b$).
+## Accettazione per stack vuoto
+Molti **PDA** vogliono accettare solamente quando lo stack si è svuotato. Questo non è richiesto dalla definizione formale. 
+Un esempio è in **PDA** per: $$\{0^n1^n\ |\ n \geq 0\}$$
+Come testiamo se lo stack è vuoto?
+* Non appena inizia la computazione facciamo *push* di un **simbolo convenzionale** (per esempio $)
+* Quando rivedo  $ sono sicuro che lo **stack** si sia svuotato.
+## Esempio 1
+Troviamo un **PDA** per $\{0^n1^n\ |\ n \geq 0\}$:
+![[Pasted image 20241016144858.png]]
+## Esempio 2
+Troviamo un **PDA** per $\{a^ib^jc^k\ |\ i,j,k \geq 0 \land (i = j \lor i = k)\}$
+![[Pasted image 20241016151115.png]]
+
+Di seguito viene riportata l'implementazione modificata, che accetta **casi-limite**, come ad esempio $bb$:
+![[Pasted image 20241016152236.png]]
+## Esempio 3
+Troviamo un **PDA** per $\{ww^R\ |\ w \in \{0,1\}^*\}$, dove $w^R$ è letta da destra a sinistra. Per esempio $\color{green}100\color{red}001$ sta in questo linguaggio:
+![[Pasted image 20241016153117.png]]

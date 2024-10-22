@@ -637,3 +637,80 @@ Di seguito viene riportata l'implementazione modificata, che accetta **casi-limi
 ## Esempio 3
 Troviamo un **PDA** per $\{ww^R\ |\ w \in \{0,1\}^*\}$, dove $w^R$ è letta da destra a sinistra. Per esempio $\color{green}100\color{red}001$ sta in questo linguaggio:
 ![[Pasted image 20241016153117.png]]
+## Teorema
+Un linguaggio $A$ è **context-free** $\iff$ esiste un **PDA**  $P$ tale che $L(P) = A$.
+## Corollario
+Qualsiasi linguaggio **regolare** è anche **context-free**.  ($\to$ cioè i linguaggi regolari formano un sottoinsieme dei linguaggi context-free)
+## Dimostrazione
+Sia $A$ un **linguaggio regolare**, allora esiste un **NFA** $N$ tale che $L(N) = A$.
+Un **NFA** è un **PDA** che non tocca lo **stack**, quindi $N$ è anche un **PDA**. Concludo pertanto che $A$ è **context-free**.
+## Dimostrazione del teorema $\implies$
+Se $A$ è un **linguaggio context-free** allora esiste un **PDA** tale che $L(P) = A$.
+
+*Idea*: dato che $A$ è context-free, esiste una **CFG** $G$ tale che $L(G) = A$. Converto quindi $G$ in un **PDA** equivalente.
+
+**CFG di esempio**:
+$$S \to AB$$ $$A \to a$$
+$$B \to b\ |\ bB$$
+$$C \to c$$
+
+Verifichiamo per $w = abb$. La derivazione è la seguente: $$S \implies AB \implies aB \implies abB \implies abb$$
+
+Simuliamo tale derivazione con un **PDA**:
+
+![[Pasted image 20241022142037.png]]
+Questa tecnica viene chiamata **parsing top-down**, ed è equivalente alla definizione di un **parsing tree**. ($\to$ è una tecnica poco usata perché computazionalmente inefficiente, tuttavia noi la useremo nella dimostrazione)
+Passiamo alla **dimostrazione** vera e propria:
+
+Sia $A$ un linguaggio **context-free**, allora esiste una **CFG** $G$ tale che $L(G) = A$. Costruiamo il seguente **PDA** a partire da $G$ (definizione a parole):
+* Metti sullo **stack** $ e poi lo **start symbol** $S$.
+* Ripeti i seguenti passi fino a terminazione:
+	* Se sulla cima dello **stack** c'è un **non-terminale** $A$, scegli non deterministicamente una produzione $A \to u_1,...,u_k$ è fai **push** di $u_k,...,u_1$ dopo aver fatto **pop** di $A$.
+	* Se sulla cima dello **stack** c'è un **terminale** $a$, confrontalo con il prossimo **carattere di input**. Se sono uguali fai **pop**, altrimenti **rifiuta** (lungo questo ramo del non-determinismo).
+	* Se sulla cima dello **stack** c'è $ passa nello **stato di accettazione**. Ciò comporta **accettazione** se tutto l'input è stato consumato.
+## Descrizione Grafica del PDA
+![[Pasted image 20241022143803.png]]
+## Esempio di conversione
+Convertiamo la seguente **CFG** in un **PDA**:
+$$S \to aTb\ |\ \epsilon$$
+$$T \to Ta\ |\ \epsilon$$
+
+![[Pasted image 20241022144611.png]]
+## Dimostrazione del Teorema $\impliedby$
+Sia $A$ un linguaggio tale per cui esiste un **PDA** $P$ tale che $L(P) = A$, allora $A$ è **context-free**.
+
+*Idea*: Convertiamo $P$ in una **CFG** $G$ tale che $L(P) = L(G)$:
+* Rendiamo $P$ *più disciplinato*, senza cambiare il suo linguaggio. Imponiamo in particolare tre requisiti (che non comportano **perdita di generalità**):
+	* $P$ ha un solo stato accettante $q_{accept}$. ($\to$ faccio una $\epsilon$-transazione da tutti i vecchi stati accettanti a $q_{accept}$).
+	* $P$ accetta solo quando lo **stack** è **vuoto** ($\to$ nel passaggio fra i vecchi stati accettanti a quello nuovo svuoto lo **stack**).
+	* Ogni mossa di $P$ è una **push** oppure è una **pop** (al posto di nessuna delle due e di tutte e due assieme, comporta l'inserimento di stati intermedi).
+	Visto che operiamo senza perdita di generalità, convertiamo solo $PDA$ che soddisfano tali vincoli.
+* Definiamo una nuova  **CFG** che contiene un **non-terminale** $A_{pq}$ per ogni coppia di stati $p,q$ del **PDA**. La **CFG** conterrà delle produzioni opportune che avranno l'obbiettivo di simulare le transazioni del **PDA**.
+  Tale **CFG** mi assicura che $A_{pq}$ deriva una stringa $x$ $\iff$ il **PDA** passa da $p$ con **stack vuoto** a $q$ con **stack vuoto** leggendo $x$.
+  * Definiamo come **start symbol** della **CFG** il non terminale $A_{q_0q_{accept}}$ dove $q_0$ è lo **stato iniziale** del **PDA** e $q_{accept}$ è il suo **stato accettante**. 
+
+Sviluppiamo il secondo passo definendo la **CFG** e dimostrando la proprietà desiderata.
+
+La **CFG** ha un non terminale $A_{pq}$ per ogni coppia di stati $p,q$ del **PDA**. Le produzioni hanno tre formati possibili:
+* $A_{pp} \to \epsilon$ per ogni stato $p$ del **PDA**.
+* $A_{pq} \to A_{pr}A_{rq}$ per ogni tripla di stati $a,p,r$ del **PDA**.
+* Se $(r,u) \in \delta(p,a,\epsilon)$ e $(q,\epsilon) \in \delta(s,b,u)$, allora $A_{pq} \to aA_{rs}b$ fa parte della **CFG**.
+
+Ampliamo l'ultimo punto:
+* $p$ è lo stato di partenza.
+* $q$ è lo stato di arrivo.
+* $a$ è il primo simbolo letto.
+* $b$ è l'ultimo simbolo letto.
+* $r$ è il secondo stato.
+* $s$ è il penultimo stato.
+* $u$ è il primo simbolo che metto sullo stack e anche l'ultimo che tolgo (corrisponde sostanzialmente al $).
+
+Si può dimostrare che $A_{pq} \implies^* x \iff$ $p$ con **stack vuoto** arriva in $q$ con **stack vuoto** leggendo $x$.
+
+Dimostriamo che se $A_{pq} \implies^* x$ allora $p$ con **stack vuoto** arriva in $q$ con **stack vuoto** leggendo $x$.
+Per induzione sulla lunghezza della derivazione $A_{pq} \implies^* x$
+* **Caso base**: derivazione di lunghezza $1$. L'unica produzione possibile che genera una stringa è $A_{pp} \to \epsilon$, cioè $A_{pp} \implies \epsilon$. Concludo banalmente perché $p$ con **stack vuoto** può rimanere fermo su $p$ con **stack vuoto** senza leggere caratteri.
+* **Caso induttivo**: derivazioni con lunghezza $> 1$. Allora la derivazione sarà fatta così: $A_{pq} \implies \square \implies^* x$.
+  Il carattere $\square$ dipende dalla regola della **CFG** che ho applicato:
+  * $A_{pq} \implies A_{pr}A_{rq} \implies^* x$, in questo caso $x = yz$, dove $A_{pr} \implies^* y$ e $A_{rq} \implies^* z$. Tali derivazioni sono più corte di quelle di partenza, e quindi posso applicare l'ipotesi induttiva. L'ipotesi induttiva dice che $p$ con **stack vuoto** passa a $r$ con **stack vuoto** leggendo $y$ e che $r$ con **stack vuoto** passa a $q$ con **stack vuoto** leggendo $z$. Quindi $p$ con **stack vuoto** passa a $q$ con **stack vuoto** leggendo $yz = x$.
+  * $A_{pq} \implies aA_{rs}b \implies^* x$

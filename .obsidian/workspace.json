@@ -4,17 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "0d651f3d1eb88bc2",
+        "id": "7d4d62945772a511",
         "type": "tabs",
         "children": [
           {
-            "id": "f9f9c9ee286b1ace",
+            "id": "d2a810ff4045563d",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "Calcolabilità e Linguaggi Formali.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "Calcolabilità e Linguaggi Formali"
             }
           }
         ]
@@ -154,9 +158,11 @@
       "templates:Insert template": false
     }
   },
-  "active": "f9f9c9ee286b1ace",
+  "active": "d2a810ff4045563d",
   "lastOpenFiles": [
+    "Utilità/Pasted image 20241023151831.png",
     "Calcolabilità e Linguaggi Formali.md",
+    "Utilità/Pasted image 20241023142122.png",
     "Untitled.md",
     "Utilità/Pasted image 20241022144611.png",
     "Utilità/Pasted image 20241022143803.png",
@@ -169,7 +175,6 @@
     "Utilità/Pasted image 20241015140631.png",
     "Report Sicurezza/Report Challenge 1.md",
     "Analisi dei Dati.md",
-    "Report Sicurezza/Immagini prima challenge/Pasted image 20241011153103.png",
     "Report Sicurezza/Immagini prima challenge",
     "Pasted image 20241011145727.png.md",
     "Report Sicurezza",

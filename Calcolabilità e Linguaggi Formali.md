@@ -714,3 +714,56 @@ Per induzione sulla lunghezza della derivazione $A_{pq} \implies^* x$
   Il carattere $\square$ dipende dalla regola della **CFG** che ho applicato:
   * $A_{pq} \implies A_{pr}A_{rq} \implies^* x$, in questo caso $x = yz$, dove $A_{pr} \implies^* y$ e $A_{rq} \implies^* z$. Tali derivazioni sono più corte di quelle di partenza, e quindi posso applicare l'ipotesi induttiva. L'ipotesi induttiva dice che $p$ con **stack vuoto** passa a $r$ con **stack vuoto** leggendo $y$ e che $r$ con **stack vuoto** passa a $q$ con **stack vuoto** leggendo $z$. Quindi $p$ con **stack vuoto** passa a $q$ con **stack vuoto** leggendo $yz = x$.
   * $A_{pq} \implies aA_{rs}b \implies^* x$
+  * ...
+# Linguaggi non Context-Free
+Dimostrare che un linguaggio non è **context-free** è difficile in generale, perché dobbiamo dimostrare che esso non è generabile da alcuna **CFG** (oppure non riconoscibile da alcun**PDA**).
+## Pumping Lemma per linguaggi Context-Free
+Se $A$ è un linguaggio **context-free**, allora esiste un intero $p \geq 1$ (**pumping length**) tale che ogni stringa $w \in A$ con $|w| \geq p$ può essere divisa in cinque parti $w = uvxyz$ tali che:
+* $\forall i \geq 0: uv^ixy^iz \in A$.
+* $|xy| > 0$ ($\to$ se non fosse così sarebbe banalmente sempre vero).
+* $|vxy| \leq p$.
+## Idea della dimostrazione
+Scegliamo una $p$ "molto grande", le stringhe con lunghezza $\geq p$ sono "molto lunghe". Essendo molto lunghe, tali stringhe avranno un **parse tree** "molto alto". Visto che i **non-terminali** sono in numero finito, in tale parse tree "molto alto" ci deve essere un non-terminale $R$ che si ripete.
+
+**Parse-tree**:
+![[Pasted image 20241023142122.png]]
+
+* Se prendo il più piccolo dei due parse tree radicati in $R$ e lo metto al posto del più grande, ottengo un parse tree per $uxz$ (**pumping down**).
+* Se prendo il più grande dei due parse tree radicati in $R$ e lo metto al posto del più piccolo, ottengo un parse tree per $uv^2xy^2z$ (**pumping up**).
+## Dimostrazione
+Se $A$ è **context-free**  esiste una **CFG** $G$, tale che $L(G) = A$. Definiamo $b$ come il numero massimo di simboli che occorrono a destra di una produzione di $G$. Assumiamo $b \geq 2$ (se $b < 2$ la dimostrazione è banale).
+Sia $V$ l'insieme dei **non-terminali** di $G$.
+Definiamo $p = b^{|V| + 1}$
+Osserviamo che $b^{|V| + 1} \geq b^{|V|} + 1$ quando $b \geq 2$.
+
+Consideriamo una stringa $w \in A$ con $|w| \geq p$. Ciò implica che $|w| \geq b^{|V|} + 1$. Ragioniamo sull'altezza dei **parse tree** di $w$:
+* Parse tree di altezza $1$ $\implies$ stringa di lunghezza massima $b$
+* Parse tree di altezza $2$ $\implies$ stringa  di lunghezza massima $b^2$
+In generale parse tree di altezza $h$ genera stringhe di lunghezza massima $b^h$.
+
+I parse tree di $w$ hanno altezza almeno $|V| + 1$.
+Fra tutti i parse tree di $w$ prendiamo quello col numero minimo di nodi.
+Prendiamo il *cammino* più lungo di tale **parse tree**, ovvero la sua *altezza*, Tale cammino deve contenere almeno $|V| + 1$ **non-terminali**. Ciò implica che lungo tale cammino, c'è almeno un non-terminale $R$ che si ripete. Ci concentriamo su un non-terminale che si ripete fra i $|V| + 1$ non-terminali in basso al cammino.
+
+Per la dimostrazione della prima condizione basta guardare il disegno.
+## Dimostrazione seconda condizione ($|vy| > 0$)
+Assumiamo per assurdo che $|xy| = 0$, cioè $|v| = |y| = 0$.
+Pertanto $uvxyz = uxz$. Ma allora se sostituisco il più piccolo albero radicato in $R$ al posto di quello più grande, ottengo un **parse tree** per $uxz$ che ha meno nodi del parse tree di partenza. Ciò è assurdo perché il parse tree di partenza è minimo.
+## Dimostrazione terza condizione ($|vxy| \leq p$)
+Abbiamo preso un **non-terminale** $R$ che occorre sul cammino più lungo dell'albero e si ripete fra i $|V| + 1$ non-terminali più in basso. Di conseguenza l'altezza del sotto-albero più grande radicato in $R$ è $|V| + 1$. Tale sotto-albero, che genera la stringa $vxy$, genera stringhe di lunghezza massima $b^{|V| + 1} = p$.
+## Esempio 1
+Dimostriamo che $B = \{a^nb^nc^n\ |\ n \geq 0\}$ non è context-free.
+Assumo per assurdo che $B$ sia **context-free**, allora deve valere il pumping lemma. Sia $p$ la sua **pumping length**.
+
+Consideriamo la stringa $s = a^pb^pc^p$. Abbiamo che $s \in B$ e $s \geq p$. Assumiamo che $s = uvxyz$, con $|vy| > 0$ e $|vxz| \leq p$. Ragioniamo per casi:
+* $v$ contiene più di un tipo di carattere, oppure $y$ contiene più di un tipo di carattere. In tal caso $uv^2xy^2z \notin B$ perché non rispetta l'ordine dei caratteri.
+  ![[Pasted image 20241023151831.png]]
+* $v$ ed $y$ contengono al più un tipo di carattere. Per esempio $v$ contiene delle $a$ e $y$ contiene delle $b$. In generale c'è almeno un tipo di carattere che non occorre né in $v$ né in $y$. Di conseguenza $uv^2y^2z \notin B$ perché tale carattere sarà sotto-rappresentato.
+## Esempio 2
+Dimostriamo che $D = \{ww\ |\ w \in \{0,1\}^*\}$ non è context-free.
+Assumo per assurdo che $D$ sia context-free, allora vale il pumping lemma. Sia $p$ la sua pumping length.
+
+Consideriamo $s = 0^p10^p1$. Purtroppo questa stringa è *pompabile*
+
+Consideriamo la stringa $s =0^p1^p0^p1^p$.
+Osserviamo che se $s = uvxyz$, allora $vyz$ deve stare a cavallo fra le due metà della stringa. Infatti se cade nella prima o nella seconda metà esco dal linguaggio con un **pumping up**. Se $vyz$ sta a cavallo delle due metà, allora $uv^2xy^2y = 0^p1^io^j1^p$, dove $i \ne p \lor j \ne p$. Questa stringa non sta nel linguaggio $D$ perché la prima metà è diversa dalla seconda.

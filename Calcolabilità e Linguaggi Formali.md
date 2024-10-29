@@ -767,3 +767,70 @@ Consideriamo $s = 0^p10^p1$. Purtroppo questa stringa è *pompabile*
 
 Consideriamo la stringa $s =0^p1^p0^p1^p$.
 Osserviamo che se $s = uvxyz$, allora $vyz$ deve stare a cavallo fra le due metà della stringa. Infatti se cade nella prima o nella seconda metà esco dal linguaggio con un **pumping up**. Se $vyz$ sta a cavallo delle due metà, allora $uv^2xy^2y = 0^p1^io^j1^p$, dove $i \ne p \lor j \ne p$. Questa stringa non sta nel linguaggio $D$ perché la prima metà è diversa dalla seconda.
+## Esercizio 1
+Dimostrare che la classe dei linguaggi context free è chiusa rispetto ad unione, concatenazione e star.
+
+Dimostriamo la chiusura rispetto all'unione, cioè se $A$ e $B$ sono CFL (context-free language), allora $A \cup B$ è un CFL.
+Dato che $A$ e $B$ sono CFL, esistono delle CFG $G = (V_1,\Sigma_1, R_1, S_1)$ e $H = (V_2,\Sigma_2,R_1,S_2)$, tali che $L(G) = A$ e $L(H) = B$. Costruiamo una nuova CFG $I = (V_3,\Sigma_3,R_3,S_3)$ tali che $L(I) = A \cup B$:
+* $V_3 = V_1 \cup V_2 \cup \{S_3\}$
+* $\Sigma_3 = \Sigma_1 \cup \Sigma_2$
+* $R_3 = R_1 \cup R_2 \cup \{S_3 \to S_1, S_3 \to S_2\}$
+* $S_3 =$ nuovo **start symbol** che non occorre il $V_1 \cup V_2$.
+*Nota*: questa soluzione è corretta solo per $V_1 \cap V_2 = \emptyset$. Posso tuttavia assumerlo senza perdita di generalità.
+## Esercizio 2
+* Usare i linguaggi $A = \{a^mb^nc^n\ |\ m,n \geq 0\}$ e $B = \{a^mb^mc^n\ |\ m,n \geq 0\}$ per dimostrare che la classe dei CFL non è chiusa rispetto a $\cap$.
+* Usare tale risultato per dimostrare che non è chiusa rispetto al complemento.
+
+Osserviamo che sia $A$ che $B$ sono CFL.
+Assumiamo per assurdo che la classe dei CFL sia chiusa rispetto a $\cap$, quindi $A \cap B$ è CFL.
+$$A \cup B = \{a^nb^nc^n\ |\ n \geq 0\}$$ che abbiamo dimostrato essere non CFL perché non rispetta il pumping lemma.
+
+Dimostriamo ora il secondo punto. Assumiamo per assurdo che valga la chiusura rispetto al complemento. Consideriamo due CFL $C$ e $D$. Osserviamo che:
+* $\overline{C}$ e $\overline{D}$ sono CLF per chiusura rispetto al complemento.
+* $\overline{C} \cup \overline{D}$ è CFL per chiusura rispetto ad unione.
+* $\overline{\overline{C} \cup \overline{D}}$  è CFL per chiusura rispetto al complemento.
+* $\overline{\overline{C} \cup \overline{D}} = \overline{\overline{C}} \cap \overline{\overline{D}} = C \cap D$ che è assurdo.
+## Esercizio 3
+Costruire un PDA per il linguaggio $\{a^ib^jc^k\ |\ i,j,k \geq 0 \land i+j \leq k\}$. Costruire poi una CFG per tale linguaggio.
+$
+**PDA**:
+![[Pasted image 20241029144303.png]]
+
+**Idea per CFG**: generiamo stringhe della forma $a^ib^jc^k$ con $k = i+j$ e aggiungiamo un numero arbitrario di $C$ in coda:
+$$S \to AC$$$$C \to cC\ |\ \epsilon$$$$A \to aAc\ |\ B$$$$B \to bBc\ |\ \epsilon$$
+## Esercizio 4
+Costruire una CFG per l'insieme delle stringhe su $\Sigma = \{a,b\}$ con $|a| \geq |b|$. Si noti che questo linguaggio è diverso da $\{a^nb^m\ |\ n > m\}$ poiché le $a$ non devono necessariamente stare prima delle $b$.
+
+**Idea per CFG**: costruiamo una CFG con due non-terminali $S$ e $T$. $T$ genera stringhe qualsiasi con un numero di $a$ maggiore uguale rispetto alle $b$. $S$ assicura di avere almeno una $a$ più delle $b$.
+$$T \to aTb\ |\ bTa\ |\ a\ |\ \epsilon\ |\ TT$$$$S \to TaT$$
+**Challenge 1**: dimostrare la correttezza.
+**Challenge 2**: fare un PDA
+## Esercizio 5
+Sia $C$ un CFL e sia $R$ regolare. Dimostrare che $C \cap R$ è CFL.
+
+Dato che $C$ è un CFL, allora esiste un PDA $P$ tale che $L(P) = C$.
+Dato che $R$ è regolare, esiste un NFA $N$ tale che $L(N) = R$.
+
+Costruisco un nuovo PDA $P'$ tale che $L(P') = C \cap R$.
+
+**Idea**: $P'$ simula $P$ e $N$ in parallelo ed accetta se entrambi accettano.
+
+**Dettagli**:
+* Sia $P = (Q,\Sigma,\Gamma,\delta,q_0,F)$
+* Sia $N = (Q',\Sigma,\delta',q_0',F')$.
+* Sia $P' = (Q^",\Sigma,\Gamma,\delta^",q_0^",F^")$ dove:
+	* $Q^" = Q \times Q'$
+	* $\delta^" : Q^" \times \Sigma \times \Gamma \to \mathbb{P}(Q^" \times \Gamma) \implies \delta^"((q,q'),a,s) = \{(\hat{q},\hat{q}'\ |\ t)\ |\ (\hat{q},t) \in \delta(q,a,s) \land \hat{q}' \in \delta'(q',a)\}$
+	* $q_0^" = (q_0,q')$
+	* $F^" = F \times F'$
+## Esercizio 6
+Dimostrare che $C = \{0^n1^n0^n1^n\ |\ n \geq 0\}$ non è CFL.
+
+Assumiamo per assurdo che $C$ sia CFL, allora deve valere il pumping lemma.
+Sia $p$ la pumping length di $C$ e consideriamo la stringa $s = 0^p1^p0^p1^p$.
+Sia $s = uvxyz$ con $|vy| > 0$ e $|vxy| \leq p$. Dimostriamo che $s$ non può essere pompata arrivando ad un assurdo.
+
+* **Caso 1**: $v$ oppure $y$ contengono sia $0$ che $1$. In questo caso $uv^2xy^2z \notin C$ perché contiene dei simboli in ordine sbagliato.
+* **Caso 2**: sia $v$ che $y$ contengono un solo tipo di simbolo. Sfruttiamo $|vxy| \leq p$:
+	* **Caso 2.1**: $vxy$ tocca un solo blocco, per esempio il primo. Allora $uv^2xy^2z = 0^{p+k}1^p0^p1^p$ con $k > 0$ che non sta in $C$.
+	* **Caso 2.2**: $vxy$ sta a cavallo fra due blocchi, per esempio i primi 2. Allora $uv^2xy^2z = 0^{p+k}1^{p + j}0^p1^p$ con $k > 0$ e $j > 0$ che non sta in $C$.

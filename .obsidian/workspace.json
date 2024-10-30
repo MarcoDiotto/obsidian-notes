@@ -11,10 +11,14 @@
             "id": "b1a0d009794d703f",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "Calcolabilità e Linguaggi Formali.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "Calcolabilità e Linguaggi Formali"
             }
           }
         ]
@@ -154,27 +158,28 @@
       "templates:Insert template": false
     }
   },
-  "active": "b1a0d009794d703f",
+  "active": "5d8ee0621af1eeeb",
   "lastOpenFiles": [
+    "Utilità/Pasted image 20241030152133.png",
+    "Tecnologie e Applicazioni Web.md",
+    "Utilità/Pasted image 20241030142219.png",
     "Calcolabilità e Linguaggi Formali.md",
+    "Utilità/Pasted image 20241030144109.png",
+    "Pasted image 20241030143859.png",
+    "Utilità/Pasted image 20241030142159.png",
+    "Utilità/Pasted image 20241030141103.png",
     "Utilità/Pasted image 20241029144303.png",
     "Utilità/Pasted image 20241023151831.png",
     "Utilità/Pasted image 20241023142122.png",
     "Untitled.md",
     "Utilità/Pasted image 20241022144611.png",
     "Utilità/Pasted image 20241022143803.png",
-    "Utilità/Pasted image 20241022142037.png",
-    "Utilità/Pasted image 20241016153117.png",
-    "Utilità/Pasted image 20241016152236.png",
-    "Utilità/Pasted image 20241016151115.png",
-    "Utilità/Pasted image 20241016144858.png",
     "Report Sicurezza/Report Challenge 1.md",
     "Analisi dei Dati.md",
     "Report Sicurezza/Immagini prima challenge",
     "Pasted image 20241011145727.png.md",
     "Report Sicurezza",
     "Utilità/AD2324-unita1-base.pdf",
-    "Tecnologie e Applicazioni Web.md",
     "Relazione progetto e-commerce DB.md",
     "Algoritmi e Strutture di Dati.md",
     "Programmazione ad Oggetti Mod. 2.md",

@@ -834,3 +834,87 @@ Sia $s = uvxyz$ con $|vy| > 0$ e $|vxy| \leq p$. Dimostriamo che $s$ non può es
 * **Caso 2**: sia $v$ che $y$ contengono un solo tipo di simbolo. Sfruttiamo $|vxy| \leq p$:
 	* **Caso 2.1**: $vxy$ tocca un solo blocco, per esempio il primo. Allora $uv^2xy^2z = 0^{p+k}1^p0^p1^p$ con $k > 0$ che non sta in $C$.
 	* **Caso 2.2**: $vxy$ sta a cavallo fra due blocchi, per esempio i primi 2. Allora $uv^2xy^2z = 0^{p+k}1^{p + j}0^p1^p$ con $k > 0$ e $j > 0$ che non sta in $C$.
+
+# Macchine di Turing
+Una **macchina di Turing** (MdT) è un **modello teorico** di un calcolatore, con *memoria infinita* ed *utilizzabile in maniera arbitraria*.
+
+**DFA** $\to$ memoria finita.
+**PDA** $\to$ memoria infinita, ma in forma di stack.
+
+**MdT**:
+* *Stato interno*
+* *Nastro infinito*
+* *Testina*
+![[Pasted image 20241030142219.png]]
+
+**Differenze rispetto a DFA/PDA**:
+* L'input è sul nastro e viene sia letto che scritto
+* La testina può essere spostata sia a sinistra che a destra
+* Memoria (nastro) infinita
+* ACCETTO o RIFIUTO un input non appena entro in uno stato di accettazione o rifiuto
+## Esempio di MdT
+Definizione di MdT per il seguente linguaggio: $\{w\#w\ |\ w \in \{0,1\}^*\}$ (non CLF, ma riconoscibile da una MdT):
+![[Pasted image 20241030142159.png]]
+
+**Passi di esecuzione**:
+* Fai zig-zag fra posizioni corrispondenti a sinistra e a destra di $\#$ per verificare che essere contengano lo stesso simbolo. Se non è così o non trovi $\#$: RIFIUTA. Altrimenti sostituisci con $\times$ i simboli corrispondenti.
+* Quando hai controllato tutti i simboli di a sinistra di $\#$, verifica se ci sono simboli rimanenti a destra di $\#$. in tal caso RIFIUTA, altrimenti ACCETTA.
+## Definizione formale di MdT
+Una MdT è una settupla $(Q,\Sigma, \Gamma, \delta, q_0, q_{accept}, q_{reject})$ dove:
+* $Q$ è un insieme finito di stati.
+* $\Sigma$ è un alfabeto finito di input, tale che $U\text{(blank)} \notin \Sigma$.
+* $\Gamma$ è un alfabeto finito per il nastro, tale che $U \in \Gamma$ e $\Sigma \subseteq \Gamma$.
+* $\delta: Q \times \Gamma \to Q \times \Gamma \times \{L,R\}$ è la funzione di transizione.
+* $q_0 \in Q$ è lo stato iniziale.
+* $q_{accept} \in q$ è lo stato di accettazione.
+* $q_{reject} \in Q$ è lo stato di rifiuto ($q_{reject} \neq q_{accept}$).
+## Come computa una MdT?
+Una **configurazione** di una MdT descrive un momento della computazione per mezzo di tre parametri:
+* **Stato interno**
+* **Contenuto del nastro**
+* **Posizione della testina**
+![[Pasted image 20241030144109.png]]
+
+In maniera compatta possiamo riscrivere questo esempio come: $001q_301$.
+In generale una configurazione ha la forma $uqv$, dove $u,v \in \Gamma^*$ e $q \in Q$. 
+
+Una MdT computa passando da una configurazione a quella successiva sulla base di quanto è definito da $\delta$.
+## Regole di computazione
+* Sia $M$ nella configurazione $uaq_ibv$ e sia $\delta(q_i,b) = (q_j,c,L)$ (dove $L$ sta per *left*), allora la prossima configurazione sarà $uq_jacb$.
+* Sia $M$ nella configurazione $uaq_ibv$ e sia $\delta(q_i,b) = (q_j,c,R)$ (dove $R$ sta per $right$), allora la prossima configurazione sarà $uacq_jv$.
+* Sia $M$ nella configurazione $q_ibv$ e sia $\delta(q_i,b) = (q_j,c,L)$, allora la prossima configurazione è $q_jcv$.
+* Sia $M$ nella configurazione $q_ibv$ e sia $\delta(q_i,b) = (q_j,c,R)$, allora la prossima configurazione è $cq_jv$.
+
+*Nota*: la testina non potrà mai essere all'estremità destra del nastro, poiché il nastro è infinito a destra.
+## Condizioni di accettazione e di rifiuto
+Una MdT accetta un input $w$ $\iff$ esistono delle configurazioni $c_1,c_2,...,c_k$ tali che:
+* $c_1$ è la configurazione iniziale ($q_0w$).
+* $c_k$ è una configurazione accettante $uq_{accept}v$ per qualche $u,v \in \Gamma^*$.
+* Per ogni $i$, $c_i$ passa in $c_{i+1}$ secondo le regole di computazione date.
+
+*Nota*: Visto che $q_{accept}$ fa terminare con accettazione e vogliamo che $q_{reject}$ termini con un rifiuto, la funzione di transizione (più precisamente) ha tipo $Q - \{q_{accept},q_{reject}\} \times \Gamma \to Q \times \Gamma \times \{L,R\}$.
+## Linguaggi riconosciuti da MdT
+Un linguaggio $A$ si dice **Turing-riconoscibile** (TR) $\iff$ esiste una MdT $M$, tale che $L(M) = A$.
+
+Dato un input $w$, una MdT $M$ ha solo tre **possibili comportamenti**:
+* $M$ accetta $w$.
+* $M$ rifiuta $w$.
+* $M$ va in loop quando eseguita su $w$.
+
+Una macchina di Turing che non va mai in loop su nessun input si dice **decisore**.
+Di conseguenza un linguaggio $A$ si dice **decidibile** $\iff$ esiste un decisore $M$ tale che $L(M) = A$.
+## Esempio 1
+$C = \{w\#w\ |\ w \in \{0,1\}^*\}$. Diamo una MdT $M$ tale che $L(M) = C$. 
+
+![[Pasted image 20241030152133.png]]
+## Esempio 2
+Si definisca una MdT per $\{0^{2^n}\ |\ n \geq 0\}$ .
+
+**Idea**: ogni passata sul nastro cancellerà metà degli $0$ presenti.
+
+Su input $w$:
+* Scorri il nastro da sinistra a destra cancellando uno $0$ si e uno $0$ no
+	* Se tale passata ha trovato un solo $0$ **accetta**
+	* Se tale passata ha trovato una quantità dispari ($> 1$) di $0$ **rifiuta**
+* Riavvolgi il nastro a sinistra e riparti dallo step $1$.
+

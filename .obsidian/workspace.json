@@ -4,21 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "22c6a7c1b20774c2",
+        "id": "c19dc20b1eb2cf7c",
         "type": "tabs",
         "children": [
           {
-            "id": "b1a0d009794d703f",
+            "id": "1d4629a0ae480cef",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Calcolabilità e Linguaggi Formali.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "Calcolabilità e Linguaggi Formali"
+              "title": "New tab"
             }
           }
         ]
@@ -158,23 +154,24 @@
       "templates:Insert template": false
     }
   },
-  "active": "5d8ee0621af1eeeb",
+  "active": "1d4629a0ae480cef",
   "lastOpenFiles": [
+    "Report Sicurezza/Report Challenge 2.md",
+    "Calcolabilità e Linguaggi Formali.md",
+    "Report Sicurezza/Immagini seconda challenge",
+    "Report Sicurezza/Immagini seconda challenge/Pasted image 20241103160023.png",
+    "Report Sicurezza/Immagini seconda challenge/Pasted image 20241103153710.png",
+    "Report Sicurezza/Immagini seconda challenge/Pasted image 20241103153124.png",
+    "Report Sicurezza/Immagini seconda challenge/Pasted image 20241103152357.png",
+    "Pasted image 20241103152026.png",
+    "Report Sicurezza/Immagini seconda challenge/Pasted image 20241103152012.png",
+    "Pasted image 20241103151929.png",
+    "Report Sicurezza/Immagini seconda challenge/Pasted image 20241103151734.png",
+    "Pasted image 20241103151446.png",
+    "Report Sicurezza/Report Challenge 1.md",
     "Utilità/Pasted image 20241030152133.png",
     "Tecnologie e Applicazioni Web.md",
-    "Utilità/Pasted image 20241030142219.png",
-    "Calcolabilità e Linguaggi Formali.md",
-    "Utilità/Pasted image 20241030144109.png",
-    "Pasted image 20241030143859.png",
-    "Utilità/Pasted image 20241030142159.png",
-    "Utilità/Pasted image 20241030141103.png",
-    "Utilità/Pasted image 20241029144303.png",
-    "Utilità/Pasted image 20241023151831.png",
-    "Utilità/Pasted image 20241023142122.png",
     "Untitled.md",
-    "Utilità/Pasted image 20241022144611.png",
-    "Utilità/Pasted image 20241022143803.png",
-    "Report Sicurezza/Report Challenge 1.md",
     "Analisi dei Dati.md",
     "Report Sicurezza/Immagini prima challenge",
     "Pasted image 20241011145727.png.md",
@@ -199,7 +196,6 @@
     "Untitled 1.canvas",
     "Programmazione ad oggetti mod 2",
     "Tecnologie e Applicazioni Web",
-    "Algoritmi e strutture dati mod 2",
     "ALGORITMI E STRUTTURE DATI.md"
   ]
 }

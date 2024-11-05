@@ -11,10 +11,14 @@
             "id": "1d4629a0ae480cef",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "Calcolabilità e Linguaggi Formali.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "Calcolabilità e Linguaggi Formali"
             }
           }
         ]
@@ -154,24 +158,25 @@
       "templates:Insert template": false
     }
   },
-  "active": "1d4629a0ae480cef",
+  "active": "5d8ee0621af1eeeb",
   "lastOpenFiles": [
-    "Report Sicurezza/Report Challenge 2.md",
+    "Utilità/Pasted image 20241105152821.png",
+    "Utilità/Pasted image 20241105150916.png",
+    "Pasted image 20241105150441.png",
     "Calcolabilità e Linguaggi Formali.md",
+    "Utilità/Pasted image 20241105144139.png",
+    "Utilità/Pasted image 20241105141151.png",
+    "Untitled.md",
+    "Utilità/Pasted image 20241105142132.png",
+    "Report Sicurezza/Report Challenge 2.md",
     "Report Sicurezza/Immagini seconda challenge",
     "Report Sicurezza/Immagini seconda challenge/Pasted image 20241103160023.png",
     "Report Sicurezza/Immagini seconda challenge/Pasted image 20241103153710.png",
     "Report Sicurezza/Immagini seconda challenge/Pasted image 20241103153124.png",
     "Report Sicurezza/Immagini seconda challenge/Pasted image 20241103152357.png",
     "Pasted image 20241103152026.png",
-    "Report Sicurezza/Immagini seconda challenge/Pasted image 20241103152012.png",
-    "Pasted image 20241103151929.png",
-    "Report Sicurezza/Immagini seconda challenge/Pasted image 20241103151734.png",
-    "Pasted image 20241103151446.png",
     "Report Sicurezza/Report Challenge 1.md",
-    "Utilità/Pasted image 20241030152133.png",
     "Tecnologie e Applicazioni Web.md",
-    "Untitled.md",
     "Analisi dei Dati.md",
     "Report Sicurezza/Immagini prima challenge",
     "Pasted image 20241011145727.png.md",

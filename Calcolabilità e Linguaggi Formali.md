@@ -862,8 +862,8 @@ Definizione di MdT per il seguente linguaggio: $\{w\#w\ |\ w \in \{0,1\}^*\}$ (n
 ## Definizione formale di MdT
 Una MdT è una settupla $(Q,\Sigma, \Gamma, \delta, q_0, q_{accept}, q_{reject})$ dove:
 * $Q$ è un insieme finito di stati.
-* $\Sigma$ è un alfabeto finito di input, tale che $U\text{(blank)} \notin \Sigma$.
-* $\Gamma$ è un alfabeto finito per il nastro, tale che $U \in \Gamma$ e $\Sigma \subseteq \Gamma$.
+* $\Sigma$ è un alfabeto finito di input, tale che $\sqcup\text{(blank)} \notin \Sigma$.
+* $\Gamma$ è un alfabeto finito per il nastro, tale che $\sqcup \in \Gamma$ e $\Sigma \subseteq \Gamma$.
 * $\delta: Q \times \Gamma \to Q \times \Gamma \times \{L,R\}$ è la funzione di transizione.
 * $q_0 \in Q$ è lo stato iniziale.
 * $q_{accept} \in q$ è lo stato di accettazione.
@@ -881,7 +881,7 @@ In generale una configurazione ha la forma $uqv$, dove $u,v \in \Gamma^*$ e $q \
 Una MdT computa passando da una configurazione a quella successiva sulla base di quanto è definito da $\delta$.
 ## Regole di computazione
 * Sia $M$ nella configurazione $uaq_ibv$ e sia $\delta(q_i,b) = (q_j,c,L)$ (dove $L$ sta per *left*), allora la prossima configurazione sarà $uq_jacb$.
-* Sia $M$ nella configurazione $uaq_ibv$ e sia $\delta(q_i,b) = (q_j,c,R)$ (dove $R$ sta per $right$), allora la prossima configurazione sarà $uacq_jv$.
+* Sia $M$ nella configurazione $uaq_ibv$ e sia $\delta(q_i,b) = (q_j,c,R)$ (dove $R$ sta per *right*), allora la prossima configurazione sarà $uacq_jv$.
 * Sia $M$ nella configurazione $q_ibv$ e sia $\delta(q_i,b) = (q_j,c,L)$, allora la prossima configurazione è $q_jcv$.
 * Sia $M$ nella configurazione $q_ibv$ e sia $\delta(q_i,b) = (q_j,c,R)$, allora la prossima configurazione è $cq_jv$.
 
@@ -917,4 +917,79 @@ Su input $w$:
 	* Se tale passata ha trovato un solo $0$ **accetta**
 	* Se tale passata ha trovato una quantità dispari ($> 1$) di $0$ **rifiuta**
 * Riavvolgi il nastro a sinistra e riparti dallo step $1$.
+## Varianti delle MdT
+* MdT con *stay*, cioè la testina non è costretta a sinistra e destra ma può anche stare ferma. In questo caso $\delta$ diventa:
+$$\delta: Q \times \Gamma \to Q \times \Gamma \times \{L,R,S \}$$
+* MdT multi-nastro ($k \geq 1$ nastri):
+	* Riceve input sul primo nastro.
+	* Quando computa:
+		* Legge da $k$ nastri.
+		* Modifica $k$ nastri.
+		* Sposta $k$ testine.
+	$\delta$ diventa: 
+$$\delta: Q \times \Gamma^k \to Q \times \Gamma^k \times \{L,R,S\}^k$$
+![[Pasted image 20241105141151.png]]
+## Teorema
+Ogni MdT multi-nastro può essere convertita in una MdT a singolo nastro ad essa equivalente.
+## Dimostrazione
+**Idea**:
+![[Pasted image 20241105142132.png]]
 
+**Dimostrazione**: partiamo da una MdT multi-nastro e la convertiamo in una MdT singolo nastro come segue:
+* $S =$ su input $w = w_1w_2...w_n$:
+	* Metti il nastro nella forma $\#\dot{w_1}w_2w_3\#\dot{\sqcup}\#\dot{\sqcup}\#...\#\dot{\sqcup}\#$
+	* Scorri il nastro leggendo i simboli col pallino e salvali nel tuo stato. Scorri poi nuovamente il nastro per aggiornare i simboli con pallino e per spostare i pallini secondo la funzione di transazione della MdT multi-nastro.
+	* Se in un qualche momento sposti un pallino sopra ad un $\#$ fai *shift a destra* di una posizione per l'intero contenuto del nastro
+## MdT non deterministica
+La funzione $\delta$ di una MdT non deterministica è: $$\delta: Q \times \Gamma \to \mathbb{P}(Q \times \Gamma \times \{L,R\})$$
+## Teorema
+Ogni MdT non deterministica si può convertire in una MdT equivalente.
+**Idea**: ragioniamo su una computazione non-deterministica come se essa fosse un *albero* di possibili computazioni. Descriviamo un possibile cammino di questo albero con un *indirizzo*.
+![[Pasted image 20241105144139.png]]
+
+Proviamo ad enumerare tutti i possibili indirizzi eseguendo una computazione deterministica per ciascuno di essi. Otteniamo nel nostro caso $11,\ 12,\ 21,\ 31$. Se una di queste accetta dobbiamo accettare anche noi. In questo caso l'albero è finito. Se l'albero è infinito non possiamo pre-computare tutti i percorsi, pertanto li enumereremo facendo una visita in ampiezza e non in profondità. Otteniamo quindi nel nostro caso: $1,\ 2,\ 3,\ 11, \ 12,\ 21 ...$ 
+
+**Dimostrazione**: simuliamo la MdT non-deterministica con una MdT deterministica con $3$ nastri. Cosa fanno i $3$ nastri?
+* Nastro *read only* che contiene l'input iniziale.
+* Nastro *di lavoro* in cui eseguiamo una computazione deterministica sull'input iniziale.
+* Nastro *degli indirizzi* che enumera i possibili modi per attraversare l'albero del non-determinismo.
+
+Descriviamo la MdT con tre nastri:
+* Inizializza il primo nastro con l'input $w$, il secondo nastro è vuoto, il terzo non è vuoto.
+* Copia il primo nastro sul secondo.
+* Simula una computazione deterministica sul secondo nastro, risolvendo il non-determinismo tramite l'indirizzo sul terzo nastro. Se accetta: **accept**.
+* Aggiorna il terzo nastro con il prossimo indirizzo secondo l'ordine menzionato e torna allo step $2$.
+## Enumeratori
+![[Pasted image 20241105150916.png]]
+## Differenze con MdT
+* **MdT**:
+	* La MdT è un *riconoscitore*.
+	* Riceve input sul nastro e decide se accettare o no.
+	* Linguaggio = insieme delle stringhe accettate.
+* **Enumeratore**:
+	* L'enumeratore è un *generatore*.
+	* Non riceve alcun input, ma accumula caratteri nel buffer della stampante.
+	* Linguaggio = insieme delle stringhe che stampa.
+## Teorema
+Un linguaggio è **Turing-riconoscibile** (**T.R.**) $\iff$ esiste un enumeratore che lo genera. In altre parole MdT ed enumeratori hanno lo stesso potere espressivo.
+## Dimostrazione
+* $\implies$ Sia $A$ un linguaggio T.R., dimostro che esiste un enumeratore $E$ tale che $L(E) = A$.
+  Visto che $A$ è T.R, esiste una MdT $M$ tale che $L(M) = A$. Costruiamo un enumeratore $E$ tale che $L(E) = A$.
+	* *Dimostrazione errata*:
+		* $E$ = per tutte le stringhe $s_1,s_2,s_3 ...$
+			* Esegui $M$ su $s_i$.
+			* Se $M$ accetta: stampa $s_i$.
+		 Il  problema in questo caso è che se $M$ va in loop sulla stringa $s$, essa non verrà mai stampata.
+	* *Dimostrazione corretta*:
+		* $E$ = per tutti gli $i = 0,1,2,3,4,...$
+		* Genera $s_1,s_2,...,s_i$.
+		* Testa $M$ su $s_1,...,s_i$ per $i$ passi di computazione.
+		* Se $M$ accetta qualche $s_j$, stampala.
+![[Pasted image 20241105152821.png]]
+* $\impliedby$ Dimostro che, se esiste un enumeratore $E$, tale che $L(E) = A$, allora $A$ è T.R.
+	* $M =$ su input $w$
+		* Simula l'enumeratore $E$.
+		* Ogni volta che $E$ stampa una stringa $v$, verifica se $v = w$.
+		*  Se $v = w$ **accept**, altrimenti torna allo step $1$.
+## Tesi di Church-Turing
+La definizione intuitiva di algoritmo coincide con la classe degli algoritmi implementabili da una MdT.

@@ -992,4 +992,122 @@ Un linguaggio è **Turing-riconoscibile** (**T.R.**) $\iff$ esiste un enumerator
 		* Ogni volta che $E$ stampa una stringa $v$, verifica se $v = w$.
 		*  Se $v = w$ **accept**, altrimenti torna allo step $1$.
 ## Tesi di Church-Turing
-La definizione intuitiva di algoritmo coincide con la classe degli algoritmi implementabili da una MdT.
+La definizione "intuitiva" di algoritmo coincide con la classe degli algoritmi implementabili da una MdT.
+## Problema delle radici intere di un polinomio (10° problema di Hilbert)
+Il 10° problema di Hilbert è il seguente:
+> Definire un algoritmo che, dato un polinomio, per esempio $x^2-y^2$, determina se esso ammette o meno meno una radice intera (cioè una sostituzione delle sue variabili con dei valori interi che lo facciano valutare $0$).
+
+Si può dimostrare che tale algoritmo *non esiste*!
+## Semplificazione del 10° problema di Hilbert
+Il problema semplificato è il seguente:
+> Determinare se un polinomio nella sola variabile $x$ ha una radice intera.
+
+Definiamo il linguaggio $A$ per il seguente problema, dove :$$A = \{<p>\ |\ p\ \text{è un polinomio in }x\ \text{con una radice intera}\}$$
+In altre parole $p$ ha una radice intera $\iff <p> \in A$, dove $<^.>$ è una funzione che trasforma polinomi nella loro rappresentazione come stringa.
+
+Per esempio possiamo rappresentare $<3x^2-5x-3>\ =\ ^"3|-5|+3^"$
+
+Il nostro problema ammette soluzione algoritmica $\iff$ $A$ è **decidibile** (= tale linguaggio è riconoscibile da un decisore).
+## Costruiamo un decisore per il linguaggio $A = A = \{<p>\ |\ p\ \text{è un polinomio in }x\ \text{con una radice intera}\}$
+Costruiamo la macchina $M$ per riconoscere il linguaggio $A$:
+* $M =$ su input $<p>$:
+	* Per tutti gli $x = 0,1,-1,2,-2,3,-3,...$
+		* Calcola il valore $p(x)$.
+		* Se $p(x) = 0$, ritorna **accept**.
+
+$M$ *non* è un decisore perché non rifiuta mai, può andare in loop quando non trova una soluzione.
+$M$ dimostra che $A$ è **T.R.**, ma non **decidibile**.
+
+Possiamo modificare $M$ in modo tale che rifiuti sotto determinate condizioni:
+* $M' =$ su input $<p>$:
+	* Per tutti gli $x = 0,1,-1,2,-2,3,-3,...$ fino ad un determinato *limite*
+		* Calcola il valore $p(x)$.
+		* Se $p(x) = 0$, ritorna **accept**.
+	* Se non hai trovato una radice intera, ritorna **reject**.
+
+Si può infatti dimostrare che la radice intera, se esiste, è compresa fra: $-k \cdot \frac{C_{max}}{C_1}$ e $+k \cdot \frac{C_{max}}{C_1}$ dove $k$ è il numero di termini, $C_{max}$ è il coefficiente di massimo valore assoluto e $C_1$ è il coefficiente di grado massimo.
+## Recap sulle MdT
+Finora abbiamo visto $3$ modi per descrivere le MdT:
+* **Formale**: $(Q,\Sigma,\Gamma,\delta,q_0,q_{accept},r_{reject})$
+* **Implementativo**: "scrivi il nastro finché vedi $0$, poi torna all'inizio del nastro..."
+* **Ad alto livello**: "per ogni $x = 1,-1,2,-2,...$ calcola $p(x)$"
+
+ Quando descriviamo una MdT ad alto livello stiamo sostanzialmente utilizzando la tesi di Church-Turing.
+## Esercizio 1 (Definizione formale di Enumeratore)
+Dare una definizione formale di enumeratore e del linguaggio che genera.
+
+ Un enumeratore è una settupla ($Q,\Sigma,\Gamma,\delta,q_0,q_p,q_h$) dove:
+ * $Q$ è un insieme finito di stati.
+ * $\Sigma$ è l'alfabeto finito per la stampa.
+ * $\Gamma$ è l'alfabeto finito del nastro ($\sqcup \in \Gamma$).
+ * $q_0$ è lo stato iniziale.
+ * $q_p$ è lo stato di stampa.
+ * $q_h$ è lo stato di terminazione.
+ * $\delta: Q \times \Gamma \to Q \times \Gamma \times \{L,R\} \times \Sigma_\epsilon$
+
+Una **configurazione** per un enumeratore è una coppia $(uqv,w)$, dove:
+* $u \in \Gamma^*$.
+* $q \in Q$.
+* $v \in \Gamma^*$.
+* $w \in \Sigma^*$.
+
+Possiamo definire come una configurazione evolve nella successiva:
+* Assumiamo che la configurazione corrente sia $(uaq_ibv,w)$ e sia $\delta(q_i,b) = (q_j,c,L,d)$, allora la prossima configurazione è $(uq_jacv, wd)$.
+* Analogo per spostamento della testina a destra.
+* Analogo all'estremità sinistra del nastro.
+* Assumiamo che la configurazione corrente sia $(uq_pvw)$, allora la prossima configurazione è $(q_0uv, \epsilon)$.
+
+Pertanto il linguaggio di un enumeratore è: $$L(E) = \{w \in \Sigma^*\ |\ \exists u,v \in \Gamma^*: (u,q_p,v,w) \text{ è raggiungibile da } (q_0,\epsilon)\}$$
+## Esercizio 2
+Dimostrare che la classe dei linguaggi T.R. è chiusa rispetto alle seguenti operazioni:
+
+>**Unione**: se $A$ e $B$ sono T.R., allora $A \cup B$ è T.R.
+
+Visto che $A$ e $B$ sono T.R., esistono MdT $M$ ed $N$ tali che $L(M) = A$ ed $L(N) = B$.
+
+Vediamo una prima idea *sbagliata* di dimostrazione:
+* Su input $w$:
+	* Simula $M$ su $w$.
+		* Se $M$ accetta: **accept**.
+		* Se $M$ rifiuta: simula $N$ su $w$ e ritorna il suo output.
+
+Tale soluzione è chiaramente sbagliata, visto che $M$ potrebbe non terminare mai.
+
+Vediamo ora una seconda idea che sfrutta  una MdT non deterministica:
+* Su input $w$:
+	* Scegli in modo non deterministico se simulare $M$ o $N$ su $w$.
+	* Se una delle due accetta: **accept**.
+
+Vediamo infine una terza idea che utilizza una MdT con due nastri:
+* Su input $w$:
+	* Copia $w$ sul secondo nastro.
+	* Simula $M$ su $w$ sul primo nastro per un passo di computazione.
+	* Simula $N$ su $w$ sul secondo nastro per un passo di computazione.
+	* Se $M$ on $N$ accettano: **accept**.
+
+*Nota*: il loop infinito è equivalente a **reject**.
+
+>**Intersezione**: se $A$ e $B$ sono T.R., allora $A \cap B$ è T.R.
+
+Visto che $A$ e $B$ sono T.R., esistono MdT $M$ ed $N$ tali che $L(M) = A$ ed $L(N) = B$.
+
+Costruisco la seguente MdT:
+* Su input $w$:
+	* Simula $M$ su $w$.
+	* Se $M$ accetta: simula $N$ su $w$ e ritorna il suo output.
+	* Se $M$ rifiuta: **reject**.
+
+> **Concatenazione**: se $A$ e $B$ sono T.R., allora $A _° B$ è T.R.
+
+Visto che $A$ e $B$ sono T.R., esistono MdT $M$ ed $N$ tali che $L(M) = A$ ed $L(N) = B$.
+
+Costruiamo la seguente MdT:
+* Su input $w$:
+	* Spezza $w$ in $w_1w_2$ *non deterministicamente*:
+	* Testa $M$ su $w_1$, se accetta simula $N$ su $w_2$. 
+	*  Se $N$ accetta: **accept**.
+
+>Star: se $A$ è T.R., allora $A ^* $ è T.R.
+
+*Nota*: i linguaggi **decidibili** sono chiusi rispetto a $\cup,\ \cap,\ _°$ e $^*$. Essi inoltre sono chiusi anche rispetto al **complemento**. 
+*Nota*: i T.R. non sono riconoscibili rispetto al complemento.

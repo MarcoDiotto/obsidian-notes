@@ -1111,3 +1111,115 @@ Costruiamo la seguente MdT:
 
 *Nota*: i linguaggi **decidibili** sono chiusi rispetto a $\cup,\ \cap,\ _°$ e $^*$. Essi inoltre sono chiusi anche rispetto al **complemento**. 
 *Nota*: i T.R. non sono riconoscibili rispetto al complemento.
+# Decidibilità
+## Problemi decidibili
+**Problema**: Determinare se un DFA $D$ accetta una stringa $w$.
+**Linguaggio**: $A_{DFA} = \{<M,w>\ |\ M\text{ è DFA e } M \in L(M)\}$.
+
+**Teorema**: $A_{DFA}$ è decidibile.
+
+**Dimostrazione**: 
+Costruisco un decisore $N$ tale che $L(N) = A_{DFA}$.
+* $N =$ su input $<M,w>:$
+	* Simuliamo il DFA $M$ su input $w$.
+	* Se $M$ termina in uno stato di accettazione: **accept**.
+	* Se $M$ termina in uno stato non di accettazione: **reject**.
+
+**Problema**: Determinare e un NFA $N$ accetta una stringa $w$.
+**Linguaggio**: $A_{NFA} = \{<N,w>\ |\ N \text{è un NFA e } w \in L(N)\}$.
+**Teorema**: $A_{NFA}$ è decidibile.
+
+**Dimostrazione 1**:
+Costruisco una MdT non deterministica $M$ fatta come segue:
+* $M =$ su input $<N,w>$:
+	* Simulo $N$ su $w$ in modo non deterministico.
+	* Se $N$ accetta: **accept**.
+	* Se $N$ rifiuta: **reject** in questo ramo del non determinismo.
+
+**Dimostrazione 2**:
+Costruisco una MdT "tradizionale" $M$ fatta come segue:
+* $M =$ su input $<N,w>$:
+	* Converto $N$ in un DFA $D$ ad esso equivalente.
+	* Esegui il decisore per $A_{DFA}$ su input $<D,w>$.
+	* Ritorna il suo output.
+
+*Nota*: in generale si può usare un decisore per creare altri decisori, come abbiamo fatto qui sopra.
+
+*Nota*: si può dimostrare che anche il linguaggio $A_{REX} = \{<R,w>\ |\ R \text{ è regexp e } w \in L(R)\}$ è decidibile.
+
+**Problema**: Dato un DFA, determinare se esso non accetta nessuna stringa.
+**Linguaggio**: $E_{DFA} = \{<D>\ |\ D \text{ è un DFA e } L(D) = \emptyset\}$
+
+**Teorema**: $E_{DFA}$ è decidibile.
+
+**Dimostrazione**: Costruiamo un decisore $M$ per $E_{DFA}$:
+* $M =$ su input $<D>$:
+	* Marca lo stato iniziale di $D$.
+	* Finché è possibile marcare nuovi stati:
+		* Marca gli stati con una transizione in entrata da stati già marcati.
+	* Se ho marcato almeno uno stato accettante: **reject**, altrimenti **accept**.
+
+
+**Problema**: Dati due DFA $D_1$ e $D_2$, determinare se riconoscono lo stesso linguaggio.
+**Linguaggio**: $EQ_{DFA} = \{<D_1,D_2>\ |\ D_1,D_2 \text{ sono DFA e } L(D_1) = L(D_2)\}$.
+
+**Teorema**: $EQ_{DFA}$ è decidibile.
+
+**Dimostrazione**:
+Osserviamo che $L(D_1) = L(D_2) \iff$
+* Tutte le stringhe di $L(D_1)$ stanno anche in $L(D_2)$.
+* Tutte le stringhe di $L(D_2)$ stanno anche in $L(D_1)$. 
+
+In alte parole:
+* Non esiste una stringa di $L(D_1)$ tale che essa non stia in $L(D_2)$.
+* Non esiste una stringa di $L(D_2)$ tale che essa non stia in $L(D_1)$.
+
+Ovvero: $$L(D_1) = L(D_2) \iff (L(D_1) \cap \overline{L(D_2)}) \cup (\overline{L(D_1)} \cap L(D_2)) = \emptyset$$
+Costruiamo un decisore $M$ per $EQ_{DFA}$:
+* $M =$ su input $<D_1,D_2>$:
+	* Costruisci un nuovo DFA $D$ tale che $L(D) = (L(D_1) \cap \overline{L(D_2)}) \cup (\overline{L(D_1)} \cap L(D_2))$.
+	  Ciò è possibile perché la classe dei linguaggi regolari è chiusa rispetto a complemento, $\cap$ e $\cup$.
+	  * Esegui il decisore per $E_{DFA}$ su $<D>$.
+	  * Ritorna il suo output.
+## Problemi su linguaggi context-free
+**Problema**: determinare se una CFG $G$ genera una certa stringa $w$.
+**Linguaggio**: $A_{CFG} = \{<G,w>\ |\ G \text{ è una CFG e } w \in L(G)\}$.
+
+**Teorema**: $A_{CFG}$ è decidibile.
+
+**Lemma**: Se $H$ è una CFG in *forma normale di Chomsky* e $w$ è una stringa di lunghezza $n$, allora se $w \in L(H)$ è possibile trovare una derivazione di $w$ che ha $2n-1$ passi. (Caso speciale: per $n = 0$ basta un passo).
+
+**Dimostrazione**:
+Costruiamo un decisore $M$ per $A_{CFG}$:
+* $M =$ su input $<G,w>$:
+	* Converti $G$ in *forma normale di Chomsky* (output = $H$).
+	* Prova tutte le derivazioni di $2n-1$ passi dove $n = |w|$.
+	  Se $n = 0$ prova solo le derivazioni di un passo.
+	  * Se una di esse genera $w$: **accept**, altrimenti: **reject**.
+
+**Domanda**: perché vale il lemma?
+Ricordiamo le condizioni su di Chomsky:
+* $A \to BC$ dove $B,C \neq S$
+* $A \to a$
+* $S \to \epsilon$
+Quelli sopra riportati sono i tre tipi di produzioni ammessi da Chomsky.
+CONTINUARE A CASA
+
+**Problema**: Data una CFG $G$, determinare se essa non accetta nessuna stringa.
+**Linguaggio**: $E_{CFG} = \{<G>\ |\ G \text{ è una CFG e } L(G) = \emptyset\}$
+
+**Teorema**: $E_{CFG}$ è decidibile.
+
+**Idea**:
+$$S \to A\ |\ B$$ $$A \to \underline{a}A\ |\ \underline{a}$$ $$B \to \underline{b}B$$
+Abbiamo sottolineato i terminali, a questo punto sottolineiamo $A$ perché genera solo terminali, ed $S$ perché genera $A$:
+$$\underline{S} \to \underline{A}\ |\ B$$ $$\underline{A} \to \underline{a}\underline{A}\ |\ \underline{a}$$ $$B \to \underline{b}B$$
+Così abbiamo la certezza che da $S$ vengono generate stringhe non vuote.
+
+**Dimostrazione**
+Costruisco un decisore per $E_{CFG}$:
+* $M =$ su input $w$:
+	* Sottolineo tutti i terminali di $G$ nelle sue produzioni.
+	* Finché è possibile sottolineare non-terminali:
+		* Sottolinea i non-terminali $A$ tali che esista una produzione $w_1,...,w_n$ dove tutti i $w_i$ sono sottolineati.
+	* Se ho sottolineato lo start symbol: **reject**, altrimenti: **accept**.

@@ -1223,3 +1223,138 @@ Costruisco un decisore per $E_{CFG}$:
 	* Finché è possibile sottolineare non-terminali:
 		* Sottolinea i non-terminali $A$ tali che esista una produzione $w_1,...,w_n$ dove tutti i $w_i$ sono sottolineati.
 	* Se ho sottolineato lo start symbol: **reject**, altrimenti: **accept**.
+## Teorema
+Ogni linguaggio context-free è decidibile
+## Dimostrazione
+Sia $A$ un linguaggio context-free. Allora esiste una CFG $G$ tale che $L(G)  = A$.
+Dimostriamo che esiste un decisore $M$ tale che $L(M) = A$.
+* $M=$ su input $W$:
+	* Esegui il decisore per $A_{CFG}$ su input $<G,w>$.
+	* Ritorna il suo output.
+
+# Indecidibilità
+Obbiettivi:
+* Dimostriamo che esistono linguaggi non decidibili.
+* Diamo uno specifico esempio di linguaggio non decidibile.
+## Recap
+Sia $f: A \to B$ una funzione:
+* $f$ è **iniettiva** $\iff$ $x \neq y$ implica $f(x) \neq f(y)$.
+* $f$ è **suriettiva** $\iff \forall y \in B\ \exists x \in A\ |\ f(x) = y$.
+* $f$ è **biettiva** $\iff$ $f$ è iniettiva e suriettiva.
+
+Due insiemi $A$ e $B$ hanno la stessa cardinalità $\iff \exists f: A \to B$ biettiva.
+## Esempio
+L'insieme dei naturali $\mathbb{N}$ e l'insieme dei naturali pari hanno la stessa cardinalità.
+
+Costruiamo una biezione da $\mathbb{N}$ ai naturali pari: $$f(n) = 2n$$
+## Insieme numerabile
+Un insieme si dice **numerabile** $\iff$:
+* è **finito**.
+* Ha la **stessa cardinalità** di $\mathbb{N}$.
+## Esempio
+L'insieme dei razionali positivi è numerabile.
+
+**Dimostrazione**:
+
+|     | $1$               | $2$               | $3$             | $4$           | $5$           | ... |
+| --- | ----------------- | ----------------- | --------------- | ------------- | ------------- | --- |
+| $1$ | ==$\frac{1}{1}$== | ==$\frac{1}{2}$== | ==$\frac{1}{3}$ | $\frac{1}{4}$ | $\frac{1}{5}$ | ... |
+| $2$ | ==$\frac{2}{1}$== | $\frac{2}{2}$     | $\frac{2}{3}$   | $\frac{2}{4}$ | $\frac{2}{5}$ | ... |
+| $3$ | ==$\frac{3}{1}$== | $\frac{3}{2}$     | $\frac{3}{3}$   | $\frac{3}{4}$ | $\frac{3}{5}$ | ... |
+| $4$ | $\frac{4}{1}$     | $\frac{4}{2}$     | $\frac{4}{3}$   | $\frac{4}{4}$ | $\frac{4}{5}$ | ... |
+| $5$ | $\frac{5}{1}$     | $\frac{5}{2}$     | $\frac{5}{3}$   | $\frac{5}{4}$ | $\frac{5}{5}$ | ... |
+| ... | ...               | ...               | ...             | ...           | ...           | ... |
+**Obbiettivi**:
+Dare una biezione da $\mathbb{N}$ ai razionali positivi, cioè produrre una lista di razionali positivi tale che:
+* Non vi siamo ripetizioni
+* Tutti i razionali positivi vi siano rappresentati
+
+Procedendo lungo le diagonali ed eliminando i duplicati, troviamo una biezione fra $\mathbb{N}$ e i razionali positivi che rispetta gli obbiettivi.
+## Dimostrazione di Cantor
+**Teorema**: $\mathbb{R}$ non è numerabile.
+
+**Dimostrazione**:
+
+| $n$ | $f(n)$      |
+| --- | ----------- |
+| $1$ | $3.140$     |
+| $2$ | $5.623$     |
+| $3$ | $17.152$    |
+| $4$ | $1.18927$   |
+| $5$ | $3.5555655$ |
+| ... | ...         |
+Usa la tecnica della **diagonalizzazione**. Assumiamo per assurdo che $\mathbb{R}$ sia numerabile. Deve allora esistere una biezione fra $\mathbb{N}$ ed $\mathbb{R}$. Chiamiamola $f$. Costruiamo un numero reale che non occorre nel codominio di $f$ (la parte destra della tabella), arrivando ad un *assurdo*. Il nostro numero è: $$0.57838...$$
+Esso differisce dall'i-esimo reale nell'i-esima cifra dopo la virgola, quindi è diverso da tutti i numeri nella tabella.
+## Teorema
+Esistono dei linguaggi che non sono T.R.
+## Dimostrazione
+La dimostrazione sfrutta un'osservazione sulla cardinalità, cioè dimostriamo che ci sono più linguaggi che MdT:
+
+* *Dimostriamo che l'insieme delle MdT è numerabile*. 
+	Per farlo osserviamo che l'insieme delle stringhe costruite su qualsiasi alfabeto $\Sigma$ finito è numerabile.
+	Vediamo per esempio: $\Sigma = \{0,1\}$
+
+| $1$        | $2$ | $3$ | $4$  | $5$  | $6$  | $7$  | $8$   | ... |
+| ---------- | --- | --- | ---- | ---- | ---- | ---- | ----- | --- |
+| $\epsilon$ | $0$ | $1$ | $00$ | $01$ | $10$ | $11$ | $000$ | ... |
+	Enumerare le stringhe per lunghezza crescente mi da una biezione con $\mathbb{N}$.
+	Qualsiasi MdT $(Q,\Sigma,\Gamma,\delta,q_0,q_{accept},q_{reject})$ è rappresentabile come una stringa. Le MdT sono un sottoinsieme delle stringhe, e quindi sono numerabili.
+
+* *Dimostriamo che l'insieme dei linguaggi non è numerabile*:
+	Osserviamo che qualsiasi linguaggio si può rappresentare come una stringa binaria **infinita**.
+	$$L = \{0,00,01\}$$
+
+|                |            |     |     |      |      |      |      |       |       |
+| -------------- | ---------- | --- | --- | ---- | ---- | ---- | ---- | ----- | ----- |
+| **Stringhe**   | $\epsilon$ | $0$ | $1$ | $00$ | $01$ | $10$ | $11$ | $000$ | $...$ |
+| **Linguaggio** | $0$        | $1$ | $0$ | $1$  | $1$  | $0$  | $0$  | $0$   | $...$ |
+	Osserviamo che l'insieme delle stringhe binarie infinite non è numerabile (dimostrazione per **diagonalizzazione**).
+	Assumiamo per assurdo che l'insieme delle stringhe binarie infinite sia numerabile:
+
+|     |          |
+| --- | -------- |
+| $1$ | $001100$ |
+| $2$ | $11001$  |
+| $3$ | $01100$  |
+| $4$ | $10000$  |
+| $5$ | $11100$  |
+| $6$ | $...$    |
+	Costruiamo una stringa binaria infinita che non compare nella tabella (**assurdo**): $$10011 ...$$
+## Vediamo il nostro primo linguaggio non decidibile
+Il primo linguaggio non decidibile che vedremo è quello relativo al problema dell'accettazione delle MdT.
+$$A_{TM} = \{<M,w>\ |\ M \text{è MdT e } w \in L(M)\}$$
+
+**Osservazione**: $A_{TM}$ è T.R, infatti possiamo costruire una MdT $N$ tale che $L(N) = A_{TM}$.
+
+* $N =$ su input $<M,w>$:
+	* Simula $M$ su $w$.
+	* Ritorna il suo output.
+
+*Nota*: questa macchina non è un decisore, potrebbe non terminare mai!
+
+Dimostriamo ora che non esiste un decisore per $A_{TM}$.
+
+**Teorema**: $A_{TM}$ è indecidibile.
+**Dimostrazione**: Assumiamo per assurdo che $A_{TM}$ sia decidibile, allora esiste un decisore $H$ per $A_{TM}$.
+$$H(<M,w>) = \begin{cases} \text{accept} \quad \text{se } M \text{ accetta } w \\ \text{reject}\ \quad \text{altrimenti} \end{cases}$$
+Costruisco una nuova MdT $D$ definita come segue:
+* $D=$ su input $<M>$:
+	* Esegue $H$ su input $<M,<M>>$
+	* Ritorna l'output invertito.
+$$D(<M>) = \begin{cases} \text{accept} \quad \text{se } M \text{ non accetta } <M> \\ \text{reject}\ \quad \text{se } M \text{ accetta } <M>   \end{cases}$$
+$$D(<D>) = \begin{cases} \text{accept} \quad \text{se } D \text{ non accetta } <D> \\ \text{reject}\ \quad \text{se } D \text{ accetta } <D>   \end{cases}$$
+
+Siamo così arrivati ad un **assurdo** $\to$ $D(<D>)$ mi da il contrario di $D(<D>)$.
+## Dietro le quinte...
+La seguente tabella mostra le varie esecuzioni di $H(<M_i,<M_i>>)$ :
+
+|       |          |          |          |          |       |            |
+| ----- | -------- | -------- | -------- | -------- | ----- | ---------- |
+|       | $<M_1>$  | $<M_2>$  | $<M_3>$  | $<M_4>$  | $...$ | $<D>$      |
+| $M_1$ | accept   | accept   | reject   | accept   | $...$ | reject     |
+| $M_2$ | reject   | accept   | reject   | accept   | $...$ | reject     |
+| $M_3$ | reject   | reject   | reject   | reject   | $...$ | accept     |
+| $M_4$ | accept   | accept   | accept   | accept   | $...$ | reject     |
+| $...$ | $...$    | $...$    | $...$    | $...$    | $...$ | $...$      |
+| $D$   | $reject$ | $reject$ | $accept$ | $reject$ | $...$ | **e qui?** |
+In posizione $(D,<D>)$ arriviamo all'assurdo

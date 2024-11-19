@@ -1356,5 +1356,123 @@ La seguente tabella mostra le varie esecuzioni di $H(<M_i,<M_i>>)$ :
 | $M_3$ | reject   | reject   | reject   | reject   | $...$ | accept     |
 | $M_4$ | accept   | accept   | accept   | accept   | $...$ | reject     |
 | $...$ | $...$    | $...$    | $...$    | $...$    | $...$ | $...$      |
-| $D$   | $reject$ | $reject$ | $accept$ | $reject$ | $...$ | **e qui?** |
+| $D$   | reject | reject | accept | reject | $...$ | **e qui?** |
 In posizione $(D,<D>)$ arriviamo all'assurdo
+
+**Recap**: $A_{TM}$ è T.R. ma non decidibile.
+## Osservazione
+$\overline{A_{TM}}$ non è T.R.
+## Teorema
+$A$ è decidibile $\iff$ sia $A$ che $\overline{A}$ sono T.R.
+## Dimostrazione
+* $\implies$ Sia  $A$ decidibile, dimostriamo che $A$ e $\overline{A}$ sono T.R.
+	* Visto che $A$ è decidibile, esso è anche T.R.
+	* Visto che $A$ è decidibile, anche $\overline{A}$ è decidibile, e quindi T.R.
+* $\impliedby$ Assumiamo che sia $A$ che $\overline{A}$ siano T.R., allora abbiamo due MdT $M$ ed $N$ tali che $L(M) = A$ ed $L(N) = \overline{A}$. Costruiamo il seguente decisore per $A$: (con due nastri)
+	* Su input $w$:
+		* Simula $M$ su $w$ per un passo di computazione sul primo nastro.
+			* Se $M$ accetta: **accetta**.
+			* Se $M$ rifiuta: **reject**.
+		* Simula $N$ su $w$ per un passo di computazione sul secondo nastro:
+			* Se $N$ accetta: **reject**.
+			* Se $N$ rifiuta: **accept**.
+		* Torna al passo $1$.
+
+*Nota*: da questa dimostrazione abbiamo concluso anche che la classe dei linguaggi T.R. non è chiusa rispetto al complemento.
+## Problema 1
+Sia $\Sigma$ un alfabeto finito. Dimostrare che "determinare se un DFA $D$ accetta tutte le stringhe su $\Sigma$" è un problema decidibile.
+$$ALL_{DFA} = \{<D>\ |\ D \text{ è DFA e } L(D) = \Sigma^*\}$$
+**Soluzione 1**:
+Ci basiamo su $E_{DFA}$.
+Costruiamo questo decisore per $ALL_{DFA}$:
+* Su input $<D>$:
+	* Costruisco un nuovo DFA $D'$ tale che $L(D') = \overline{L(D)}$.
+	* Esegui il decisore per $E_{DFA}$ su $<D'>$.
+	* Ritorno il suo output.
+
+*Nota*: Posso applicare questa soluzione perché i linguaggi regolari sono chiusi rispetto al complemento (importante specificarlo all'esame).
+
+**Soluzione 2**:
+Ci basiamo su $EQ_{DFA}$.
+Costruiamo il seguente decisore per $ALL_{DFA}$.
+* Su input $<D>$:
+	* Costruisco un nuovo DFA $D'$ tale che $L(D') = \Sigma^*$
+	* Esegui il decisore per $EQ_{DFA}$ su $<D,D'>$.
+	* Ritorna il suo output.
+
+![[Pasted image 20241119143507.png]]
+## Problema 2
+Si consideri: $$\overline{E_{TM}} = \{<M>\ |\ M \text{ è MdT e } L(M) \neq \emptyset\}$$Dimostrare che esso è T.R.
+Costruiamo una MdT $N$ tale che $L(N) = \overline{E_{TM}}$.
+
+**Soluzione errata**:
+* $N =$ su input $<M>$:
+	* Per $i = 1,2,3,4, ...$
+		* Esegui $M$ sulla stringa $s_i$.
+		* Se $M$ accetta: **accept**
+
+*Nota*: questa soluzione è sbagliata perché potremmo andare in loop infinito prima di accettare.
+
+**Soluzione corretta**:
+* $N =$ su input $<M>$:
+	* Per $i = 1,2,3,4, ...$
+		* Esegui $M$ su $s_1, ..., s_i$ per $i$ passi di computazione.
+		* Se almeno una di tali computazioni accetta: **accept**.
+## Problema 3
+Si consideri: $$\{<R,S>\ | \ R,S \text{ sono regexp e } L(R) \subseteq L(S)\}$$
+Dimostrare che esso è decidibile.
+
+**Soluzione 1**:
+Usiamo la seguente osservazione: 
+	$L(R) \subseteq L(S) \iff$ tutte le stringhe di $L(R)$ stanno anche il $L(S)$, cioè non esiste una stringa di $L(R)$ che non stia in $L(S)$
+
+* Su input $<R,S>$:
+	* Convertiamo $R,S$ in DFA equivalenti $D_R,D_S$
+	* Costruiamo un nuovo DFA $L(D'_S) = \overline{L(D_S)}$.
+	* Costruiamo un nuovo DFA $D$ tale che $L(D_R) \cap L(D'_S)$.
+	* Eseguiamo $E_{DFA}$ su $<D>$
+	* Ritorna il suo output.
+
+**Soluzione 2**:
+Osserviamo che: $$L(R) \subseteq L(S) \iff L(R) \cap L(S) = L(R)$$
+* Su input $<R,S>$:
+	* Convertiamo $R,S$ in DFA equivalenti $D_R,D_S$.
+	* Costruisco un nuovo DFA $D$ tale che $L(D) = L(D_R) \cap L(D_S)$.
+	* Esegui il decisore per $EQ_{DFA}$ su $<D_R,D>$.
+	* Ritorna il suo output.
+## Problema 4
+Data una CFG $G$ diciamo che una variabile $A$ è utilizzabile $\iff$ occorre nella derivazione di almeno una stringa $w \in L(G)$. Dimostrare che "determinare se una variabile è utilizzabile è decidibile".
+
+**Esempio di variabile non utilizzabile**:
+Nell'esempio seguente $B$ non è raggiungibile da $S$:
+$$S \to A$$
+$$A \to aA\ |\ a$$
+$$B \to b$$
+$$C \to B$$
+**Esempio di variabile non utilizzabile**:
+Nell'esempio seguente $A$ non è *generante*:
+$$S \to A$$
+$$A \to A$$
+
+Possiamo dimostrare che le sole variabili non utilizzabili sono quelle che:
+* Non sono raggiungibili dallo start symbol.
+* Non generano stringhe di soli terminali.
+
+**Idea**:
+* Elimino le variabili non raggiungibili.
+* Se sono raggiungibili e sono *generanti*: esse occorrono nella derivazione di qualche stringa, ovvero sono utilizzabili.
+
+
+**Per chiudere**:
+Dimostriamo che "determinare se una variabile è raggiungibile o generante" è decidibile:
+
+**Raggiungibili**:
+* Inizializzo $Reach = \{S\}$
+* Finché è possibile estendere $Reach$:
+	* Se ho una produzione nella forma $A \to v$ dove $A \in Reach$, inserisci le variabili di $v$ in $Reach$
+* Ritorna $Reach$
+
+**Generanti**:
+* Inizializzo $Gen = \emptyset$.
+* Se esiste una produzione $A \to v$ dove tutti i simboli di $v$ sono terminali o variabili in $Gen$, aggiungi $A$ a $Gen$.
+* Itera finché possibile, poi ritorna $Gen$.

@@ -1476,3 +1476,73 @@ Dimostriamo che "determinare se una variabile è raggiungibile o generante" è d
 * Inizializzo $Gen = \emptyset$.
 * Se esiste una produzione $A \to v$ dove tutti i simboli di $v$ sono terminali o variabili in $Gen$, aggiungi $A$ a $Gen$.
 * Itera finché possibile, poi ritorna $Gen$.
+## Riduzione
+>Intuitivamente diciamo che $A$ è riducibile a $B$ (indicato con $A \leq B$) quando una soluzione per $B$ ci consente di costruire una soluzione per $A$.
+
+**Osservazioni**:
+* Se $A \leq B$ e $B$ è *decidibile*, allora anche $A$ è *decidibile*.
+* Se $A \leq B$ e $A$ è *indecidibile*, allora anche $B$ è *indecidibile* ($\to$ utile come tecnica di dimostrazione).
+## Problema della fermata (Halting Problem)
+$$HALT_{TM} = \{<M,w>\ |\ M \text{ è MdT che termina su input } w\}$$
+**Teorema**: $HALT_{TM}$ è indecidibile.
+**Dimostrazione**:
+Dimostriamo che $A_{TM}$ è riducibile ad $HALT_{TM}$, cioè dimostriamo che, se avessimo un decisore per $HALT_{TM}$ allora potremmo costruire un decisore per $A_{TM}$ (Ciò è impossibile perché $A_{TM}$ è indecidibile).
+
+Assumiamo di avere $N$ decisore per $HALT_{TM}$, costruisco il seguente decisore per $A_{TM}$:
+* Su input $<M,w>$:
+	* Esegui $N$ su input $<M,w>$.
+	* Se $N$ rifiuta: **reject**.
+	* Se $N$ accetta: simula $M$ su $w$ e ritorna il suo output. 
+## Problema 2
+Consideriamo ora il problema di determinare se il linguaggio di una MdT è vuoto.
+$$E_{TM} = \{<M> \ |\ M \text{ è MdT e } L(M) = \emptyset\}$$
+Tale linguaggio è **indecidibile**.
+
+**Dimostrazione**:
+Dimostriamo che $A_{TM}$ è riducibile a $E_{TM}$, cioè dimostriamo che se avessi un decisore $H$ per $E_{TM}$, allora potremmo costruire un decisore per $A_{TM}$ (impossibile).
+
+**Soluzione sbagliata**:
+Costruiamo il seguente decisore per $A_{TM}$
+* Su input $<M,w>$:
+	* Esegui il decisore per $E_{TM}$ su input $<M>$.
+	* Se esso accetta: **reject**.
+	* Se invece esso rifiuta: simulo $M$ su $w$ e ritorno il suo output.
+
+L'ultimo passaggio potrebbe non terminare, quindi non ho costruito un decisore.
+
+**Soluzione corretta**:
+* Su input $<M,w>$:
+	* Costruiamo una nuova MdT $N$ con la seguente proprietà:
+		* $L(N) = \begin{cases} \text{NON VUOTO} \quad \text{se } M \text{ accetta } w \\ \text{VUOTO} \quad \text{altrimenti} \end{cases}$
+		* Esegui il decisore per $E_{TM}$ su input $N$.
+		* Se esso ritorna accept: **reject**.
+		* Se invece esso ritorna reject: **accept**. 
+
+Dobbiamo però costruire la MdT $N$:
+* Su input $x$:
+	* Se $x \neq w$: **reject**
+	* Altrimenti: simula $M$ su $w$ e ritorna il suo output.
+$$L(N) = \begin{cases} \{w\} \quad  \text{se } M \text{ accetta } w \\ \emptyset \quad \text{altrimenti}\end{cases}$$
+## Problema 3
+$$REG_{TM} = \{<M>\ |\ M \text{ è MdT e } L(M) \text{ è regolare}\}$$
+Tale linguaggio è **indecidibile**.
+**Dimostrazione**:
+Dimostriamo che $A_{TM}$ è riducibile a $REG_{TM}$, cioè dimostriamo che, se avessimo un decisore $H$ per $REG_{TM}$, potremmo costruire un decisore per $A_{TM}$ (impossibile).
+
+* Su input $<M,w>$:
+	* Costruisci una nuova MdT $N$ tale che:
+		* $L(N) = \begin{cases} \text{REGOLARE} \quad  \text{se } M \text{ accetta } w \\ \text{NON REGOLARE} \quad \text{altrimenti}\end{cases}$
+	* Esegui il decisore su per $REG_{TM}$ su $<N>$.
+	* Ritorno il suo output.
+
+Costruiamo $N$:
+* $N =$ su input $x$:
+	* Se $x$ ha la forma $0^n1^n$ per qualche $n$: **accept**
+	* Altrimenti: simula $M$ su $w$ e ritorna il suo output.
+
+|                     |                       |                           |
+| ------------------- | --------------------- | ------------------------- |
+|                     | $x$ ha forma $0^n1^n$ | $x$ non ha forma $0^n1^n$ |
+| $M$ accetta $w$     | accept                | accept                    |
+| $M$ non accetta $w$ | accept                | reject                    |
+$$L(N) = \begin{cases} \Sigma^* \quad  \text{se } M \text{ accetta } w \\ \{0^n1^n \ \ n \geq 0\} \quad \text{altrimenti}\end{cases}$$

@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "d957410cd44f079a",
+        "id": "139f8b77b9fee52f",
         "type": "tabs",
         "children": [
           {
-            "id": "2459278e932e0c12",
+            "id": "5b6d4a52603def9d",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -158,12 +158,12 @@
       "templates:Insert template": false
     }
   },
-  "active": "2459278e932e0c12",
+  "active": "5b6d4a52603def9d",
   "lastOpenFiles": [
     "Calcolabilità e Linguaggi Formali.md",
+    "Programmazione ad Oggetti Mod. 2.md",
     "Untitled.md",
     "Utilità/Pasted image 20241119143507.png",
-    "Programmazione ad Oggetti Mod. 2.md",
     "Untitled 2.md",
     "Untitled 4.md",
     "Untitled 3.md",

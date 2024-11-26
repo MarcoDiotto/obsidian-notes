@@ -555,7 +555,7 @@ Di seguito riportiamo l'algoritmo:
 * L'**ordine** in cui effettuiamo tali step è importante e ci garantisce la non-invalidazione di step precedenti.
 * Negli step $2,3$ è necessario tenere traccia di cosa è già stato eliminato, altrimenti potrebbero essere re-inseriti e dare vita a loop.
 ## Esempio
-$$S \to ASA\ |\ aB$$$$A \to B\ |\ S$$$$B \to b\ |\ \epsilon$$
+$$S \to ASA\ |\ aB$$$$A \to B\ |\ S\ |\ \epsilon$$$$B \to b\ |\ \epsilon$$
 Utilizziamo l'algoritmo per portare la grammatica in forma normale di Chomsky:
 $$S_0 \to S$$$$S \to ASA\ |\ aB\ |\ a$$$$A \to B\ |\ S\ |\ \epsilon$$$$B \to b$$Rimuovendo anche la $\epsilon$ a destra di $A$ otteniamo:
 $$S_0 \to S$$$$S \to ASA\ |\ aB\ |\ a\ |\ AS\ |\ SA\ |\ S$$$$A \to B\ |\ S$$$$B \to b$$Dobbiamo ora rimuovere le produzioni unitarie ($S \to S$ e $S_0 \to S$):
@@ -621,7 +621,7 @@ Il linguaggio riconosciuto da un **PDA** resta composto dalle stringhe che vengo
 L'automa passa da $q_i$ a $q_j$ leggendo un input $w$ quando $a$ è in cima allo **stack**. $b$ è la cima dello **stack** (Un altro esempio può essere $\epsilon \to b$, ovvero un **push** di $b$).
 ## Accettazione per stack vuoto
 Molti **PDA** vogliono accettare solamente quando lo stack si è svuotato. Questo non è richiesto dalla definizione formale. 
-Un esempio è in **PDA** per: $$\{0^n1^n\ |\ n \geq 0\}$$
+Un esempio è un **PDA** per: $$\{0^n1^n\ |\ n \geq 0\}$$
 Come testiamo se lo stack è vuoto?
 * Non appena inizia la computazione facciamo *push* di un **simbolo convenzionale** (per esempio $)
 * Quando rivedo  $ sono sicuro che lo **stack** si sia svuotato.
@@ -1545,4 +1545,105 @@ Costruiamo $N$:
 |                     | $x$ ha forma $0^n1^n$ | $x$ non ha forma $0^n1^n$ |
 | $M$ accetta $w$     | accept                | accept                    |
 | $M$ non accetta $w$ | accept                | reject                    |
+|                     |                       |                           |
 $$L(N) = \begin{cases} \Sigma^* \quad  \text{se } M \text{ accetta } w \\ \{0^n1^n \ \ n \geq 0\} \quad \text{altrimenti}\end{cases}$$
+## Problema 4
+$$EQ_{TM} = \{<M_1,M_2>\ |\ M_1,M_2 \text{ sono MdT e } L(M_1) = L(M_2)\}$$
+Dimostriamo che questo problema è indecidibile.
+
+**Dimostrazione**:
+Dimostriamo per assurdo che, se $EQ_{TM}$ fosse decidibile, potremmo decidere $E_{TM}$, che è indecidibile. Sia $H$ l'ipotetico decisore per $EQ_{TM}$, costruiamo un decisore per $E_{TM}$ come segue:
+* Su input $<M>$:
+	* Costruisci una MdT $N$ tale che $L(N) = \emptyset$.
+	* Eseguiamo $H$ su input $<M,N>$.
+	* Ritorna il suo output.
+Questo è assurdo perché $E_{TM}$ è indecidibile.
+## Riduzioni basate su storie di computazione accettanti
+Sia $M$ una MdT e sia $w$ una stringa. Una storia di computazione accettante per $M$ e $w$ è una sequenza di configurazioni della MdT $M$, tali che:
+* la prima configurazione è la configurazione iniziale di $M$ su $w$.
+* l'ultima configurazione è una configurazione accettante.
+* Ogni configurazione discende dalla precedente (se ne ha una) secondo le regole di computazione di una MdT.
+
+>$M$ accetta $w$ $\iff$ esiste una storia di computazione accettante per $M$ e $w$
+## Automi linearmente limitati (LBA)
+
+Un **LBA** è una MdT con un vincolo aggiuntivo: non può mai spostare la testina oltre la lunghezza del suo input iniziale.
+*Esempio*: se l'input iniziale ha lunghezza $10$, un LBA opera con un nastro di $10$ celle.
+## Problema 1
+$$A_{LBA} = \{<M,w>\ |\ M \text{ è LBA e } w \in L(M)\}$$
+Tale problema è decidibile ma prima di dimostrarlo abbiamo bisogno di un lemma.
+
+**LEMMA**: Sia $M$ un LBA con $q$ stati e $g$ simboli possibili per il nastro. Se un nastro ha lunghezza $n$, il numero massimo di configurazioni del LBA è $qng^n$.
+
+**DIMOSTRAZIONE**:
+Una configurazione è una tripla che comprende:
+* lo stato del LBA.
+* la posizione della testina.
+* il contenuto del nastro.
+
+Nel nostro caso abbiamo:
+* Numero di stati: $q$.
+* Numero di posizioni della testina: $n$
+* Possibili contenuti del nastro: $g^n$ ($\to$ g simboli per ogni cellula)
+
+Passiamo alla dimostrazione del problema:
+
+**TEOREMA**: $A_{LBA}$ è decidibile.
+**DIMOSTRAZIONE**: Costruisci il seguente decisore per $A_{LBA}$:
+* Su input $<M,w>$ (con $M =$ LBA):
+	* Simula $M$ su $w$ per $qng^n$ passi di computazione, oppure fino a terminazione.
+	* Se $M$ ha terminato: ritorna il suo output.
+	* Se $M$ non ha terminato: **reject**.
+## Problema 2
+$$E_{LBA} = \{<M> \ |\ M \text{ è LBA e } L(M) = \emptyset\}$$
+Tale problema è indecidibile.
+**DIMOSTRAZIONE**:
+Costruiamo una riduzione da $A_{TM}$ a $E_{LBA}$ sfruttando la tecnica delle storie di computazione accettanti.
+Assumiamo per assurdo che $E_{LBA}$ sia decidibile e costruiamo un decisore per $A_{TM}$ (che è impossibile):
+* Decisore per $A_{TM}$
+	*  Su input $<M, w>$ ($\to$ dove $M$ è MdT):
+		* Costruiamo un LBA $N$ con la seguente caratteristica:
+		  $L(N) = \begin{cases} \text{NON VUOTO} \quad \text{se } M \text{ accetta } w \\ \text{VUOTO} \quad \text{altrimenti}\end{cases}$
+		* Esegui il decisore per $E_{LBA}$ su $<N>$
+		* Ritorna il suo output invertito.
+
+Costruiamo il nostro LBA $N$ in modo che $N$ sia l'insieme delle storie di computazione accettanti di $M$ è $w$.
+* Se $L(N) = \emptyset$, allora non ci sono storie di computazione accettanti di $M$ e $w$, quindi $M$ non accetta $w$.
+* Se $L(N) \neq \emptyset$, allora vi è una storia di computazione accettante di $M$ e $w$, quindi $M$ accetta $w$.
+
+**Come è fatto nel concreto l'LBA $N$?**
+Assumiamo di rappresentare le storie di computazione accettanti nel seguente formato: $$\#C_1\#C_2\#...\#C_k\#$$ dove le $C_i$ sono configurazioni.
+Come verifichiamo se tale stringa è una storia di configurazione accettante?
+* $C_1$ è configurazione iniziale di $M$ di $w$ ($\to$ semplice scansione di $C_1$, basta verificare $C_1=q_0w$ dove $q_0$ è lo stato iniziale di $M$).
+* $C_k$ è una configurazione accettante di $M$ su $w$ ($\to C_k = uq_{accept}w$ per qualche $u,v$).
+* $\forall i: C_{i+1}$ discende da $C_i$ secondo la funzione di transazione di $M$.
+## Problema 3
+$$ALL_{CFG} = \{<G>\ |\ G \text{ è CFG e } L(G) = \Sigma^*\}$$
+Tale problema è indecidibile.
+
+**DIMOSTRAZIONE**:
+Assumiamo per assurdo che $ALL_{CFG}$ sia decidibile e costruiamo un decisore per $A_{TM}$ (assurdo). Il decisore per $A_{TM}$ è il seguente:
+* Su input $<M,w>$:
+	* Costruisci una CFG $G$ con la seguente proprietà:
+	  $L(N) = \begin{cases} A \neq \Sigma^* \quad \text{se } M \text{ accetta } w \\ \Sigma^* \quad \text{altrimenti}\end{cases}$
+	* Esegui il decisore per $ALL_{CFG}$ su input $G$.
+	* Ritorna l'output invertito.
+Costruiamo $G$ in modo tale che $L(G)$ contenga le stringhe che *non* sono storie di computazione accettanti per $M$ e $w$:
+* Se $L(G) = \Sigma^*$, allora nessuna stringa è una storia di computazione accettante per $M$ e $w$, quindi $M$ non accetta $w$.
+* Se $L(G) \neq \Sigma^*$, allora qualche stringa è una storia di computazione accettante per $M$ e $w$, quindi $M$ accetta $w$.
+
+Specificare $G$ sarebbe molto complesso. Invece di dare $G$ possiamo definire un PDA $P$. Nella nostra costruzione $G$ è la conversione di $P$ in una CFG.
+
+**COSTRUZIONE DEL PDA**:
+Costruiamo il PDA $P$ in modo tale che $L(P)$ comprenda le stringhe che non sono storie di computazione accettante per $M$ e $w$:
+$$\#C_1\#C_2\#...\#C_k\#$$
+Quella sopra riportata è una stringa che codifica una storia di computazione accettante.
+
+**Come verifichiamo che una stringa non è una storia di computazione accettante?**
+* $C_i$ non è configurazione iniziale di $M$ su $w$, cioè $C_1 \neq q_0w$.
+* $C_k$ non è configurazione accettante, cioè $C_k \neq uq_{accept}v$
+* $\exists i : C_{i + 1}$ non discende da $C_i$ secondo la funzione di transazione della MdT $M$. ($\to$ è necessario cambiare la rappresentazione come stringa:$\#C_1\#C^R_2\#C_3\#C^R_4...\#C_k\#$ )
+
+Il PDA $P$ sceglie non deterministicamente se verificare la condizione $1,2$ o $3$.
+
+*Nota*: Il cambio di configurazione nel punto $3$ è necessario per poter confrontare correttamente i valori nello stack.

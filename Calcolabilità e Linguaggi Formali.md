@@ -1764,7 +1764,7 @@ Dato che $A \leq_m B$, esiste una $f$ calcolabile tale che, per ogni stringa $w$
 $EQ_{TM}$ non è T.R.
 
 **DIMOSTRAZIONE**:
-Dimostriamo che $A_{TM} \leq_m EQ_{TM}$, cioè $A_{TM} \leq_m \overline{EQ}_{TM}$.
+Dimostriamo che $\overline{A}_{TM} \leq_m EQ_{TM}$, cioè $A_{TM} \leq_m \overline{EQ}_{TM}$.
 
 Costruiamo quindi una $f$ calcolabile tale che $<M,w> \in A_{TM} \iff f(<M,w>) \in \overline{EQ}_{TM}$,
 

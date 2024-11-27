@@ -549,13 +549,13 @@ Di seguito riportiamo l'algoritmo:
 * Generiamo un nuovo **start symbol** $S'$ ed aggiungiamo la **produzione** $S' \to S$. Tale trasformazione preserva il linguaggio ed assicura per costruzione che lo start symbol non occorra a destra di una produzione.
 * Eliminiamo le produzioni della forma $A \to \epsilon$, dove $A$ non è lo **start symbol**. Per tutte le regole della forma $R \to uAv$ introduco una nuova regola $R \to uv$. Ciò deve essere fatto per tutte le occorrenze di $A$. Per esempio, data una regola del tipo $R \to uAvAw$, sarà necessario introdurre nuove regole: $R \to uvAw,\ R\to uAvw,\ R \to uavw$. 
 * Eliminiamo le produzioni "unitarie" della forma $A \to B$. Per tutte le regole della forma $B \to u$, introduco una nuova regola $A \to u$.
-* Rimpiazziamo ogni regola della forma $A \to u_1,u_2,..,u_k$ con $k \geq 3$ e la sostituiamo con nuove regole del tipo $A \to u_1,A_1,\ A_1 \to u_2A_2,..,\ A_{k-2} \to u_{k-1}u_k$. Nel nostro caso $u$ può essere sia un **terminale**, sia un **non-terminale**. Pertanto andiamo a rimpiazzare ogni terminale $u_i$ con un nuovo **non-terminale** $U_i$ e aggiungiamo la regola $U_i \to u_i$.
+* Rimpiazziamo ogni regola della forma $A \to u_1,u_2,..,u_k$ con $k \geq 3$ e la sostituiamo con nuove regole del tipo $A \to u_1A_1,\ A_1 \to u_2A_2,..,\ A_{k-2} \to u_{k-1}u_k$. Nel nostro caso $u$ può essere sia un **terminale**, sia un **non-terminale**. Pertanto andiamo a rimpiazzare ogni terminale $u_i$ con un nuovo **non-terminale** $U_i$ e aggiungiamo la regola $U_i \to u_i$.
 
 *Note*:
 * L'**ordine** in cui effettuiamo tali step è importante e ci garantisce la non-invalidazione di step precedenti.
 * Negli step $2,3$ è necessario tenere traccia di cosa è già stato eliminato, altrimenti potrebbero essere re-inseriti e dare vita a loop.
 ## Esempio
-$$S \to ASA\ |\ aB$$$$A \to B\ |\ S\ |\ \epsilon$$$$B \to b\ |\ \epsilon$$
+$$S \to ASA\ |\ aB$$$$A \to B\ |\ S$$$$B \to b\ |\ \epsilon$$
 Utilizziamo l'algoritmo per portare la grammatica in forma normale di Chomsky:
 $$S_0 \to S$$$$S \to ASA\ |\ aB\ |\ a$$$$A \to B\ |\ S\ |\ \epsilon$$$$B \to b$$Rimuovendo anche la $\epsilon$ a destra di $A$ otteniamo:
 $$S_0 \to S$$$$S \to ASA\ |\ aB\ |\ a\ |\ AS\ |\ SA\ |\ S$$$$A \to B\ |\ S$$$$B \to b$$Dobbiamo ora rimuovere le produzioni unitarie ($S \to S$ e $S_0 \to S$):
@@ -720,7 +720,7 @@ Dimostrare che un linguaggio non è **context-free** è difficile in generale, p
 ## Pumping Lemma per linguaggi Context-Free
 Se $A$ è un linguaggio **context-free**, allora esiste un intero $p \geq 1$ (**pumping length**) tale che ogni stringa $w \in A$ con $|w| \geq p$ può essere divisa in cinque parti $w = uvxyz$ tali che:
 * $\forall i \geq 0: uv^ixy^iz \in A$.
-* $|xy| > 0$ ($\to$ se non fosse così sarebbe banalmente sempre vero).
+* $|vy| > 0$ ($\to$ se non fosse così sarebbe banalmente sempre vero).
 * $|vxy| \leq p$.
 ## Idea della dimostrazione
 Scegliamo una $p$ "molto grande", le stringhe con lunghezza $\geq p$ sono "molto lunghe". Essendo molto lunghe, tali stringhe avranno un **parse tree** "molto alto". Visto che i **non-terminali** sono in numero finito, in tale parse tree "molto alto" ci deve essere un non-terminale $R$ che si ripete.
@@ -747,7 +747,7 @@ Prendiamo il *cammino* più lungo di tale **parse tree**, ovvero la sua *altezza
 
 Per la dimostrazione della prima condizione basta guardare il disegno.
 ## Dimostrazione seconda condizione ($|vy| > 0$)
-Assumiamo per assurdo che $|xy| = 0$, cioè $|v| = |y| = 0$.
+Assumiamo per assurdo che $|vy| = 0$, cioè $|v| = |y| = 0$.
 Pertanto $uvxyz = uxz$. Ma allora se sostituisco il più piccolo albero radicato in $R$ al posto di quello più grande, ottengo un **parse tree** per $uxz$ che ha meno nodi del parse tree di partenza. Ciò è assurdo perché il parse tree di partenza è minimo.
 ## Dimostrazione terza condizione ($|vxy| \leq p$)
 Abbiamo preso un **non-terminale** $R$ che occorre sul cammino più lungo dell'albero e si ripete fra i $|V| + 1$ non-terminali più in basso. Di conseguenza l'altezza del sotto-albero più grande radicato in $R$ è $|V| + 1$. Tale sotto-albero, che genera la stringa $vxy$, genera stringhe di lunghezza massima $b^{|V| + 1} = p$.
@@ -766,7 +766,7 @@ Assumo per assurdo che $D$ sia context-free, allora vale il pumping lemma. Sia $
 Consideriamo $s = 0^p10^p1$. Purtroppo questa stringa è *pompabile*
 
 Consideriamo la stringa $s =0^p1^p0^p1^p$.
-Osserviamo che se $s = uvxyz$, allora $vyz$ deve stare a cavallo fra le due metà della stringa. Infatti se cade nella prima o nella seconda metà esco dal linguaggio con un **pumping up**. Se $vyz$ sta a cavallo delle due metà, allora $uv^2xy^2y = 0^p1^io^j1^p$, dove $i \ne p \lor j \ne p$. Questa stringa non sta nel linguaggio $D$ perché la prima metà è diversa dalla seconda.
+Osserviamo che se $s = uvxyz$, allora $vyz$ deve stare a cavallo fra le due metà della stringa. Infatti se cade nella prima o nella seconda metà esco dal linguaggio con un **pumping up**. Se $vyz$ sta a cavallo delle due metà, allora $uv^2xy^2y = 0^p1^i0^j1^p$, dove $i \ne p \lor j \ne p$. Questa stringa non sta nel linguaggio $D$ perché la prima metà è diversa dalla seconda.
 ## Esercizio 1
 Dimostrare che la classe dei linguaggi context free è chiusa rispetto ad unione, concatenazione e star.
 
@@ -775,7 +775,7 @@ Dato che $A$ e $B$ sono CFL, esistono delle CFG $G = (V_1,\Sigma_1, R_1, S_1)$ e
 * $V_3 = V_1 \cup V_2 \cup \{S_3\}$
 * $\Sigma_3 = \Sigma_1 \cup \Sigma_2$
 * $R_3 = R_1 \cup R_2 \cup \{S_3 \to S_1, S_3 \to S_2\}$
-* $S_3 =$ nuovo **start symbol** che non occorre il $V_1 \cup V_2$.
+* $S_3 =$ nuovo **start symbol** che non occorre in $V_1 \cup V_2$.
 *Nota*: questa soluzione è corretta solo per $V_1 \cap V_2 = \emptyset$. Posso tuttavia assumerlo senza perdita di generalità.
 ## Esercizio 2
 * Usare i linguaggi $A = \{a^mb^nc^n\ |\ m,n \geq 0\}$ e $B = \{a^mb^mc^n\ |\ m,n \geq 0\}$ per dimostrare che la classe dei CFL non è chiusa rispetto a $\cap$.
@@ -1646,4 +1646,178 @@ Quella sopra riportata è una stringa che codifica una storia di computazione ac
 
 Il PDA $P$ sceglie non deterministicamente se verificare la condizione $1,2$ o $3$.
 
+$ALL_{CFG}$ è indecidibile.
+Dimostrare che $EQ_{CFG} = \{<G,H>\ |\ G,H \text{ sono CFG e } L(G) = L(H)\}$ 
+
 *Nota*: Il cambio di configurazione nel punto $3$ è necessario per poter confrontare correttamente i valori nello stack.
+# Definizioni di riducibilità
+Utili perché:
+* Permettono di dimostrare proprietà generali di ogni riduzione.
+* Permettono di effettuare ragionamenti più sofisticati di quelli fatti finora.
+## Definizione di mapping riducibilità  (o riducibilità attraverso funzioni)
+Inizialmente abbiamo bisogno della definizione di **calcolabilità**:
+
+> Una funzione $f: \Sigma^* \to \Sigma^*$ si dice **calcolabile** $\iff$ esiste una MdT $M$ tale che, per ogni stringa $w$, $M$ su input $w$ termina lasciando $f(w)$ sul nastro.
+
+Un esempio banale è dato dalla somma:
+	Possiamo pensare ad una sequenza di $n$ volte un carattere $a$
+	Per esempio, potremmo scrivere $3 + 4$ come: $$aaa\#aaaa$$
+	e successivamente come: $$aaaaaaa$$
+	Abbiamo così lasciato sul nastro una sequenza di $7\ a$, ovvero la somma di $3$ e $4$.
+
+**Definizione di mapping-riducibilità**:
+> Un linguaggio $A$ è mapping-riducibile ad un linguaggio $B$ ($A \leq_m B$) $\iff$ esiste una funzione calcolabile $f$ tale che, per ogni stringa $w$, $w \in A \iff f(w) \in B$.
+
+In altre parole, se prendo un punto che sta in $A$, il risultato della funzione $f$ applicata su tale punto dovrà essere in $B$.
+Se invece il punto di partenza è fuori da $A$, allora finirò fuori da $B$.
+
+*Osservazione*: $A \leq_m B \iff \overline{A} \leq_m \overline{B}$.
+## Teorema
+> Se $A \leq_m B$ e $B$ è **decidibile**, allora $A$ è **decidibile**.
+
+**DIMOSTRAZIONE**:
+Dato che $A \leq_m B$, esiste una funzione **calcolabile** $f$ tale che, per ogni stringa $w$, $w \in A \iff f(w) \in B$.
+Visto che $B$ è decidibile, allora esiste un decisore $M$ tale che $L(M) = B$.
+
+Costruiamo un decisore per $A$ come segue:
+* Su input $w$:
+	* Calcola $f(w)$.
+	* Esegui $M$ su input $f(w)$.
+	* Ritorna il suo output.
+
+$w \in A \implies f(w) \in B \implies$ Il decisore ritorna **accept**.
+$w \notin A \implies f(w) \notin B \implies$ Il decisore ritorna **reject**.
+
+**COROLLARIO**: Se $a \leq_m B$ e $A$ è indecidibile, allora $B$ è indecidibile.
+## Esempio
+Dimostriamo che $A_{TM} \leq_m HALT_{TM}$.
+$$A_{TM} = \{<M,w>\ |\ M \text{è MdT e } w \in L(M)\}$$
+$$HALT_{TM} = \{<M,w>\ |\ M \text{ è MdT che termina su input } w\}$$
+
+Dobbiamo trovare una $f$ calcolabile, tale che: $$<M,w> \in A_{TM} \iff f(<M,w>) \in HALT_{TM}$$
+Diamo una MdT $F$ che implementa la funzione $f$:
+* Su input $<M,w>$:
+	* Costruiamo una nuova MdT N definita come segue:
+		* Su input $x$:
+			* Simula $M$ su $x$.
+			* Se $M$ accetta: **accept**.
+			* Se $M$ rifiuta: vai in loop.
+		* Ritorna $<N,w>$
+
+Dimostriamo la correttezza di ciò che abbiamo appena scritto, distinguendo $3$ casi:
+* $M$ accetta $w \implies <M,w> \in A_{TM}$ In questo caso $N$ accetta $w$, quindi $<N,w> \in HALT_{TM}$.
+* $M$ rifiuta $w \implies <M,w> \notin A_{TM}$ In questo caso $N$ va in loop su $w$, quindi $<N,w> \notin HALT_{TM}$.
+* $M$ va in loop su $w \implies <M,w> \notin A_{TM}$ In questo caso $N$ va in loop su $w$, quindi $<N,w> \notin A_{TM}$.
+## Esempio 2
+Dimostriamo che $E_{TM} \leq_m EQ_{TM}$.
+
+$$E_{TM} = \{<M> \ |\ M \text{ è MdT e } L(M) = \emptyset\}$$
+$$EQ_{TM} = \{<M_1,M_2>\ |\ M_1,M_2 \text{ sono MdT e } L(M_1) = L(M_2)\}$$
+
+Costruiamo una $f$ calcolabile tale che $<M> \in E_{TM} \iff f(<M>) \in EQ_{TM}$.
+$f$ è implementata sulla seguente MdT $F$:
+* Su input $<M>$:
+	* Costruisci una nuova MdT $N$ tale che $L(N) = \emptyset$.
+	* Ritorna $<M,N>$
+
+$<M> \in E_{TM} \implies L(M) = \emptyset \implies <M,N> \in EQ_{TM}$
+$<M> \notin E_{TM} \implies L(M) \neq \emptyset \implies <M,N> \notin EQ_{TM}$
+## Esempio 3
+Dimostriamo che $A_{TM} \leq_m \overline{E}_{TM}$.
+Vogliamo costruire una $f$ calcolabile tale che $<M,w>\in A_{TM} \iff f(<M,w>) \in \overline{A}_{TM}$
+Implementiamo $f$ tramite la seguente MdT $F$:
+* Su input $<M,w>$:
+	* Costruisci una nuova MdT $N$ definita come segue:
+		* $N =$ su input $x$:
+			* Se $x \neq w$: **reject**.
+			* Altrimenti: simula $M$ su $w$ e ritorna il suo output.
+	* Ritorna $N$.
+
+Dimostriamo la correttezza di ciò che abbiamo appena scritto, distinguendo 2 casi:
+* $<M,w> \in A_{TM} \implies M$ accetta $w$
+	* $\implies L(N) = \{w\}$
+	* $\implies L(N) \neq \emptyset$
+	* $\implies <N> \notin E_{TM}$
+	* $\implies <N> \in \overline{E}_{TM}$
+* $<M,w> \notin A_{TM} \implies M$ non accetta $w$
+	* $\implies L(N) = \emptyset$
+	* $\implies <N> \in E_{TM}$
+	* $\implies <N> \notin \overline{E}_{TM}$
+## Problema
+Dimostrare che $A_{TM} \nleq_m E_{TM}$.
+## Teorema
+Se $A \leq_m B$ e $B$ e T.R., allora anche $A$ è T.R.
+
+**DIMOSTRAZIONE**:
+Dato che $A \leq_m B$, esiste una $f$ calcolabile tale che, per ogni stringa $w$:
+* $w \in A \iff f(w) \in B$
+* Dato che $B$ è T.R., esiste una MdT $M$ tale che $L(M) = B$.
+* Costruiamo una MdT $N$ tale che $L(N) = A$.
+* Su input $w$:
+	* Calcola $f(w)$.
+	* Esegui $M$ su $<f(w)>$ e ritorna il suo output.
+
+**COROLLARIO**: se $A \leq_m B$ e $A$ non è T.R., allora $B$ non è T.R.
+
+> La mapping-riducibilità ci permette di dimostrare che alcuni problemi non sono T.R.
+## Teorema
+$EQ_{TM}$ non è T.R.
+
+**DIMOSTRAZIONE**:
+Dimostriamo che $A_{TM} \leq_m EQ_{TM}$, cioè $A_{TM} \leq_m \overline{EQ}_{TM}$.
+
+Costruiamo quindi una $f$ calcolabile tale che $<M,w> \in A_{TM} \iff f(<M,w>) \in \overline{EQ}_{TM}$,
+
+$f$ è implementata dalla seguente MdT $F$:
+* Su input $<M,w>$:
+	* Costruiamo una nuova MdT $N_1$:
+		* **reject**.
+	* Costruiamo una nuova MdT $N_2$
+		* Su input $x$:
+			* Simula $M$ su $w$.
+			* Ritorna il suo output.
+	* Ritorniamo $<N_1,N_2>$.
+
+*Nota*: $L(N_1) = \emptyset$.
+*Nota*: Qualsiasi sia l'input di $N_2$, essa simulerà sempre su $w$.
+
+Dimostriamo la correttezza di ciò che abbiamo appena scritto, distinguendo 2 casi:
+* $<M,w> \in A_{TM} \implies M$ accetta $w$
+	* $\implies L(N_2) = \Sigma^*$.
+	* $\implies L(N_1) \neq L(N_2)$.
+	* $\implies <N-1,N_2> \in \overline{EQ}_{TM}$.
+* $<M,w> \notin A_{TM} \implies M$ non accetta $w$.
+	* $\implies L(N_2) = \emptyset$.
+	* $\implies L(N_1) = L(N_2)$.
+	* $\implies <N_1,N_2> \notin \overline{EQ}_{TM}$.
+
+**VARIAZIONI**:
+* Costruiamo una nuova MdT $N_2$
+	* Su input $x$:
+		* Se $x \neq w$: **reject**.
+		* Altrimenti simula $M$ su $w$ e ritorna il suo output.
+* Ritorniamo $<N_1,N_2>$.
+
+In questo caso:
+
+* $<M,w> \in A_{TM} \implies M$ accetta $w$
+	* $\implies L(N_2) = \{w\}$.
+	* $\implies L(N_1) \neq L(N_2)$.
+	* $\implies <N-1,N_2> \in \overline{EQ}_{TM}$.
+
+E la dimostrazione sarebbe corretta lo stesso.
+
+
+Se invece volessimo fare $A_{TM} \leq EQ_{TM}$:
+
+$f$ è implementata dalla seguente MdT $F$:
+* Su input $<M,w>$:
+	* Costruiamo una nuova MdT $N_1$:
+		* **accept**.
+	* Costruiamo una nuova MdT $N_2$
+		* Su input $x$:
+			* Simula $M$ su $w$.
+			* Ritorna il suo output.
+	* Ritorniamo $<N_1,N_2>$.
+
+*Nota*: in questo caso $L(N_1) = \Sigma^*$.

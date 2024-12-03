@@ -1821,3 +1821,102 @@ $f$ è implementata dalla seguente MdT $F$:
 	* Ritorniamo $<N_1,N_2>$.
 
 *Nota*: in questo caso $L(N_1) = \Sigma^*$.
+## Turing riducibilità
+$$\overline{A_{TM}} \leq_m A_{TM}\ ????$$
+*Reminder*: Se $A \leq_m B$ e $A$ non è T.R., allora $B$ non è T.R. Nel nostro caso infatti $\overline{A_{TM}}$ non è T.R. mentre $A_{TM}$ è T.R.
+
+Introduciamo la **Turing riducibilità**:
+* Un **oracolo** è per un linguaggio $B$ è un dispositivo( generico) che, per ogni stringa $w$ ritorna *accept* se $w \in B$ e *reject* se $w \notin B$.
+* Una **MdT con oracolo** per il linguaggio $B$ è una MdT estesa con la possibilità di interrogare un oracolo per $B$.
+
+**DEFINIZIONE**: Un linguaggio $A$ è Turing Riducibile ad un linguaggio $B$, rappresentato con la notazione $A \leq_T B \iff$ esiste una MdT con oracolo per $B$ che decide $A$. 
+
+*Osservazione*: $\overline{A_{TM}} \nleq_m A_{TM}$ ma $\overline{A_{TM}} \leq_T A_{TM}$.
+## Esempio 1
+Dimostriamo che $\overline{A_{TM}} \leq_T A_{TM}$.
+
+Costruiamo una MdT con oracolo per $A_{TM}$ che decide $\overline{A_{TM}}$:
+* Su input $x$:
+	* Invoca l'oracolo per $A_{TM}$ su $x$.
+	* Inverti il suo responso.
+## Esempio 2
+Dimostriamo che $E_{TM} \leq_T A_{TM}$.
+
+Dimostriamo che esiste una MdT con oracolo per $A_{TM}$ che decide $E_{TM}$.
+* Su input $<M>$:
+	* Costruiamo una nuova MdT $N$ con la seguente proprietà:
+		* $L(N) = \begin{cases} \Sigma^* \quad \text{se } L(M) \neq \emptyset \\ \emptyset \quad \text{se } L(M) = \emptyset \end{cases}$
+	* Esegui l'oracolo per $A_{TM}$ su input $<N,1>$.
+	* Invertiamo il responso.
+
+Definiamo la MdT $N$:
+* $N=$ su input $x$:
+	* Per $i=0,1,2,3,...$
+		* Esegui $M$ su $s_0,s_1,...,s_i$ per $i$ passi di computazione.
+		* Se una di tali computazioni accetta, ritorna con **accept**.
+## Teorema
+Se $A \leq_T B$ e $B$ è decidibile, allora $A$ è decidibile.
+
+**DIMOSTRAZIONE**:
+Sia $A \leq_T B$, allora esiste una MdT con oracolo per $B$ che decida $A$. Posso costruire un decisore per $A$ sostituendo tutte le chiamate all'oracolo per $B$ con chiamate al decisore per $B$.
+
+**COROLLARIO**: Se $A \leq_T B$ è indecidibile, e $A$ è indecidibile, allora $B$ è indecidibile.
+## Teorema
+Se $A \leq_m B$, allora $A \leq_T B$.
+
+**DIMOSTRAZIONE**:
+Dato che $A \leq_m B$, esiste una funzione calcolabile $f$ tale che, $\forall w, w \in A \iff f(w) \in B$.
+Costruisco una MdT con oracolo per $B$ che decide $A$ come segue:
+* Su input $w$:
+	* Calcola $f(w)$.
+	* Esegui l'oracolo per $B$ su $f(w)$
+	* Ritorna il suo output.
+## Pro e contro di $\leq_m$ e $\leq_T$
+
+| MAPPING $\leq_m$                                                                                                                                    | TURING $\leq_T$                                                                                                       |
+| --------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| $\color{green}+$Permette di dimostrare che certi problemi non sono Turing riconoscibili<br>(se $A \leq_m B$ e $A$ non è T.R. allora $B$ non è T.R.) | $\color{green}+$ Più intuitiva ($\overline{A_{TM}} \leq_T A_{TM}$)<br>$\color{green}+$ Se vale $\leq_m$, vale $leq_T$ |
+| $\color{red}-$Non cattura certe riduzioni intuitiva ($\overline{A_{TM}} \nleq_m A_{TM}$)                                                            | $\color{red}-$Non ci aiuta a dimostrare che certi problemi non sono T.R:                                              |
+## Teorema di Rice
+**ENUNCIATO "INFORMALE"**: 
+Qualsiasi proprietà non banale del linguaggio di una MdT è *indecidibile*.
+
+**ESEMPI**:
+$E_{TM} = \{<M>\ |\ M \text{è una MdT e } L(M) = \emptyset\}$
+$A_{TM} = \{<M,w>\ |\ M \text{è MdT e } w \in L(M)\}$
+$REG_{TM} = \{<M>\ |\ M \text{ è MdT e } L(M) \text{ è regolare}\}$
+
+**ENUNCIATO FORMALE**: 
+* Una **proprietà di una MdT** è un insieme $P$ contenente una serie di descrizioni $<M_1>,<M_2>,<M_3>...$ di MdT (ovvero un linguaggio che contiene una serie di MdT che hanno tale proprietà).
+* Una **proprietà non banale** è una proprietà $P$ tale che esistano MdT $M,N$ tali che $<M> \in P$ e $<N> \notin P$ (ovvero $P$ è soddisfatta da certe MdT e non da altre).
+* Una **proprietà del linguaggio** è una proprietà $P$, tale che, comunque prese due MdT $M,N$ tali che $L(M) = L(N)$, allora $<M> \in P \iff <N> \in P$ (Se $M$ ed $N$ hanno lo stesso linguaggio, o $P$ vale sia per $M$ che per $N$, oppure $P$ non vale per nessuna dei due).
+
+**DIMOSTRAZIONE**:
+Sia $P$ una proprietà non banale del linguaggio di una MdT.
+Assumiamo per assurdo che $P$ sia decidibile e sia $H$ il suo decisore.
+In tal caso riusciremo a costruire un decisore per $A_{TM}$, che è assurdo in quanto $A_{TM}$ è indecidibile.
+Il decisore per $A_{TM}$ è il seguente:
+* Su input $<M,w>$:
+	* Costruisci una nuova MdT $N$ tale che $N$ ha la proprietà $P$ se $M$ accetta $w$ e $N$ non ha la proprietà $P$ altrimenti.
+	* Esegui $H$ su input $N$.
+	* Ritorna il suo output.
+
+**Come è fatta la costruzione dello step $1$, cioè $N$?**:
+
+**Costruzione di $N$**:
+Visto che $P$ non è banale, devono esistere:
+* Almeno una MdT che soddisfa $P$.
+* Almeno una MdT che non soddisfa $P$.
+
+Assumiamo senza perdita di generalità (cioè senza restringere le ipotesi) che la macchina $V_{\emptyset}$, tale che $L(V_{\emptyset}) = \emptyset$ non soddisfa $P$, cioè $<V_{\emptyset}> \notin P$. Sia invece $T$ una MdT che soddisfa $P$, cioè $<T> \in P$.
+
+Costruiamo la macchina $N$ come segue:
+* $N=$ su input $x$:
+	* Esegui $M$ su $w$.
+	* Se $M$ ha rifiutato: **reject**.
+	* Se $M$ ha accettato: simula $<T>$ su $x$ e ritorna il suo output.
+
+Pertanto il linguaggio di $N$ è:
+$$L(N) = \begin{cases} L(T) \quad \text{se } M \text{ accetta } w\\ \emptyset\ (= V_{\emptyset}) \quad \text{altrimenti} \end{cases}$$
+
+In particolare sappiamo che $<V_{\emptyset}> \notin P$ e $L(T) \in P$. 

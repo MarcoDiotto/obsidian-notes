@@ -1920,3 +1920,73 @@ Pertanto il linguaggio di $N$ è:
 $$L(N) = \begin{cases} L(T) \quad \text{se } M \text{ accetta } w\\ \emptyset\ (= V_{\emptyset}) \quad \text{altrimenti} \end{cases}$$
 
 In particolare sappiamo che $<V_{\emptyset}> \notin P$ e $L(T) \in P$. 
+## Problema 1
+$$EQ_{CFG} = \{<G,H>\ |\ G,H \text{ sono CFG e } L(G) = L(H)\}$$
+Dimostrare che $EQ_{CFG}$ è CO-Turing riconoscibile (il suo complemento è T.R.).
+
+Costruiamo una MdT $M$ tale che $L(M) = \overline{EQ_{CFG}}$:
+* $M =$ su input $<G,H>$:
+	* Per $i = 1,2,3,4,...$
+		* Esegui il decisore per $A_{CFG}$ su input $<G,s_i>$
+		* Esegui il decisore per $A_{CFG}$ su input $<H,s_i>$
+		* Se i due output sono diversi: **accept**
+
+Può continuare all'infinito se tutte le stringhe sono uguali. Tuttavia, a noi non serve un decisore, ci basta sapere se due output sono diversi.
+## Problema 2
+Dimostrare che $A_{TM} \nleq_m E_{TM}$.
+*Nota*: Ricordiamo che $A_{TM} \leq_m \overline{E_{TM}}$.
+
+Assumiamo per assurdo che $A_{TM} \nleq_m E_{TM}$. Tale affermazione è equivalente a $\overline{A_{TM}} \leq_m \overline{E_{TM}}$. Osserviamo che $\overline{A_{TM}}$ non è T.R. (dimostrato). Inoltre sappiamo che $\overline{E_{TM}}$ 
+è T.R. (dimostrato). Ciò è impossibile, perché sappiamo che se $A \leq_m B$ e $A$ non è T.R., allora $B$ non è T.R.
+## Problema 3
+Si consideri la seguente affermazione: "Se $A \leq_m B$ e $B$ è regolare, allora anche $A$ è regolare". Dimostrare la sua verità o la sua falsità.
+
+**RAGIONIAMO**: Se $A \leq_m B$, allora esiste una funzione calcolabile $f$, tale che, per ogni stringa $w$, $w \in A \iff f(w) \in B$. Sappiamo che $B$ è regolare, quindi esiste un DFA che lo riconosce. Dovremmo costruire un DFA che riconosca $A$. La funzione $f$ è calcolabile, ciò significa che ci serve una MdT per calcolarla (Un DFA è troppo semplice per farlo).
+
+La proprietà è *falsa*, possiamo dimostrare che $\{0^n1^n\ |\ n \geq 0\} \leq_m 0^*1^*$.
+La nostra funzione $f$ è:
+$$f(w) = \begin{cases} 01 \quad \text{se }w \text{ ha forma } 0^n1^n \\ 10 \quad \text{altrimenti}\end{cases}$$
+Nel nostro caso, $f$ è calcolabile perché può riconoscere $0^n1^n$ e da in output dei valori corretti rispetto alle limitazioni fornite ($0^*1^*$).
+## Problema 4
+Dimostrare che se $A$ è T.R. e $A \leq_m \overline{A}$, allora $A$ è decidibile.
+Dato che $A \leq_m \overline{A}$, abbiamo che $\overline{A} \leq_m \overline{\overline{A}} = A$. Questo perché la mapping riducibilità e preservata dal complemento. Dato che $\overline{A} \leq_m A$, allora anche $\overline{A}$ è T.R.
+Dato che sia $A$ che $\overline{A}$ sono T.R. concludiamo che $\overline{A}$ è decidibile per il teorema visto a lezione.
+## Problema 5
+Dimostrare che $A$ è T.R. $\iff A \leq_m A_{TM}$.
+* $\implies$ Assumiamo che $A$ sia T.R., allora esiste una MdT $M$ tale che $L(M) = A$. Per dimostrare che $A \leq_m A_{TM}$ dobbiamo trovare una funzione calcolabile $f$ tale che, per ogni stringa $w$, $w \in A \iff f(w) \in A_{TM}$.
+  Definiamo $f(w) = <M,w>$, tale funzione è calcolabile, inoltre:
+	* $w \in A$. In tal caso $M$ accetta $w$, quindi $<M,w> \in A_{TM}$.
+	* $w \notin A$. In tal caso $M$ non accetta $w$, quindi $<M,w> \notin A_{TM}$.
+* $\impliedby$ Assumiamo che $A \leq_m A_{TM}$. Vogliamo dimostrare che $A$ è T.R. Visto che $A_{TM}$ è T.R. l'ipotesi $A \leq_m A_{TM}$ implica che $A$ è T.R.
+## Problema 6
+Dimostrare che $A$ è decidibile $\iff$ $A \leq_m 0^*1^*$.
+* $\implies$ Dato che $A$ è decidibile, esiste un decisore $M$ tale che $L(M) = A$. Per dimostrare che $A \leq_m 0^*1^*$ dobbiamo costruire una funzione $f$ calcolabile, tale che $\forall w, w \in A \iff f(w) \in 0^*1^*$.
+  Implementiamo $f$ tramite la seguente MdT $F$.
+	* Su input $w$:
+		* Esegui $M$ su $w$
+		* Se $M$ accetta: scrivo $01$ sul nastro.
+		* Se $M$ rifiuta: scrivo $10$ sul nastro.
+		* *Nota*: $M$ non va in loop perché è un decisore. Se $M$ andasse in loop, $F$ non sarebbe calcolabile.
+* $\impliedby$ Sia $A \leq_m 0^*1^*$. Possiamo dimostrare che $0^*1^*$ è regolare, pertanto esso è anche decidibile. Dato che $A \leq_m 0^*1^*$ e $0^*1^*$ è decidibile, allora anche $A$ è decidibile.
+## Problema 7
+**Tipico esercizio da esame**:
+Si consideri il problema di determinare se una MdT con due nastri scrive un simbolo diverso da $\sqcup$ sul secondo nastro, quando computa su un dato input $w$.
+* Formalizzare tale un problema come un linguaggio.
+* Dimostrare che esso è indecidibile.
+
+**Punto $1$**:
+Il nostro linguaggio è $$B = \{<T,w>\ |\ T \text{ è MdT con 2 nastri che scrive un simbolo diverso da $\sqcup$ sul secondo nastro quando computa su } w\}$$
+**Punto $2$**:
+Assumiamo per assurdo che $B$ sia decidibile. Utilizziamo il decisore per $B$ per costruire un decisore per $A_{TM}$ (assurdo).
+* Su input $<M,w>$:
+	* Costruiamo una MdT $T$ con $2$ nastri tale che, se $M$ accetta $w$, allora $T$ scrive $0$ sul secondo nastro, e non tocca il secondo nastro in caso contrario.
+	* Eseguiamo il decisore per $B$ su $<T,w>$
+	* Ritorna il suo output.
+
+Definiamo la macchina $T$:
+* $T$ su input $x$:
+	* Simula $M$ su $x$ sul primo nastro.
+	* Se $M$ rifiuta : termina
+	* Se $M$ accetta: scrivi $0$ sul secondo nastro
+
+*Nota*: potremmo anche fare in modo che $T$ accetti $x$ come input ma simuli $M$ sempre su $w$. In tal caso nel decisore per $T$ potremmo passare $<M,\text{generica stringa}>$.

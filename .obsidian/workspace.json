@@ -4,21 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "139f8b77b9fee52f",
+        "id": "2ce3021e9c0282b7",
         "type": "tabs",
         "children": [
           {
-            "id": "5b6d4a52603def9d",
+            "id": "acb0d6ed3d3a5198",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Calcolabilità e Linguaggi Formali.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "Calcolabilità e Linguaggi Formali"
+              "title": "New tab"
             }
           }
         ]
@@ -159,9 +155,10 @@
       "templates:Insert template": false
     }
   },
-  "active": "5b6d4a52603def9d",
+  "active": "acb0d6ed3d3a5198",
   "lastOpenFiles": [
     "Calcolabilità e Linguaggi Formali.md",
+    "2024-12-04.md",
     "Programmazione ad Oggetti Mod. 2.md",
     "Untitled.md",
     "Utilità/Pasted image 20241119143507.png",

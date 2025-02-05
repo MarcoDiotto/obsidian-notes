@@ -66,19 +66,19 @@ $L(E) = \{w \in \{0,1\}^* | \text{ ultimo carattere letto è 0 oppure } w = \eps
 Sia $M = \{Q,\Sigma,\delta,q_0,F\}$ e sia $w = w_1,w_2, ... , w_n$ una stringa tale che $\forall i \in [1,n]: w_i \in \Sigma$ diciamo che $M$ **accetta** $w$ $\iff$ esistono degli stati $r_0,r_1, ... , r_n \in Q$ tale che: 
 * $r_0 = q_0$
 * $r_n \in F$
-* $\forall i \in [0,n-1]: \delta(r_1, w_{i+1}) = r_{i + 1}$
+* $\forall i \in [0,n-1]: \delta(r_i, w_{i+1}) = r_{i + 1}$
 ## Esempio
 ![[Pasted image 20240918142946.png]]
 
-Dimostriamo che accetta $101$:
-* **Sequenza di stati**: $q_0, q_1, q_0,  q_1$
+Dimostriamo che accetta $1010$:
+* **Sequenza di stati**: $q_0 (\to \text{iniziale}), q_1, q_0,  q_1,q_0$
 
 ## Definizione di Linguaggio di un DFA
 Sia $M$ un DFA. Il **linguaggio riconosciuto** da $M$, indicato con $L(M)$, è l'insieme delle stringhe che $M$ accetta.
 ## Definizione di Linguaggio Regolare
 Un linguaggio $A$ si dice **regolare** $\iff$ esiste un DFA $M$ tale che $L(M) = A$.
 ## Esempi di Linguaggio Regolare
-* Dimostrare che l'insieme delle stringhe binarie che contengono un numero dispari di $1$ è regolare.
+* Dimostrare che l'insieme delle stringhe binarie che contengono un numero dispari di $1$ è regolare. 
 ![[Pasted image 20240918145450.png]]
 
 * Dimostrare che l'insieme delle stringhe binarie che contengono la sottostringa $001$ è regolare:
@@ -138,7 +138,7 @@ Trasformiamolo in un DFA:
 
 Che linguaggio riconosce il seguente NFA:
 ![[Pasted image 20240924151400.png]]
-$L(D) =$ Strighe composte da soli $0$ di lunghezza pari a multipli di $3$.
+$L(D) =$ Stringhe composte da soli $0$ di lunghezza pari o multipli di $3$.
 ## Definizione di NFA
 Un NFA è una quintupla $(Q,\Sigma, \delta, q_0, F)$ dove:
 * $Q$ è un insieme finito di stati.
@@ -206,15 +206,15 @@ Ciò che abbiamo è:
 * $N_2 = (Q_2, \Sigma, \delta_2, q_2, F_2)$.
 * $N = (Q, \Sigma, \delta, q_0, F)$.
 In particolare $N$ sarà così costruito:
-* $Q = q_1 \cup q_2$.
+* $Q = Q_1 \cup Q_2$.
 * $q_0 = q_1$.
 * $F = F_2$.
-* $\delta(q,a) = \delta_1(q,a) \to \text{se } q \in Q_1 \\ F_1,\ \delta_2(q,a) \to \text{se } q \in Q_2,\ \delta_1(q,a) \to \text{se } q \in F_1 \land a \neq \epsilon,\ \{q_2\} \cup \delta_1(q,a) \text{se } q \in F_1 \land a = \epsilon$
+* $\delta(q,a) = \delta_1(q,a) \to \text{se } q \in Q_1 - F_1,\ \delta_2(q,a) \to \text{se } q \in Q_2,\ \delta_1(q,a) \to \text{se } q \in F_1 \land a \neq \epsilon,\ \{q_2\} \cup \delta_1(q,a) \text{se } q \in F_1 \land a = \epsilon$
 ## Dimostrazione regolarità di $A^*$
 Se $A$ è *regolare*, allora $A^*$ è *regolare*.
 $A^* = \{w_1, ..., w_k | \forall i : w_i \in A \land k \geq 0\}$.
 
-Sia $A$ regolare, allora esiste un NFA $N$ tale che $L(N) = A$. Costruisco un NFA $M$ tale che $LD(M) = A^*$.
+Sia $A$ regolare, allora esiste un NFA $N$ tale che $L(N) = A$. Costruisco un NFA $M$ tale che $L(M) = A^*$.
 ![[Pasted image 20240925153153.png]]
 # Espressioni Regolari
  Le **espressioni regolari** (o **regexp**) sono un formalismo utilizzato per descrivere i linguaggi regolari.
@@ -241,7 +241,7 @@ Sia $\Sigma$ un alfabeto. L'insieme delle **regexp** definite su $\Sigma$ è def
 * $\epsilon$ è una regexp.
 * $\emptyset$ è una regexp.
 * Se $R_1$ e $R_2$ sono regexp, allora $R_1 \cup R_2$ è una regexp.
-* Se $R_1$ e $R_2$ sono regexp, allora $R{_1°} R_2$ è una regexp.
+* Se $R_1$ e $R_2$ sono regexp, allora $R_{1°} R_2$ è una regexp.
 * Se $R$ è una regexp, allora $R^*$ è una regexp.
 ## Convenzioni
 * L'operatore $_°$ generalmente viene **eliso** $\to$ $R_{1°} R_2 = R_1R_2$.
@@ -276,7 +276,7 @@ Avviene per **induzione** sulla **struttura** di $R$.
 * Sia $R=a$ per qualche $a$, allora $L(R) = \{a\}$.
   **Dimostro** che $L(R)$ è regolare
   ![[Pasted image 20241001150506.png]]
-* Sia $R = \epsilon$, allora $l(R) = \{\epsilon\}$.
+* Sia $R = \epsilon$, allora $L(R) = \{\epsilon\}$.
   **Dimostro** che $L(R)$ è regolare
   ![[Pasted image 20241001150526.png]]
 * Sia $R = \emptyset$, allora $L(R) = \emptyset$.
@@ -375,7 +375,7 @@ Il **passo difficile** è il terzo.
 ## Esempio 1
 Dimostriamo che $A = \{0^n1^n\}$ non è regolare.
 
-Assumiamo per assurdo che $A$ sia regolare, allora deve valere il pumping lemma. Prendiamo come controesempio $s = 1^p0^p$.
+Assumiamo per assurdo che $A$ sia regolare, allora deve valere il pumping lemma. Prendiamo come controesempio $s = 0^p1^p$.
 * Osservo intanto che la stringa $s \in A$ e che rispetta la **pumping length** (ovvero che $|s| \geq p$).
 * Scriviamo $s$ nella forma $s = xyz$ con $|y| > 0$ e $|xy| \leq p$.
 * Dimostriamo che esiste $i \geq 0$ tale che $xy^iz \notin A$.
@@ -420,14 +420,14 @@ Dimostrare che se $A$ è regolare, allora $\overline{A}$ è regolare.
 	Dato che $A$ è regolare, allora esiste un **DFA** $D$, tale che $L(D)=A$. Sia $D=(Q,\Sigma,\delta,q_0,F)$, definisco un nuovo **DFA** $D'=(Q,\Sigma,\delta,q_0,Q-F)$ 
 	Allora è facile dimostrare che per ogni $w \in \Sigma^*(\to \text{tutte le stringhe costruite sullo stesso alfabeto}),w \in L(D) \iff w \notin L(D')$ 
 	* Se $w \in L(D)$, allora esistono stati $q_0,q_1,...,q_n$ tali che $q_n \in F$ e ciascuno stato va nel prossimo secondo $\delta$. Visto che $q_n \notin Q-F$, abbiamo che $w \notin L(D')$.
-	* Se $w \notin L(D)$, allora esistono stati $q_0,q_1,---,q_n$ tali che $q_n \notin F$ e ciascuno stato va nel prossimo secondo $\delta$. Visto che $q_n \in Q-F$, abbiamo che $w \in L(D')$.
+	* Se $w \notin L(D)$, allora esistono stati $q_0,q_1,...,q_n$ tali che $q_n \notin F$ e ciascuno stato va nel prossimo secondo $\delta$. Visto che $q_n \in Q-F$, abbiamo che $w \in L(D')$.
 ## Esempio 4
 Dimostrare che $A= \{a^{2^n}\ |\ n \geq 0\}$ non è regolare.
 **Dimostrazione**:
 	Assumiamo per assurdo che $A$ sia regolare e sia $p$ la sua **pumping length**.
 	Consideriamo la stringa $s = a^{2^p}$.
 	Abbiamo in particolare che $s \in A$ e $|s| \geq p$.
-	Sia $s = xyz$ con $|y| > o$ e $|xy| \leq p$, osserviamo che:
+	Sia $s = xyz$ con $|y| > 0$ e $|xy| \leq p$, osserviamo che:
 	* $|xyz| < |xy^2z|$ perché la $|y| > 0$.
 	* $2^p = |xyz| < |xy^2z| \leq 2^p+p$ perché $|xy| \leq p$.
 	* $2^p = |xyz| < |xy^2z| \leq 2^p+p < 2^p + 2^p$ perché $p < 2^p\  \forall p\geq1$
@@ -495,13 +495,13 @@ Tali grammatiche sono dette **context-free** perché un *non-terminale* si scriv
 * Siano ora $u,v,w \in (V \cup \Sigma)^*$ e sia $A \to w \in R$, diciamo che $uAv \implies uwv$ e lo chiamiamo "**produce**" (la freccia) 
 * Diciamo che $u$ **deriva** $v$ (indicato con $u \implies^*v$) $\iff$ $u = v$ oppure $u \implies w_1 \implies w_2 \implies w_2 \implies ... \implies v$ per qualche $w_1,w_2,...$ 
 ## Esempio 1
-Abbiamo che $A \implies^*00\#11$ perché $a \implies 0A1 \implies 00A11 \implies 00B11 \implies 00\#11$
+Abbiamo che $A \implies^*00\#11$ perché $A \implies 0A1 \implies 00A11 \implies 00B11 \implies 00\#11$
 
 Sia $G$ una **CFG**, definiamo il suo linguaggio come:
 * $L(G)=\{w\in\Sigma^*\ |\ S \implies^* w\}$
 ## Esempio 2
 Si assuma $\Sigma = \{0,1\}$, si forniscano **CFG** per i seguenti linguaggi:
-* Stringhe che comprendono almeno tre $1$: $S \to A1A1A1A1\quad A \to 0A\ |\ 1A\ |\ \epsilon$.
+* Stringhe che comprendono almeno tre $1$: $S \to A1A1A1\quad A \to 0A\ |\ 1A\ |\ \epsilon$.
 * Stringhe che iniziano e finiscono con lo stesso simbolo: $S \to 0A0\ |\ 1A1\ |\ 0\ |\ 1\quad A \to 0A\ |\ 1A\ |\ \epsilon$.
 * Stringhe di lunghezza dispari: $S \to CP\quad C \to 0\ |\ 1\quad P \to 00P\ |\ 01P\ |\ 10P\ |\ 11P\ |\ \epsilon$.
 * Stringhe palindrome: $S \to 0S0\ |\ 1S1\ |\ 0\ |\ 1\ |\ \epsilon$.
@@ -547,7 +547,7 @@ Per ogni **CFG** $G$ esiste una **CFG** $H$ in forma normale di Chomsky, tale ch
 Definiamo un algoritmo che converte $G$ in una **CFG** equivalente, che soddisfi la forma normale di Chomsky.
 Di seguito riportiamo l'algoritmo:
 * Generiamo un nuovo **start symbol** $S'$ ed aggiungiamo la **produzione** $S' \to S$. Tale trasformazione preserva il linguaggio ed assicura per costruzione che lo start symbol non occorra a destra di una produzione.
-* Eliminiamo le produzioni della forma $A \to \epsilon$, dove $A$ non è lo **start symbol**. Per tutte le regole della forma $R \to uAv$ introduco una nuova regola $R \to uv$. Ciò deve essere fatto per tutte le occorrenze di $A$. Per esempio, data una regola del tipo $R \to uAvAw$, sarà necessario introdurre nuove regole: $R \to uvAw,\ R\to uAvw,\ R \to uavw$. 
+* Eliminiamo le produzioni della forma $A \to \epsilon$, dove $A$ non è lo **start symbol**. Per tutte le regole della forma $R \to uAv$ introduco una nuova regola $R \to uv$. Ciò deve essere fatto per tutte le occorrenze di $A$. Per esempio, data una regola del tipo $R \to uAvAw$, sarà necessario introdurre nuove regole: $R \to uvAw,\ R\to uAvw,\ R \to uvw$. 
 * Eliminiamo le produzioni "unitarie" della forma $A \to B$. Per tutte le regole della forma $B \to u$, introduco una nuova regola $A \to u$.
 * Rimpiazziamo ogni regola della forma $A \to u_1,u_2,..,u_k$ con $k \geq 3$ e la sostituiamo con nuove regole del tipo $A \to u_1A_1,\ A_1 \to u_2A_2,..,\ A_{k-2} \to u_{k-1}u_k$. Nel nostro caso $u$ può essere sia un **terminale**, sia un **non-terminale**. Pertanto andiamo a rimpiazzare ogni terminale $u_i$ con un nuovo **non-terminale** $U_i$ e aggiungiamo la regola $U_i \to u_i$.
 
@@ -736,7 +736,7 @@ Sia $V$ l'insieme dei **non-terminali** di $G$.
 Definiamo $p = b^{|V| + 1}$
 Osserviamo che $b^{|V| + 1} \geq b^{|V|} + 1$ quando $b \geq 2$.
 
-Consideriamo una stringa $w \in A$ con $|w| \geq p$. Ciò implica che $|w| \geq b^{|V|} + 1$. Ragioniamo sull'altezza dei **parse tree** di $w$:
+Consideriamo una stringa $w \in A$ con $|w| \geq p$. Ciò implica che $|w| \geq b^{|V| + 1}$. Ragioniamo sull'altezza dei **parse tree** di $w$:
 * Parse tree di altezza $1$ $\implies$ stringa di lunghezza massima $b$
 * Parse tree di altezza $2$ $\implies$ stringa  di lunghezza massima $b^2$
 In generale parse tree di altezza $h$ genera stringhe di lunghezza massima $b^h$.
@@ -783,7 +783,7 @@ Dato che $A$ e $B$ sono CFL, esistono delle CFG $G = (V_1,\Sigma_1, R_1, S_1)$ e
 
 Osserviamo che sia $A$ che $B$ sono CFL.
 Assumiamo per assurdo che la classe dei CFL sia chiusa rispetto a $\cap$, quindi $A \cap B$ è CFL.
-$$A \cup B = \{a^nb^nc^n\ |\ n \geq 0\}$$ che abbiamo dimostrato essere non CFL perché non rispetta il pumping lemma.
+$$A \cap B = \{a^nb^nc^n\ |\ n \geq 0\}$$ che abbiamo dimostrato essere non CFL perché non rispetta il pumping lemma.
 
 Dimostriamo ora il secondo punto. Assumiamo per assurdo che valga la chiusura rispetto al complemento. Consideriamo due CFL $C$ e $D$. Osserviamo che:
 * $\overline{C}$ e $\overline{D}$ sono CLF per chiusura rispetto al complemento.
@@ -853,7 +853,7 @@ Una **macchina di Turing** (MdT) è un **modello teorico** di un calcolatore, co
 * Memoria (nastro) infinita
 * ACCETTO o RIFIUTO un input non appena entro in uno stato di accettazione o rifiuto
 ## Esempio di MdT
-Definizione di MdT per il seguente linguaggio: $\{w\#w\ |\ w \in \{0,1\}^*\}$ (non CLF, ma riconoscibile da una MdT):
+Definizione di MdT per il seguente linguaggio: $\{w\#w\ |\ w \in \{0,1\}^*\}$ (non CFL, ma riconoscibile da una MdT):
 ![[Pasted image 20241030142159.png]]
 
 **Passi di esecuzione**:
@@ -866,7 +866,7 @@ Una MdT è una settupla $(Q,\Sigma, \Gamma, \delta, q_0, q_{accept}, q_{reject})
 * $\Gamma$ è un alfabeto finito per il nastro, tale che $\sqcup \in \Gamma$ e $\Sigma \subseteq \Gamma$.
 * $\delta: Q \times \Gamma \to Q \times \Gamma \times \{L,R\}$ è la funzione di transizione.
 * $q_0 \in Q$ è lo stato iniziale.
-* $q_{accept} \in q$ è lo stato di accettazione.
+* $q_{accept} \in Q$ è lo stato di accettazione.
 * $q_{reject} \in Q$ è lo stato di rifiuto ($q_{reject} \neq q_{accept}$).
 ## Come computa una MdT?
 Una **configurazione** di una MdT descrive un momento della computazione per mezzo di tre parametri:
@@ -880,7 +880,7 @@ In generale una configurazione ha la forma $uqv$, dove $u,v \in \Gamma^*$ e $q \
 
 Una MdT computa passando da una configurazione a quella successiva sulla base di quanto è definito da $\delta$.
 ## Regole di computazione
-* Sia $M$ nella configurazione $uaq_ibv$ e sia $\delta(q_i,b) = (q_j,c,L)$ (dove $L$ sta per *left*), allora la prossima configurazione sarà $uq_jacb$.
+* Sia $M$ nella configurazione $uaq_ibv$ e sia $\delta(q_i,b) = (q_j,c,L)$ (dove $L$ sta per *left*), allora la prossima configurazione sarà $uq_jacv$.
 * Sia $M$ nella configurazione $uaq_ibv$ e sia $\delta(q_i,b) = (q_j,c,R)$ (dove $R$ sta per *right*), allora la prossima configurazione sarà $uacq_jv$.
 * Sia $M$ nella configurazione $q_ibv$ e sia $\delta(q_i,b) = (q_j,c,L)$, allora la prossima configurazione è $q_jcv$.
 * Sia $M$ nella configurazione $q_ibv$ e sia $\delta(q_i,b) = (q_j,c,R)$, allora la prossima configurazione è $cq_jv$.
@@ -1083,7 +1083,7 @@ Vediamo infine una terza idea che utilizza una MdT con due nastri:
 	* Copia $w$ sul secondo nastro.
 	* Simula $M$ su $w$ sul primo nastro per un passo di computazione.
 	* Simula $N$ su $w$ sul secondo nastro per un passo di computazione.
-	* Se $M$ on $N$ accettano: **accept**.
+	* Se $M$ o $N$ accettano: **accept**.
 
 *Nota*: il loop infinito è equivalente a **reject**.
 
@@ -1110,7 +1110,7 @@ Costruiamo la seguente MdT:
 >Star: se $A$ è T.R., allora $A ^* $ è T.R.
 
 *Nota*: i linguaggi **decidibili** sono chiusi rispetto a $\cup,\ \cap,\ _°$ e $^*$. Essi inoltre sono chiusi anche rispetto al **complemento**. 
-*Nota*: i T.R. non sono riconoscibili rispetto al complemento.
+*Nota*: i T.R. non sono chiusi rispetto al complemento.
 # Decidibilità
 ## Problemi decidibili
 **Problema**: Determinare se un DFA $D$ accetta una stringa $w$.
@@ -1228,7 +1228,7 @@ Ogni linguaggio context-free è decidibile
 ## Dimostrazione
 Sia $A$ un linguaggio context-free. Allora esiste una CFG $G$ tale che $L(G)  = A$.
 Dimostriamo che esiste un decisore $M$ tale che $L(M) = A$.
-* $M=$ su input $W$:
+* $M=$ su input $w$:
 	* Esegui il decisore per $A_{CFG}$ su input $<G,w>$.
 	* Ritorna il suo output.
 
@@ -1256,14 +1256,14 @@ L'insieme dei razionali positivi è numerabile.
 
 **Dimostrazione**:
 
-|     | $1$               | $2$               | $3$             | $4$           | $5$           | ... |
-| --- | ----------------- | ----------------- | --------------- | ------------- | ------------- | --- |
-| $1$ | ==$\frac{1}{1}$== | ==$\frac{1}{2}$== | ==$\frac{1}{3}$ | $\frac{1}{4}$ | $\frac{1}{5}$ | ... |
-| $2$ | ==$\frac{2}{1}$== | $\frac{2}{2}$     | $\frac{2}{3}$   | $\frac{2}{4}$ | $\frac{2}{5}$ | ... |
-| $3$ | ==$\frac{3}{1}$== | $\frac{3}{2}$     | $\frac{3}{3}$   | $\frac{3}{4}$ | $\frac{3}{5}$ | ... |
-| $4$ | $\frac{4}{1}$     | $\frac{4}{2}$     | $\frac{4}{3}$   | $\frac{4}{4}$ | $\frac{4}{5}$ | ... |
-| $5$ | $\frac{5}{1}$     | $\frac{5}{2}$     | $\frac{5}{3}$   | $\frac{5}{4}$ | $\frac{5}{5}$ | ... |
-| ... | ...               | ...               | ...             | ...           | ...           | ... |
+|     | $1$               | $2$               | $3$               | $4$           | $5$           | ... |
+| --- | ----------------- | ----------------- | ----------------- | ------------- | ------------- | --- |
+| $1$ | ==$\frac{1}{1}$== | ==$\frac{1}{2}$== | ==$\frac{1}{3}$== | $\frac{1}{4}$ | $\frac{1}{5}$ | ... |
+| $2$ | ==$\frac{2}{1}$== | $\frac{2}{2}$     | $\frac{2}{3}$     | $\frac{2}{4}$ | $\frac{2}{5}$ | ... |
+| $3$ | ==$\frac{3}{1}$== | $\frac{3}{2}$     | $\frac{3}{3}$     | $\frac{3}{4}$ | $\frac{3}{5}$ | ... |
+| $4$ | $\frac{4}{1}$     | $\frac{4}{2}$     | $\frac{4}{3}$     | $\frac{4}{4}$ | $\frac{4}{5}$ | ... |
+| $5$ | $\frac{5}{1}$     | $\frac{5}{2}$     | $\frac{5}{3}$     | $\frac{5}{4}$ | $\frac{5}{5}$ | ... |
+| ... | ...               | ...               | ...               | ...           | ...           | ... |
 **Obbiettivi**:
 Dare una biezione da $\mathbb{N}$ ai razionali positivi, cioè produrre una lista di razionali positivi tale che:
 * Non vi siamo ripetizioni
@@ -1584,7 +1584,7 @@ Una configurazione è una tripla che comprende:
 Nel nostro caso abbiamo:
 * Numero di stati: $q$.
 * Numero di posizioni della testina: $n$
-* Possibili contenuti del nastro: $g^n$ ($\to$ g simboli per ogni cellula)
+* Possibili contenuti del nastro: $g^n$ ($\to$ g simboli per ogni cella)
 
 Passiamo alla dimostrazione del problema:
 
@@ -1607,7 +1607,7 @@ Assumiamo per assurdo che $E_{LBA}$ sia decidibile e costruiamo un decisore per 
 		* Esegui il decisore per $E_{LBA}$ su $<N>$
 		* Ritorna il suo output invertito.
 
-Costruiamo il nostro LBA $N$ in modo che $N$ sia l'insieme delle storie di computazione accettanti di $M$ è $w$.
+Costruiamo il nostro LBA $N$ in modo che $N$ sia l'insieme delle storie di computazione accettanti di $M$ e $w$.
 * Se $L(N) = \emptyset$, allora non ci sono storie di computazione accettanti di $M$ e $w$, quindi $M$ non accetta $w$.
 * Se $L(N) \neq \emptyset$, allora vi è una storia di computazione accettante di $M$ e $w$, quindi $M$ accetta $w$.
 
@@ -1625,7 +1625,7 @@ Tale problema è indecidibile.
 Assumiamo per assurdo che $ALL_{CFG}$ sia decidibile e costruiamo un decisore per $A_{TM}$ (assurdo). Il decisore per $A_{TM}$ è il seguente:
 * Su input $<M,w>$:
 	* Costruisci una CFG $G$ con la seguente proprietà:
-	  $L(N) = \begin{cases} A \neq \Sigma^* \quad \text{se } M \text{ accetta } w \\ \Sigma^* \quad \text{altrimenti}\end{cases}$
+	  $L(G) = \begin{cases} A \neq \Sigma^* \quad \text{se } M \text{ accetta } w \\ \Sigma^* \quad \text{altrimenti}\end{cases}$
 	* Esegui il decisore per $ALL_{CFG}$ su input $G$.
 	* Ritorna l'output invertito.
 Costruiamo $G$ in modo tale che $L(G)$ contenga le stringhe che *non* sono storie di computazione accettanti per $M$ e $w$:
@@ -1936,7 +1936,7 @@ Può continuare all'infinito se tutte le stringhe sono uguali. Tuttavia, a noi n
 Dimostrare che $A_{TM} \nleq_m E_{TM}$.
 *Nota*: Ricordiamo che $A_{TM} \leq_m \overline{E_{TM}}$.
 
-Assumiamo per assurdo che $A_{TM} \nleq_m E_{TM}$. Tale affermazione è equivalente a $\overline{A_{TM}} \leq_m \overline{E_{TM}}$. Osserviamo che $\overline{A_{TM}}$ non è T.R. (dimostrato). Inoltre sappiamo che $\overline{E_{TM}}$ 
+Assumiamo per assurdo che $A_{TM} \leq_m E_{TM}$. Tale affermazione è equivalente a $\overline{A_{TM}} \leq_m \overline{E_{TM}}$. Osserviamo che $\overline{A_{TM}}$ non è T.R. (dimostrato). Inoltre sappiamo che $\overline{E_{TM}}$ 
 è T.R. (dimostrato). Ciò è impossibile, perché sappiamo che se $A \leq_m B$ e $A$ non è T.R., allora $B$ non è T.R.
 ## Problema 3
 Si consideri la seguente affermazione: "Se $A \leq_m B$ e $B$ è regolare, allora anche $A$ è regolare". Dimostrare la sua verità o la sua falsità.

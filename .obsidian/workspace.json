@@ -4,17 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "2ce3021e9c0282b7",
+        "id": "bded6cf88b805e4d",
         "type": "tabs",
         "children": [
           {
-            "id": "acb0d6ed3d3a5198",
+            "id": "c7fd7374fd2998b6",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "Rust.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "Rust"
             }
           }
         ]
@@ -36,7 +40,8 @@
             "state": {
               "type": "file-explorer",
               "state": {
-                "sortOrder": "alphabetical"
+                "sortOrder": "alphabetical",
+                "autoReveal": false
               },
               "icon": "lucide-folder-closed",
               "title": "Files"
@@ -155,31 +160,33 @@
       "templates:Insert template": false
     }
   },
-  "active": "acb0d6ed3d3a5198",
+  "active": "c7fd7374fd2998b6",
   "lastOpenFiles": [
+    "Rust.md",
     "Calcolabilità e Linguaggi Formali.md",
+    "Report Sicurezza/Report Challenge 4.md",
+    "Report Sicurezza/Immagini quarta challenge/Pasted image 20241204165828.png",
+    "Report Sicurezza/Immagini quarta challenge/Pasted image 20241204165249.png",
+    "Report Sicurezza/Immagini quarta challenge/Pasted image 20241204164634.png",
+    "Pasted image 20241204164543.png",
+    "Report Sicurezza/Immagini quarta challenge/Pasted image 20241204163756.png",
+    "Report Sicurezza/Report Challenge 3.md",
+    "Report Sicurezza/Report Challenge 2.md",
+    "Report Sicurezza/Immagini quarta challenge/Pasted image 20241204162901.png",
+    "Report Sicurezza/Immagini quarta challenge/Pasted image 20241204160840.png",
+    "Report Sicurezza/Immagini quarta challenge/Pasted image 20241204160317.png",
+    "Report Sicurezza/Immagini quarta challenge",
     "2024-12-04.md",
     "Programmazione ad Oggetti Mod. 2.md",
-    "Untitled.md",
     "Utilità/Pasted image 20241119143507.png",
     "Untitled 2.md",
     "Untitled 4.md",
     "Untitled 3.md",
     "Untitled 1.md",
-    "Report Sicurezza/Report Challenge 3.md",
     "Report Sicurezza/Immagini terza challenge",
     "Report Sicurezza/Immagini terza challenge/Pasted image 20241109144207.png",
-    "Pasted image 20241109144138.png",
-    "Report Sicurezza/Report Challenge 2.md",
     "Report Sicurezza/Report Challenge 1.md",
-    "Utilità/Pasted image 20241105152821.png",
-    "Utilità/Pasted image 20241105150916.png",
-    "Pasted image 20241105150441.png",
-    "Utilità/Pasted image 20241105144139.png",
-    "Utilità/Pasted image 20241105141151.png",
-    "Utilità/Pasted image 20241105142132.png",
     "Report Sicurezza/Immagini seconda challenge",
-    "Report Sicurezza/Immagini seconda challenge/Pasted image 20241103160023.png",
     "Tecnologie e Applicazioni Web.md",
     "Analisi dei Dati.md",
     "Report Sicurezza/Immagini prima challenge",
@@ -201,8 +208,6 @@
     "Utilità",
     "Analisi dei Dati",
     "Untitled.canvas",
-    "Untitled 1.canvas",
-    "Programmazione ad oggetti mod 2",
-    "ALGORITMI E STRUTTURE DATI.md"
+    "Untitled 1.canvas"
   ]
 }

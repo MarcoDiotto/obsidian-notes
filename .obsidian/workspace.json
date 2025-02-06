@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "bded6cf88b805e4d",
+        "id": "8cee203bcaa97e1b",
         "type": "tabs",
         "children": [
           {
-            "id": "c7fd7374fd2998b6",
+            "id": "c4cab0256d5450bd",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -160,9 +160,11 @@
       "templates:Insert template": false
     }
   },
-  "active": "c7fd7374fd2998b6",
+  "active": "c4cab0256d5450bd",
   "lastOpenFiles": [
+    "().md",
     "Rust.md",
+    "Untitled.md",
     "Calcolabilità e Linguaggi Formali.md",
     "Report Sicurezza/Report Challenge 4.md",
     "Report Sicurezza/Immagini quarta challenge/Pasted image 20241204165828.png",
@@ -201,7 +203,6 @@
     "el.md",
     "Utilità/cheatsheet.md",
     "Algoritmi.md",
-    "().md",
     "[[Algoritmi.md",
     "Utilità/AD2324-lab2.html",
     "Utilità/AD2324-lab2 1.html",
